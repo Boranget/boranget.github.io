@@ -3,12 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: Boranget.博客
 subtitle: ''
 description: ''
 keywords:
-author: John Doe
-language: en
+author: Boranget
+language: zh-CN
 timezone: ''
 
 # URL
@@ -105,3 +105,8 @@ deploy:
   type: git
   repo: git@github.com:Boranget/boranget.github.io.git
   branch: pages
+search:
+  path: search.json
+  field: post
+  content: true
+  format: html
