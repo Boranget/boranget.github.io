@@ -5,11 +5,15 @@
 # Site
 title: Boranget.博客
 subtitle: ''
-description: ''
-keywords:
+description: '一个叫Boranget的橙汁写的博客，内含一些笔记和一些经验'
+keywords: 
+  - Boranget
+  - 橙汁
+  - 博客
+  - hexo
 author: Boranget
 language: zh-CN
-timezone: ''
+timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -33,6 +37,7 @@ skip_render:
 # Writing
 new_post_name: :title.md # File name of new posts
 default_layout: post
+auto_spacing: true
 titlecase: false # Transform title into titlecase
 external_link:
   enable: true # Open external links in new tab
