@@ -35,34 +35,45 @@ tags:
   - GitHub
   - GItee
 
-# Git常用命令
+## 分支
 
-## 设置用户签名
+在版本控制过程中,同时推进多个任务,我们可以为每个任务创建单独的分支,使用分支意味着从主线上离开了,开发分支不会影响主分支的运行
+
+git切换分支本质上是移动**Head**指针
+
+# 操作
+
+## 用户签名
 
 签名的作用是区分不同操作者身份, 用户的签名信息在每一个版本的提交信息中能够看到,以此来确认本次提交时谁做的,必须设置,否则无法提交代码
 
 治理设置的签名与远程仓库的用户名密码没有任何关系
 
 ```bash
+# 全局配置：所有的git都使用该用户名和邮箱
 git config --global user.name Boranget
 git config --global user.email Boanget@orange.com
+# 本地配置：当前项目使用该用户名和邮箱
+git config user.name Boranget
+git config user.email Boanget@orange.com
+# 查看
+git config user.name
+git config user.email
 ```
 
-## 基础操作
-
-### 初始化仓库
+## 初始化仓库
 
 git init
 
 初始化当前目录为一个git仓库,使得在当前目录可以进行git操作
 
-### 查看本地库状态
+## 查看本地库状态
 
 git status
 
 查看本地仓库的状态, 比如在新增文件后可以看到本地仓库中有没有追踪的文件
 
-### 添加暂存区
+## 添加暂存区
 
 git add 文件名
 
@@ -70,7 +81,7 @@ git add 文件名
 
 (暂存区存在的意义: 在commit的时候,是选择将暂存区的文件提交的,如果没有暂存区的存在,我们就只能提交所有的文件到本地仓,但我们有的时候会有这样的需求:我只想将我修改的一部分提交到本地仓,此时我本就需要暂存区的帮助:将我们想要提交到本地仓的文件添加到暂存区,然后commit)
 
-### 提交本地库
+## 提交本地库
 
 git commit -m"日志信息" 
 
@@ -90,8 +101,6 @@ git commit -m"日志信息"
 >
 >[REM] 删除不需要的文件
 
-# 历史版本
-
 ## 查看历史版本
 
 git reflog 查看版本信息
@@ -109,16 +118,7 @@ git revert -n 版本号
 重做掉某一版本
 
 - reset相当于把整个仓库状态回归到某个提交节点，而revert是先取消某一个提交的修改内容，类似于取反
-
-# 分支
-
-- 什么是分支
-
-  在版本控制过程中,同时推进多个任务,我们可以为每个任务创建单独的分支,使用分支意味着从主线上离开了,开发分支不会影响主分支的运行
-
-- 指针
-
-  git切换分支本质上是移动**Head**指针
+- 如果要撤销revert操作，则将该revert提交给revert掉即可
 
 ## 创建分支
 
@@ -148,25 +148,35 @@ git merge 分支名
 
 解决方式为: 打开冲突文件,删除特殊符号,继续编辑,保存后add commit,此时状态恢复正常
 
-# 远程仓库
-
 ## 创建远程仓库
 
-在github或者gitee上依照提示步骤创建仓库
+在github等平台上创建仓库
 
-## 查看当前所有的远程地址别名
+## 查看远程地址配置
 
 git remote -v
 
-## 起别名
+## 已有项目添加远程仓
 
-git remote add 别名, 远程地址
+1. 本地创建仓库根目录文件夹
 
-## 推送本地分支内容到远程仓库
+2. 在文件夹内右键打开git bash
+
+   ```bash
+   # 初始化仓库
+   git init
+   # 配置远程仓库地址
+   it remote add origin git@gitee.com:gitora/private_note.git
+   # 删除远程仓库地址
+   git remote rm origin
+   ```
+
+
+## 推送
 
 git push 别名 分支
 
-## 将远程仓库的内容克隆到本地
+## 克隆
 
 git clone 远程地址
 
@@ -178,18 +188,24 @@ git pull / git fetch
 
 - 从远端仓库拉取代码，fatch是拉取到本地再决定是否要合并，pull是直接合并
 
-## 操作
-
-- 回退：git reset  / git revert
-  - reset相当于把整个仓库状态回归到某个提交节点，而revert是先取消某一个提交的修改内容，类似于取反？
-
 ## 脏目录
 
--- git stash
+git stash
 
 将更改储藏在脏工作目录中。
 
-# 一些规范
+## 公钥
+
+```bash
+ # ""内是公钥名称,可随便取名
+ ssh-keygen -t ed25519 -C "boranget@gitee.com"
+ # 连续回车,得到公钥文件
+
+```
+
+将公钥内容复制到远程仓库公钥配置界面即可
+
+# 规范
 
 ## 分支命名规范
 
@@ -213,34 +229,3 @@ git pull / git fetch
 - [ADD] 添加实现新功能
 - [REM] 删除不需要的文件
 
-# 经验
-
-## 创建远程仓库
-
-1. 在云端新建好仓库
-
-2. 本地创建仓库根目录文件夹
-
-3. 在文件夹内右键打开git bash
-
-   ```bash
-   # 初始化仓库
-   git init
-   # 配置远程仓库地址
-it remote add origin git@gitee.com:gitora/private_note.git
-   # 删除远程仓库地址
-   git remote rm origin
-   ```
-   
-   
-
-## 添加公钥到gitee
-
-```bash
- # ""内是公钥名称,可随便取名
- ssh-keygen -t ed25519 -C "boranget@gitee.com"
- # 连续回车,得到公钥文件
-
-```
-
-将公钥内容复制到远程仓库公钥配置界面即可
