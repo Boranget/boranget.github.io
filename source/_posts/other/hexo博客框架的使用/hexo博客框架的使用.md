@@ -8,6 +8,8 @@ tags:
 
 # 环境准备
 
+## 安装git
+
 ## 安装node-js
 
 可使用淘宝镜像的cnpm
