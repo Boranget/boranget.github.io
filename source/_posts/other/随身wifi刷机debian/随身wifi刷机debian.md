@@ -194,10 +194,6 @@ win11
 
 ## 工具安装
 
-### 查看磁盘剩余空间 
-
-df -lh
-
 ### root用户
 
 1. 配置超级用户
@@ -249,4 +245,25 @@ dpkg-reconfigure locales
 reboot
 ```
 
-至此debian刷机完毕
+## 一些命令
+
+### 查看磁盘剩余空间 
+
+df -lh
+
+### 开机自启配置
+
+```bash
+#创建启动脚本
+touch /etc/rc.local 
+echo '#!/bin/sh -e' > /etc/rc.local 
+echo "exit 0" >> /etc/rc.local 
+chmod +x /etc/rc.local 
+systemctl daemon-reload 
+systemctl start rc-local 
+#修改启动脚本 
+vi /etc/rc.local 
+```
+
+
+
