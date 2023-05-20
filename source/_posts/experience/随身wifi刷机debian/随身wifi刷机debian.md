@@ -18,11 +18,14 @@ tags:
 
 win11
 
+# 所需文件
+
+链接：https://pan.baidu.com/s/1b8S9iy8W1EF6lMcQCLpgUQ 
+提取码：2u69
+
 # 软件安装
 
 建议新建一个文件夹并将其加入杀毒软件白名单，避免杀毒软件误删文件
-
-下载链接：[查看链接](https://www.123pan.com/s/Dpq0Vv-XAUHd.html)提取码:V23y
 
 1. 安装vivo9008驱动
 
