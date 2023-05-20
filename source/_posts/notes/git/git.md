@@ -4,6 +4,21 @@ date: 2022-11-28 16:50:30
 tags:
 ---
 
+# 一些问题
+
+- git push 时提示
+
+  > fatal: unable to access 'https://github.com/***': Recv failure: Connection was reset
+
+  解决办法：执行
+
+  ```bash
+  git config --global --unset http.proxy
+  git config --global --unset https.proxy
+  ```
+
+  取消代理
+
 # 简介
 
 ## 概念
