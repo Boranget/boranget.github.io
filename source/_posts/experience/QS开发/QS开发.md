@@ -7,7 +7,7 @@ tags:
 # 原因
 
 本意是想通过cmd窗口更快的启动一些软件或者文件夹，之前使用dos命令编写一个一个的bat文件放入一个文件夹中，然后将整个文件夹放入path环境变量中，但这样每次想要添加一个新的快速启动的内容都比较麻烦，于是就想写一个小工具来实现更便捷的使用。
-# 过程
+# C实现
 ## 语言选择
 选择了c语言，一是用java的话不太符合快速启动的初衷（我只学过这俩），二是顺便可以复习一下已经差不多还给老师的c。
 ## 工具选择
@@ -388,11 +388,195 @@ int main(int argc,char* argv[]){
 在修改代码中常量时，有个问题就是不能采用相对路径，因为在使用cmd启动时，会默认将cmd的当前目录当作当前路径，从而会让程序找不到文件。
 ## 放上最终效果
 ![最终效果](QS开发/20210504214152877.png)
-# 一些问题
+## 一些问题
 - 刚开始打算使用计算的方式在最后得到三维数组的长度，也就是得到配置文件中的行数，但一直行不通，计算结果有问题，于是后来改用结构体来记录：读入文件循环的时候动态增加。
 - 在代码中定义字符串时会将'\'视为转义字符，如果是从文件中读取则不会将'\'视为转义字符。
 - 字符串转换为字符指针 (char*)"testString"，直接将字符串赋值给字符指针会有警告。
 - 指针是第一次接触学习，所以犯了挺多错误。
-- 没有优化内存回收。
 
-欢迎讨论，望各位大神不吝赐教
+# 重构
+
+上班之后抽空学习了下c++，决定重构一下， 这次选择vector来存放配置，重构时间：2022/12/1
+
+## 代码
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <fstream>
+#include <vector>
+#include <Windows.h>
+using namespace std;
+
+/**
+ * 切割一个字符串
+ * 传入原字符串,切割字符,用于接收的字符串数组
+ */
+void split(string src, string delim, string *res)
+{
+	// 由于strtok会更改字符串本身,但传入的参数是只读的,所以这里拷贝一份
+	int len = src.length();
+	char cache[len];
+	strcpy(cache, src.c_str());
+	char *node;
+	res[0] = strtok(cache, delim.c_str());
+	for (int i = 1; node = strtok(NULL, delim.c_str()); i++)
+	{
+		res[i] = (string)node;
+	}
+	return;
+}
+/**
+ * 初始化
+ *
+ */
+vector<string *> init()
+{
+	// 获取环境变量中QS_HOME的值
+	char buffer[MAX_PATH];
+	GetEnvironmentVariableA("QS_HOME", buffer, MAX_PATH);
+	// 组合为文件名
+	string fileName = (string)buffer+"\\"+"qsConfig";
+	vector<string *> res;
+	// 读文件准备
+	// 文件读取对象
+	ifstream readFile;
+	// 打开文件
+	readFile.open(fileName, ios::in);
+	string currentLine;
+	while (!readFile.eof())
+	{
+		readFile >> currentLine;
+		// 若每一行结尾为换行符,去掉
+		if (currentLine[currentLine.length() - 1] == '\n')
+		{
+			currentLine[currentLine.length() - 1] == '\0';
+		}
+		// 切割该行字符串,获得切割结果
+		string *currentLineArry = new string[3];
+		split(currentLine, ",", currentLineArry);
+		res.push_back(currentLineArry);
+	}
+	return res;
+}
+/**
+ * 执行路径
+ */
+int executeQs(string path)
+{
+	string pathf = "\nstart \" \" ";
+	// 连接
+	string commondStr = pathf + path;
+	// 输出命令
+	cout << commondStr << endl;
+	// 执行命令,c_str()将字符串转为字符数组
+	system(commondStr.c_str());
+	return 0;
+}
+
+//参数为空的情况下
+//输入id，
+//通过id获得path，然后执行
+int showConfigList(vector<string *> form)
+{
+
+	string path;
+	// 输出表格头
+	printf("%-10s%-15s%-15s%-50s\n\n", "ID", "Name", "Parameter", "Path");
+	// 遍历表格并输出
+	for (int i = 0; i < form.size(); i++)
+	{
+		printf("%-10d%-15s%-15s%-50s", i + 1, form[i][0].c_str(), form[i][1].c_str(), form[i][2].c_str());
+		cout << endl;
+	}
+
+	// 用户输入启动命令编号
+	int id;
+	cout << "Please enter the ID number : ";
+	cin >> id;
+	cout << endl;
+
+	if (id < 1 || id > form.size())
+	{
+		cerr << "Id number is not exist" << endl;
+		return 0;
+	}
+	cout << "Please wait a moment ...... " << endl;
+	path = form[id - 1][2];
+	executeQs(path);
+
+	return 1;
+}
+
+//参数不为空的情况下
+//传入参数，通过参数查找id，
+//通过id获得path，然后执行
+int serchByQuickName(string parameter, vector<string *> form)
+{
+	string path;
+	int i = 0;
+	for (i = 0; i < form.size(); i++)
+	{
+		if (!parameter.compare(form[i][1]))
+		{
+			path = form[i][2];
+			break;
+		}
+	}
+	if (i == form.size())
+	{
+		cerr << "Parameter is not exist" << endl;
+		return 0;
+	}
+
+	cout << "Please wait a moment ...... " << endl;
+	executeQs(path);
+
+	return 1;
+}
+
+int main(int argc, char *argv[])
+{
+	// 初始化
+	vector<string *> form = init();
+	if (argc == 2)
+	{
+		// 如果命令行参数长度为2,说明带上了启动命令
+		// 获取启动命令参数
+		char *parameter = argv[1];
+		// 根据命令查找
+		serchByQuickName(parameter, form);
+	}
+	else if (argc == 1)
+	{
+		// 如果长度为1, 说明没有带参数,展示列表
+		showConfigList(form);
+	}
+	else
+	{
+		// 否则报错
+		cerr << "Parameter is Error" << endl;
+	}
+	return 0;
+}
+
+```
+
+## 使用方法
+
+>环境变量配置：
+>	需要将当前目录配置到系统环境变量的“QS_HOME”中，并将本目录配置到系统环境变量的Path中
+>配置文件格式：
+>	文件名 qsConfig 无后缀
+>	一行一个配置：
+>		启动名,简称(启动命令),文件路径
+>		启动名,简称(启动命令),文件路径
+>		................
+>	如:
+>		qsConfig,conf,C:\tools\base\qs\qsConfig
+>		Typora,typ,C:\tools\work\md\Typora\Typora.exe
+>使用方法:
+>	第一种: 打开命令行, 输入qs, 展示配置列表, 输入对应的编号,启动
+>	第二种: 打开命令行, 输入 qs 简称(启动命令) 直接启动
+>	
+
