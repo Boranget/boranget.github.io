@@ -4,6 +4,12 @@ date: 2023-04-22 10:35:19
 tags:
 ---
 
+# 一些专业名词
+
+EIP: enterprise integration pattern
+
+SLA: service-level agreement 服务等级协议
+
 # 认识Camel
 
 ## Camel的消息模型
@@ -186,15 +192,17 @@ Exchange
 
   信息发送与接收的端点。在camel中，使用uri来配置端点例如
 
-  file:data/inbox? delay=5000
+  \- file:data/inbox? delay=5000
 
-  Scheme:Context path?Options
+  = Scheme:Context path?Options
 
   其中，Scheme表示使用何种component来处理，Context path表示上下文路径，Options表示相关操作。这里：使用FileComponent在data/Inbox每五秒进行一次轮询
 
 - Producer
 
   能够向端点发送消息的实体
+
+  这里的Producer和Consumer都是相对于外围系统,Producer是生产出消息供外围系统消费, Consumer是消费外围系统产生的消息.
 
 - Consumer
 
@@ -206,5 +214,8 @@ Exchange
 
   - polling consumers
 
-    用于同步场景
+    会主动获取信息, 比如ftp server ,且当前信息未处理完成时不会去获取新的信息, 多用于同步场景, 通常的用法如scheduled的任务。
 
+# Routing with Camel
+
+routing用于处理来自一个消息队列的消息，并将其发送给一个接收方集合中的某个接收方。
