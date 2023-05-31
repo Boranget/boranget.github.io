@@ -83,3 +83,7 @@ categories:
 创建项目的时候不从网络下载archetype-catalog.xml模板，加快创建maven项目的速度
 
 ![image-20230530214240740](Maven安装与配置/image-20230530214240740.png)
+
+# 历史版本下载
+
+[Index of /dist/maven/maven-3 (apache.org)](https://archive.apache.org/dist/maven/maven-3/)
