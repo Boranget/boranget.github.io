@@ -2,6 +2,9 @@
 title: nginx
 date: 2022-11-09 16:50:30
 tags:
+  - nginx
+categories:
+  - 笔记
 ---
 
 # 基本概念

@@ -2,8 +2,10 @@
 title: hexo博客框架的使用
 date: 2023-04-17 16:50:30
 tags:
-	- 笔记
-	- 经验
+  - hexo
+  - 博客
+categories:
+  - 经验
 ---
 
 # 环境准备

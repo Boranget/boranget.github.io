@@ -2,6 +2,9 @@
 title: React
 date: 2022-09-13 16:50:30
 tags:
+  - react
+categories:
+  - 笔记
 ---
 
 # 虚拟DOM

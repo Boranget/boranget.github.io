@@ -2,6 +2,9 @@
 title: c++
 date: 2022-12-2 09:34:30
 tags:
+  - c++
+categories:
+  - 笔记
 ---
 
 # C++数据类型

@@ -2,6 +2,9 @@
 title: electron
 date: 2022-11-28 16:50:30
 tags:
+  - electron
+categories:
+  - 笔记
 ---
 
 # 入门

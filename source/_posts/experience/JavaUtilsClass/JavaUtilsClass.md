@@ -2,6 +2,9 @@
 title: JavaUtilsClass
 date: 2023-01-13 16:50:30
 tags:
+  - 工具类
+categories:
+  - 经验
 ---
 
 # json匹配

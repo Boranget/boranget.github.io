@@ -2,6 +2,9 @@
 title: linux_deploy安装并ssh连接教程
 date: 2021-07-20 16:50:30
 tags:
+  - 服务器
+categories:
+  - 经验
 ---
 
 # 参考教程

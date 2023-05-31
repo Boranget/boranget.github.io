@@ -2,6 +2,9 @@
 title: 一个cmd快捷小工具的开发
 date: 2021-05-04 16:50:30
 tags:
+  - c语言
+categories:
+  - 经验
 ---
 
 # 原因

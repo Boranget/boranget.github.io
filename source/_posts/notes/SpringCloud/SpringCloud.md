@@ -2,6 +2,9 @@
 title: SpringCloud
 date: 2023-01-10 16:50:30
 tags:
+  - spring cloud
+categories:
+  - 笔记
 ---
 
 # 发现的一些问题

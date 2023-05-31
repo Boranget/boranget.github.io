@@ -2,6 +2,10 @@
 title: aidlux上部署mirai
 date: 2022-03-20 16:50:30
 tags:
+  - qq机器人
+  - 服务器
+categories:
+  - 经验
 ---
 
 # aidlux上部署mirai
@@ -38,4 +42,3 @@ tags:
 * 参考[mirai (mamoe.net)](https://docs.mirai.mamoe.net/mirai-login-solver-selenium/)
 * 其中方法一中手机客户端在[Releases · mzdluo123/TxCaptchaHelper (github.com)](https://github.com/mzdluo123/TxCaptchaHelper/releases)下载
 
-## 欢迎各位补充

@@ -2,6 +2,9 @@
 title: edge浏览器使用pyecharts_snapshot_selenium渲染成图片
 date: 2021-06-17 16:50:30
 tags:
+  - python
+categories:
+  - 经验
 ---
 
 # pyecharts渲染成图片

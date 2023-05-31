@@ -2,6 +2,10 @@
 title: aidlux 配合 nginx 搞一个小服务器用
 date: 2022-10-02 16:50:30
 tags:
+  - 服务器
+  - nginx
+categories:
+  - 经验
 ---
 
 aidlux 配合 nginx

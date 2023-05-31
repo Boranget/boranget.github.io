@@ -2,6 +2,10 @@
 title: JUC
 date: 2023-03-09 16:50:30
 tags:
+  - juc
+  - 多线程
+categories:
+  - 笔记
 ---
 
 # JUC概述

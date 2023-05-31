@@ -2,6 +2,9 @@
 title: OrangeFrame
 date: 2022-02-01 16:50:30
 tags:
+  - java frame
+categories:
+  - 笔记
 ---
 
 # 系统结构

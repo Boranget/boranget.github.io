@@ -2,23 +2,13 @@
 title: mybatis
 date: 2023-03-01 16:50:30
 tags:
+  - mybatis
+categories:
+  - 笔记
+
 ---
 
-# 数据源配置
-
-```yml
-spring:
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sstestdb?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
-```
-
 # 引入依赖
-
-
 
 ```xml
 <!--druid-->
@@ -40,9 +30,19 @@ spring:
 </dependency>
 ```
 
-一般: SpringBoot官方的Starter命名格式为：spring-boot-starter-*
+有个知识点： SpringBoot官方的Starter命名格式为：spring-boot-starter-*，而第三方的starter命名格式为： *-spring-boot-starter
 
-第三方命名格式为： *-spring-boot-starter
+# 数据源配置
+
+```yml
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sstestdb?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+```
 
 # 一对一查询
 

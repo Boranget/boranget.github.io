@@ -2,6 +2,9 @@
 title: Java多态
 date: 2021-02-23 16:50:30
 tags:
+  - java入门
+categories:
+  - 经验
 ---
 
 # 什么是多态

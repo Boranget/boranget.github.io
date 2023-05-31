@@ -2,6 +2,9 @@
 title: Swagger
 date: 2023-01-04 16:50:30
 tags:
+  - swagger
+categories:
+  - 笔记
 ---
 
 # 在网页中展示接口信息

@@ -2,6 +2,9 @@
 title: JavaWeb
 date: 2022-12-08 16:50:30
 tags:
+  - web基础
+categories:
+  - 笔记
 ---
 
 # HTML基础

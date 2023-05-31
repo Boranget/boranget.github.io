@@ -2,6 +2,9 @@
 title: oauth2
 date: 2022-11-28 16:50:30
 tags:
+  - oauth2
+categories:
+  - 笔记
 ---
 
 # 基本概念

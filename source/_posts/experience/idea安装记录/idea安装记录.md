@@ -1,6 +1,10 @@
 ---
 title: idea安装记录
 date: 2023-05-21 20:41:30
+tags:
+  - idea
+categories:
+  - 经验
 ---
 
 # 所需文件

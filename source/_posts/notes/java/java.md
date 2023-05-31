@@ -2,6 +2,9 @@
 title: java
 date: 2023-2-23 16:50:30
 tags:
+  - java基础
+categories:
+  - 笔记
 ---
 
 # 内部类相关

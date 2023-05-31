@@ -2,6 +2,9 @@
 title: gateway
 date: 2023-02-01 16:50:30
 tags:
+  - 微服务
+categories:
+  - 笔记
 ---
 
 # 一些问题

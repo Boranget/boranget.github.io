@@ -2,6 +2,9 @@
 title: Web
 date: 2022-08-25 16:50:30
 tags:
+  - web基础
+categories:
+  - 笔记
 ---
 
 # ES6

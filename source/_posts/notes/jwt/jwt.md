@@ -2,6 +2,9 @@
 title: JWT
 date: 2022-12-27 16:50:30
 tags:
+  - jwt
+categories:
+  - 笔记
 ---
 
 # 定义
