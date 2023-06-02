@@ -9,6 +9,8 @@ categories:
 
 # 下载
 
+这里注意，如果要配合idea使用，需要查询idea版本与maven版本的适配关系，不匹配将会导致无法在idea中使用maven。
+
 [Maven – Download Apache Maven](https://maven.apache.org/download.cgi)
 
 下载apache-maven-***-bin.zip
