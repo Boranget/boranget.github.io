@@ -64,7 +64,7 @@ categories:
     }
     ```
 
-# Lock接口
+# 加锁方式
 
 ## Synchronized关键字
 
@@ -81,6 +81,10 @@ categories:
 - 修饰静态方法
 
 - 修饰一个类
+
+## Lock
+
+ReentranLock 独占锁，多线程运行的情况下，只有一个线程会获得这个锁
 
 ## 多线程编程步骤
 
@@ -125,7 +129,7 @@ class Ticket {
 
 - 虚假唤醒
 
-  将wait放入if语句中只会判断一次,而当前线程再度被唤醒之后,则不会做wait判断,直接向下执行,所以用while防止虚假唤醒
+  将wait放入if语句中只会判断一次，而当前线程再度被唤醒之后，则不会做wait判断，直接向下执行。所以用while防止虚假唤醒
 
   ```java
   while (count != 0) {
@@ -287,7 +291,7 @@ List<String> l = Collections.synchronizedList(la);
 
 ## CopyOnWriteArrayList
 
-不打扰读,但写的时候需要复制一份,且,写为lock操作 
+不打扰读，但写的时候需要复制一份，且会加锁 
 
 ## CopyOnWriteSet
 
