@@ -2,6 +2,9 @@
 title: algorithm
 date: 2022-11-23 08:48:30
 tags:
+  - 算法
+categories:
+  - 笔记
 ---
 
 # 动态规划

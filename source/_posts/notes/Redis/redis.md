@@ -2,6 +2,9 @@
 title: Redis
 date: 2022-12-29 16:50:30
 tags:
+  - redis
+categories:
+  - 笔记
 ---
 
 # RedisTemplate

@@ -2,6 +2,9 @@
 title: 坚果pro2折腾记录
 date: 2023-05-20 20:15:30
 tags:
+  - 刷机
+categories:
+  - 经验
 ---
 
 # 参考资料

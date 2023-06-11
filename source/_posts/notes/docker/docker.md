@@ -2,6 +2,9 @@
 title: docker
 date: 2022-12-8 16:50:30
 tags:
+  - docker
+categories:
+  - 笔记
 ---
 
 # 概念

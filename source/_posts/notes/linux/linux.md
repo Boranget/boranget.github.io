@@ -1,6 +1,8 @@
 ---
 title: Linux
 date: 2021-02-02 16:50:30
+tags:
+  - linux
 categories:
   - 笔记
 ---

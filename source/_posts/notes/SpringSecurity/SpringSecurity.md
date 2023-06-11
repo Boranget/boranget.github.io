@@ -2,6 +2,9 @@
 title: SpringSecurity
 date: 2023-01-03 16:50:30
 tags:
+  - spring security
+categories:
+  - 笔记
 ---
 
 #  HTTP Basic 登陆模式

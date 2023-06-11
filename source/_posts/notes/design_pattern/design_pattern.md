@@ -2,6 +2,9 @@
 title: design_pattern
 date: 2022-12-27 16:50:30
 tags:
+  - 设计模式
+categories:
+  - 笔记
 ---
 
 # UML

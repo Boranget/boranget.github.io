@@ -1,5 +1,5 @@
 ---
-title: MySQL安装与配置
+title: Maven安装与配置
 date: 2023-05-27 16:50:30
 tags:
   - maven
@@ -8,6 +8,8 @@ categories:
 ---
 
 # 下载
+
+这里注意，如果要配合idea使用，需要查询idea版本与maven版本的适配关系，不匹配将会导致无法在idea中使用maven。
 
 [Maven – Download Apache Maven](https://maven.apache.org/download.cgi)
 
@@ -83,3 +85,7 @@ categories:
 创建项目的时候不从网络下载archetype-catalog.xml模板，加快创建maven项目的速度
 
 ![image-20230530214240740](Maven安装与配置/image-20230530214240740.png)
+
+# 历史版本下载
+
+[Index of /dist/maven/maven-3 (apache.org)](https://archive.apache.org/dist/maven/maven-3/)

@@ -2,6 +2,9 @@
 title: node安装与配置
 date: 2023-05-20 21:03:30
 tags:
+  - nodejs
+categories:
+  - 经验
 ---
 
 # 参考资料

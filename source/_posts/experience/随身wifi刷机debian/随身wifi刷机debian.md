@@ -2,6 +2,10 @@
 title: 随身wifi刷机debian
 date: 2023-05-12 21:15:30
 tags:
+  - 刷机
+  - 服务器
+categories:
+  - 经验
 ---
 
 # 参考资料

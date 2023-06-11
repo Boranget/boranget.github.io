@@ -2,6 +2,10 @@
 title: Quartz
 date: 2023-02-27 16:50:30
 tags:
+  - job
+  - qartz
+categories:
+  - 笔记
 ---
 
 # 基本概念

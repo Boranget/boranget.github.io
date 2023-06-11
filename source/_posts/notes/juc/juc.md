@@ -2,6 +2,10 @@
 title: JUC
 date: 2023-03-09 16:50:30
 tags:
+  - juc
+  - 多线程
+categories:
+  - 笔记
 ---
 
 # JUC概述
@@ -115,8 +119,6 @@ tags:
         }
     }
     ```
-
-
 
 ## 多线程编程步骤
 
@@ -316,9 +318,8 @@ class Resource{
 object.wait
 object.notifyAll
 - 虚假唤醒
-
-  将wait放入if语句中只会判断一次,而当前线程再度被唤醒之后,则不会做wait判断,直接向下执行,如果此时资源还没有准备好，则会发生异常。所以用while来一直进行判断，防止虚假唤醒
-
+  将wait放入if语句中只会判断一次，而当前线程再度被唤醒之后，则不会做wait判断，直接向下执行。所以用while防止虚假唤醒
+  
   ```java
   while (count != 0) {
       this.wait();
@@ -485,7 +486,7 @@ List<String> l = Collections.synchronizedList(la);
 
 ## CopyOnWriteArrayList
 
-不打扰读,但写的时候需要复制一份,且,写为lock操作 
+不打扰读，但写的时候需要复制一份，且会加锁 
 
 ## CopyOnWriteSet
 

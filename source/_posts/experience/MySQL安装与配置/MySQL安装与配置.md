@@ -1,6 +1,8 @@
 ---
 title: MySQL安装与配置
 date: 2023-05-27 16:50:30
+tags:
+  - mysql
 categories:
   - 经验
 ---

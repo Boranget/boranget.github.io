@@ -2,6 +2,9 @@
 title: SpringBoot
 date: 2023-01-05 16:50:30
 tags:
+  - spring boot
+categories:
+  - 笔记
 ---
 
 # 别的一些

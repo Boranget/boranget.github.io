@@ -2,6 +2,9 @@
 title: maven
 date: 2023-02-28 16:50:30
 tags:
+  - maven
+categories:
+  - 笔记
 ---
 
 # 一些别的

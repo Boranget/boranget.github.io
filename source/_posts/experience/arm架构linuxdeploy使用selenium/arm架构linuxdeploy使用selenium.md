@@ -2,6 +2,9 @@
 title: arm架构linuxdeploy使用selenium
 date: 2021-08-15 16:50:30
 tags:
+  - 服务器
+categories:
+  - 经验
 ---
 
 # linuxdeploy使用selenium

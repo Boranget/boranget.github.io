@@ -2,6 +2,9 @@
 title: SQL
 date: 2023-03-31 16:50:30
 tags:
+  - sql
+categories:
+  - 笔记
 ---
 
 # excel中生成SQL语句

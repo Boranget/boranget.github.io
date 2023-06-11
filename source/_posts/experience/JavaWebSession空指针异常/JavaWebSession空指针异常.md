@@ -2,6 +2,9 @@
 title: JavaWebSession空指针异常
 date: 2021-02-23 16:50:30
 tags:
+  - java入门
+categories:
+  - 经验
 ---
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210223184549743.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDgzMjkwOA==,size_16,color_FFFFFF,t_70)

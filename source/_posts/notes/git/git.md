@@ -2,6 +2,9 @@
 title: git
 date: 2022-11-28 16:50:30
 tags:
+  - git
+categories:
+  - 笔记
 ---
 
 # 一些问题

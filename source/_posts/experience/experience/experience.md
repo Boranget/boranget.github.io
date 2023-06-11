@@ -2,6 +2,9 @@
 title: experience
 date: 2023-01-31 16:50:30
 tags:
+  - 经验
+categories:
+  - 经验
 ---
 
 #  JSON
