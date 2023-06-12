@@ -120,6 +120,16 @@ categories:
     }
     ```
 
+- 等待池
+
+  假设一个线程A调用了某个对象的wait方法，线程A会释放该线程的锁，接着进入该对象的等待池，等待池中的线程不回去竞争该对象的锁
+
+- 锁池
+
+  某只有获取某对象的锁，该线程才可以执行该对象对应的synchronized代码，对象的锁每次只有一个线程可以获得，其他的线程只能在锁池中等待
+
+- 调用某对象的notify方法，会将该对象的等待池中的某一线程唤醒，进入锁池，notifyAll方法会将等待池中的所有线程唤醒进入锁池
+
 ## 多线程编程步骤
 
 1. 创建一个资源类,在其中创建属性和操作方法
@@ -237,6 +247,133 @@ class MyRunnable implements Runnable {
 }
 ```
 
+# FutureTask
+
+ 使用了Callable接口，该接口可以有返回值, 并可以抛出异常
+
+```java
+public FutureTask(Callable<V> callable) {
+    if (callable == null)
+        throw new NullPointerException();
+    this.callable = callable;
+    this.state = NEW;       // ensure visibility of callable
+}
+
+@FunctionalInterface
+public interface Callable<V> {
+    /**
+     * Computes a result, or throws an exception if unable to do so.
+     *
+     * @return computed result
+     * @throws Exception if unable to compute a result
+     */
+    V call() throws Exception;
+}
+```
+
+
+
+```java
+public class CallableTest {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        FutureTask futureTask = new FutureTask(()->{
+            System.out.println(Thread.currentThread().getName());
+            return 1;
+        });
+        new Thread(futureTask,"fut0").start();
+        // 调用get方法会等待任务结束
+        System.out.println(futureTask.get());
+        System.out.println("over");
+    }
+}
+```
+
+```java
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.*;
+
+public class Test {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        FutureTask futureTask = new FutureTask(()->{
+           for(int i = 0; i < 99; i ++){
+               System.out.println(i);
+               Thread.sleep(1000);
+           }
+            return 1;
+        });
+        new Thread(futureTask,"fut0").start();
+        try {
+            // 等待三秒
+            System.out.println(futureTask.get(3, TimeUnit.SECONDS));
+        } catch (TimeoutException e) {
+            // 三秒后报超时异常，此时取消任务，若不取消，调用线程向下执行，且任务继续执行
+            futureTask.cancel(true);
+        }
+        System.out.println("over");
+    }
+}
+```
+
+# 线程池
+
+预定义好的线程池
+
+```java
+// 固定数量线程
+ExecutorService threadPool = Executors.newFixedThreadPool(5);
+// 一线程
+ExecutorService threadPool = Executors.newSingleThreadExecutor();
+// 可扩容线程
+ExecutorService threadPool = Executors.newCachedThreadPool();
+```
+
+自定义线程池
+
+```java
+public class ThreadPool {
+    public static void main(String[] args) {
+        ExecutorService threadPool = new ThreadPoolExecutor(
+                // 最小/常驻线程槽
+                2,
+                // 最大线程数
+                5,
+                // 存活时间
+                2L,
+                // 存活时间单位
+                TimeUnit.SECONDS,
+                // 阻塞队列
+                new ArrayBlockingQueue<>(3),
+                // 线程工厂
+                Executors.defaultThreadFactory(),
+                // 拒绝策略
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+
+        try{
+            for(int i = 0; i < 300; i ++){
+                final int j = i;
+                threadPool.execute(()->{
+                    System.out.println(Thread.currentThread().getName()+"办理业务 "+j);
+                });
+                // 等待时间过短他，会逼着线程池扩容到5
+                Thread.sleep(0);
+                // 线程池不会超过2
+                Thread.sleep(1);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            threadPool.shutdown();
+        }
+    }
+}
+```
+
+线程池中也可投入Callable接口的实现
+
 # 加锁方式
 
 ## Synchronized关键字
@@ -252,7 +389,6 @@ class MyRunnable implements Runnable {
 - 修饰一个方法,作用范围整个方法
 
 - 修饰静态方法
-
 
 对于普通同步方法，锁是当前实例对象。
 对于静态同步方法，锁是当前类的Class对象。
@@ -455,7 +591,7 @@ class ShateResource {
 
   ```
 
-# 集合的线程安全
+# 线程安全的集合
 
 **并发修改异常**
 
@@ -479,20 +615,36 @@ public static void main(String[] args) {
 
 ## Collections.synchronizedList
 
+同步list底层还是在向基础list中存取数据
+
 ```java
-List<String> la = new ArrayList<>();
-List<String> l = Collections.synchronizedList(la);
+List<String> 基础list = new ArrayList<>();
+List<String> 同步list = Collections.synchronizedList(la);
 ```
 
 ## CopyOnWriteArrayList
+
+```java
+CopyOnWriteArrayList<String> strings = new CopyOnWriteArrayList<>();
+strings.add("1");
+System.out.println(strings.get(0));
+```
 
 不打扰读，但写的时候需要复制一份，且会加锁 
 
 ## CopyOnWriteSet
 
+与上同
+
 ## ConcurrentHashMap
 
-# 多线程锁
+```java
+final ConcurrentHashMap concurrentHashMap = new ConcurrentHashMap();
+concurrentHashMap.put("a","avl");
+System.out.println(concurrentHashMap.get("a"));
+```
+
+# 锁
 
 - synchronized 加到非静态方法上 锁为this
 - synchronized 加到静态方法上 锁为当前类.class
@@ -508,7 +660,7 @@ List<String> l = Collections.synchronizedList(la);
 
 ## 可重入锁
 
-线程获取锁后可重复使用,比如一个syn方法调用另一个持相同锁的syn方法
+线程获取锁后可重复使用，比如一个syn方法可以调用另一个持相同锁的syn方法
 
 ## 死锁 
 
@@ -518,7 +670,7 @@ public class DeadLock {
     static Object b = new Object();
 
     public static void main(String[] args) {
-
+        
         new Thread(()->{
             synchronized (a){
                 System.out.println("a");
@@ -608,43 +760,27 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.201-b09 mixed mode):
 
   一个线程先获取写锁,在不释放的情况下,可以获取读锁 
 
-# Callable接口
-
- 可以有返回值, 抛出异常
-
-## FutureTask
-
-```java
-public class CallableTest {
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        FutureTask futureTask = new FutureTask(()->{
-            System.out.println(Thread.currentThread().getName());
-            return 1;
-        });
-        new Thread(futureTask,"fut0").start();
-        System.out.println(futureTask.get());
-        System.out.println("over");
-    }
-}
-```
-
-调用get方法会一直等待
-
 # 辅助类
 
 ## CountDownLatch
 
-```java
-public class CountDown {
+一个多线程计数器
 
+```java
+import java.util.concurrent.*;
+
+public class Test {
     public static void main(String[] args) throws InterruptedException {
+        // 初始化计数器
         CountDownLatch countDownLatch = new CountDownLatch(6);
-        for(int i = 0; i < 6; i ++){
-            new Thread(()->{
-                System.out.println(Thread.currentThread().getName()+"号同学离开了教室");
+        for (int i = 0; i < 6; i++) {
+            new Thread(() -> {
+                System.out.println(Thread.currentThread().getName() + "号同学离开了教室");
+                // 计数器减一
                 countDownLatch.countDown();
-                },i+"").start();
+            }, i + "").start();
         }
+        // 等待计数器清零
         countDownLatch.await();
         System.out.println("锁门");
     }
@@ -653,18 +789,24 @@ public class CountDown {
 
 ## CyclicBarrier
 
-await数量多于7会继续等待,但等于7时会执行默认操作,接着继续等待
+多线程同步工具，当指定的所有线程都进行到某一阶段时，才接着向下执行。
+
+在await不断增加的过程中，如果当前await的数量小于目标值，则会继续等待，当等于目标值时会执行默认操作，接着若await数量继续增长，多于目标值，会继续等待。
 
 ```java
-public class DragonBall {
-    private static final  int number = 7;
+import java.util.concurrent.*;
+
+public class Test {
+    private static final int number = 7;
+
     public static void main(String[] args) {
-        CyclicBarrier cyclicBarrier = new CyclicBarrier(number,()->{
-            System.out.println("集齐七颗龙珠就可以召唤神龙");
+        // 定义目标值和达到目标时要执行的任务
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(number, () -> {
+            System.out.println(number+"个任务已全部完成");
         });
-        for(int i = 0; i < number; i ++){
-            new Thread(()->{
-                System.out.println("第"+Thread.currentThread().getName()+"颗龙珠已找到");
+        for (int i = 0; i < number; i++) {
+            new Thread(() -> {
+                System.out.println("第" + Thread.currentThread().getName() + "个任务已完成");
                 try {
                     cyclicBarrier.await();
                 } catch (InterruptedException e) {
@@ -672,7 +814,7 @@ public class DragonBall {
                 } catch (BrokenBarrierException e) {
                     e.printStackTrace();
                 }
-            },""+i).start();
+            }, "" + i).start();
         }
     }
 }
@@ -681,14 +823,20 @@ public class DragonBall {
 
 ## Semaphore
 
+多线程的公共资源申请
+
 ```java
-public class Car {
+import java.util.Random;
+import java.util.concurrent.*;
+
+public class Test {
     public static void main(String[] args) {
         // 车位数
         Semaphore semaphore = new Semaphore(3);
         for(int i = 0; i < 6; i ++){
             new Thread(()->{
                 try{
+                    // 申请两个资源
                     semaphore.acquire(2);
                     System.out.println(Thread.currentThread().getName()+"抢到了车位");
                     TimeUnit.SECONDS.sleep(new Random().nextInt(5));
@@ -697,6 +845,7 @@ public class Car {
                 }catch (InterruptedException e){
                     e.printStackTrace();
                 }finally {
+                    // 释放两个资源
                     semaphore.release(2);
                 }
             },i+"").start();
@@ -707,7 +856,7 @@ public class Car {
 
 
 
-# 阻塞队列
+## 阻塞队列
 
 `BlockingQueue` 是一个线程安全的队列，它提供了在生产者-消费者模式下使用的阻塞队列。
 
@@ -763,59 +912,7 @@ public class ThreadTest {
 
 ```
 
-# 线程池
-
-```java
-// 固定数量线程
-ExecutorService threadPool = Executors.newFixedThreadPool(5);
-// 一线程
-ExecutorService threadPool = Executors.newSingleThreadExecutor();
-// 可扩容线程
-ExecutorService threadPool = Executors.newCachedThreadPool();
-```
-
-## 自定义
-
-```java
-public class ThreadPool {
-    public static void main(String[] args) {
-        ExecutorService threadPool = new ThreadPoolExecutor(
-                // 最小/常驻线程槽
-                2,
-                // 最大线程数
-                5,
-                // 存活时间
-                2L,
-                TimeUnit.SECONDS,
-                // 阻塞队列
-                new ArrayBlockingQueue<>(3),
-                // 线程工厂
-                Executors.defaultThreadFactory(),
-                // 拒绝策略
-                new ThreadPoolExecutor.AbortPolicy()
-        );
-
-        try{
-            for(int i = 0; i < 300; i ++){
-                final int j = i;
-                threadPool.execute(()->{
-                    System.out.println(Thread.currentThread().getName()+"办理业务 "+j);
-                });
-                // 会逼着线程池扩容到5
-                Thread.sleep(0);
-                // 线程池不会超过2
-                Thread.sleep(1);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            threadPool.shutdown();
-        }
-    }
-}
-```
-
-# Fork/join
+## 递归任务
 
 ```java
 class MyTask extends RecursiveTask<Integer>{
@@ -835,16 +932,18 @@ class MyTask extends RecursiveTask<Integer>{
             for(int i = begin; i <= end; i ++){
                 res+=i;
             }
-
         }else{
             int mid = (begin+end)/2;
             MyTask myTaskl = new MyTask(begin,mid);
             MyTask myTaskr = new MyTask(mid+1,end);
+            // 执行
             myTaskl.fork();
+            // 执行
             myTaskr.fork();
+            // 收集结果
             res = myTaskl.join()+ myTaskr.join();
         }
-            return  res;
+        return  res;
     }
 }
 public class Task {
@@ -857,7 +956,7 @@ public class Task {
 }
 ```
 
-# 异步回调
+## 异步回调
 
 ```java
 public class Asyn {
@@ -866,7 +965,7 @@ public class Asyn {
             // ForkJoinPool.commonPool-worker-1
             System.out.println(Thread.currentThread().getName());
         });
-        // null
+        // null，这里是由于没有返回值
         System.out.println(completableFuture1.get());
         CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(()->{
             // ForkJoinPool.commonPool-worker-1
@@ -874,11 +973,11 @@ public class Asyn {
             int i = 9/0;
             return 1024;
         });
-        // 1024
+        // 1024，t为返回值，u为抛出的异常
         System.out.println(completableFuture2.whenComplete((t, u) -> {
             // 1024
             System.out.println("t: " + t);
-            // ava.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero
+            // java.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero
             System.out.println("u: " + u);
         }).get());
     }
