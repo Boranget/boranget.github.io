@@ -85,5 +85,108 @@ a：引入itreator模式后可以将遍历与实现分离
 
 通过抽象类的定义，在父类中定义处理流程的框架，在子类中实现具体处理的模式
 
+## 相关角色
+
+- AbstractClass
+
+  实现模板方法，并声明模板方法中使用到的抽象方法。这些方法由子类ConcreteClass进行具体的实现
+
+- ConcreteClass
+
+  实现父类中定义的抽象方法，以交由模板方法使用
+
+# Factory Method模式
+
+使用Template Method模式
+
+## 相关角色
+
+- Product
+
+  产品，抽象类，定义接口
+
+- Creator
+
+  创建者，抽象类
+
+- ConcreteProduct
+
+  具体的产品，实现了Product中的抽象方法
+
+- ConcreteCreator
+
+  具体的创建者，负责生成具体的产品
+
+# Singleton模式
+
+只能生成一个实例
+
+- 将构造函数私有化
+- 静态方法提供当前类的实例
+
+## 相关角色
+
+- Singleton
+
+  该角色中有一个返回唯一实例的静态方法，该方法每次调用都会返回同一个实例
+
+## 其他
+
+饿汉式、懒汉式等，懒汉式在多线程的情况下的双重验证机制
+
+# Prototype模式
+
+根据现有实例来生成新的实例
+
+实现Cloneable接口，调用Object的clone方法克隆一个实例
+
+## 相关角色
+
+- Prototype
+
+  定义复制实例的方法
+
+- ConcretePrototype
+
+  实现Prototype接口中的复制方法
+
+- Client
+
+  负责使用复制方法复制新的实例
+
+## 其他
+
+注意Object类中的clone方法是浅复制
+
+# Builder模式
+
+## 相关角色
+
+- Builder
+
+  负责定义生成实例的接口
+
+- ConcreteBuilder
+
+  实现Builder中定义的接口
+
+- Director
+
+  负责使用Builder来创建产品，具体的Builder通过参数传入
+
+- Client
+
+  使用Director来创建产品
+
+## 其他
+
+链式调用的builder：
+
+```java
+builder.name("jeck").age(13).build()
+```
+
+
+
 
 
