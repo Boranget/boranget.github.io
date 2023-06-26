@@ -374,6 +374,77 @@ public class ThreadPool {
 
 线程池中也可投入Callable接口的实现
 
+## 比较多线程于单线程执行速度
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public abstract class Test {
+    public static final int v = 10000;
+    public static final int tn = 8;
+
+    public static void main(String[] args)  {
+        final long l = System.currentTimeMillis();
+        for (int i = 0; i < v; i++) {
+            try {
+                Thread.sleep(1);
+                System.out.println(Thread.currentThread());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        final long l1 = System.currentTimeMillis();
+
+        final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                tn,
+                tn,
+                2L,
+                TimeUnit.SECONDS,
+                // 阻塞队列数量
+                new ArrayBlockingQueue<>(2),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+
+        final long l2 = System.currentTimeMillis();
+        for(int i = 0; i < tn; i ++){
+
+            threadPoolExecutor.execute(new MyThread());
+        }
+        // 关闭线程池
+        threadPoolExecutor.shutdown();
+        try {
+            // 等待线程池中任务结束
+            threadPoolExecutor.awaitTermination(1000,TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        final long l3 = System.currentTimeMillis();
+        System.out.println(l1 - l);
+        System.out.println(l3 - l2);
+    }
+}
+
+class MyThread implements Runnable {
+    @Override
+    public void run() {
+        for (int i = 0; i < Test.v / Test.tn; i++) {
+            try {
+                Thread.sleep(1);
+                System.out.println(Thread.currentThread());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
 # 加锁方式
 
 ## Synchronized关键字
