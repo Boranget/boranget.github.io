@@ -19,7 +19,7 @@ categories:
 
 # 下载
 
-在mysql官网下载安装器：msi结尾文件
+在mysql官网下载安装器[MySQL :: Download MySQL Installer](https://dev.mysql.com/downloads/windows/installer/)：msi结尾文件
 
 # 安装
 
