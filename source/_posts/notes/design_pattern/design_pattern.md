@@ -132,7 +132,7 @@ a：引入itreator模式后可以将遍历与实现分离
 
 ## 其他
 
-饿汉式、懒汉式等，懒汉式在多线程的情况下的双重验证机制
+饿汉式、懒汉式等，其中懒汉式在多线程的情况下的双重验证机制，可提高获取已存在对象的效率
 
 # Prototype模式
 
@@ -403,7 +403,7 @@ Display d = new CountDisplay(new StringDisplay(""));
 
 过滤器链比较类似于这个模式
 
-# Facade
+# Facade 模式
 
 窗口模式，屏蔽底层
 
@@ -500,7 +500,7 @@ Display d = new CountDisplay(new StringDisplay(""));
 
 当不同的状态下所执行的操作不同时，不是通过if来判断状态进行不同的操作，而是调用不同状态类下的方法。也就是说不同的操作是定义在不同的状态类中，而不是当前类的if块中。
 
-若不想在当前类中判断状态，可以在各个状态类中去判断当前应该是什么状态，接着调用管理者的修改状态方法来切换状态。
+若不想在当前类中判断状态，可以在各个状态类中去判断当前应该是什么状态，接着调用管理者的修改状态方法来切换状态。这样做的缺点是每个状态都需要知道其他的状态。可以通过状态迁移表来控制状态的流动
 
 ## 相关角色
 
@@ -515,4 +515,112 @@ Display d = new CountDisplay(new StringDisplay(""));
 - Context
 
   持有表示当前状态的ConcreteState角色，并使用不同状态类中的方法实现
+
+# Flyweight 模式
+
+将已经生成的实例保存并复用，避免产生重复实例
+
+## 相关角色
+
+- Flyweight
+
+  实例会被复用的类
+
+- FlyweightFactory
+
+  创建并保存Flyweight的实例，同时在接收到获取实例请求时判断是否已经存在该实例并返回该实例。
+
+- Client
+
+  通过调用FlyweightFactory的方法来获取Flyweight角色
+
+## 其他
+
+类似于单例模式，或者枚举类型
+
+# Proxy 模式
+
+代理
+
+## 相关角色
+
+- Subject
+
+  定义了接口，使Proxy角色和RealSubject角色具有一致性
+
+- Proxy
+
+  实现了Subject接口。会尽量处理来自Client的请求，当自身无法处理时，会调用RealSubject的方法来处理
+
+- RealSubject
+
+  实现罗Subject接口，会在Proxy无法完成任务时被Proxy创建并调用
+
+- Client
+
+  请求者
+
+## 其他
+
+作者说是为了提升处理速度，原因是将耗时操作在需要的时候再执行，但我认为完全可以通过懒加载来实现。
+
+不过确实类似于HTTP代理，由于代理服务器会保存一份缓存，当代理服务器上有缓存时，代理服务器并不会取向目标服务器请求数据，而是会直接返回本地数据，当代理服务器上没有需要的缓存数据时，则会向目标服务器请求数据。
+
+同时存在有很多代理模式
+
+- Virtual Proxy
+
+  当真正需要实例时才会创建和初始化实例
+
+- Remote Proxy
+
+  比如远程方法调用，调用者感觉不到调用的对象是否在本地
+
+- Access Proxy
+
+  在访问源实例时代理会判断是否有该权限
+
+# Command 模式
+
+将之前的操作作为command对象记录下来，便于撤销或重做
+
+## 相关角色
+
+- Command
+
+  负责定义命令的接口，所有实现了本接口的类都会作为命令
+
+- ConcreteCommand
+
+  实现了Command接口
+
+- Receiver
+- Client
+- Invoker
+
+# Interpreter 模式
+
+迷你语言，程序解析并运行
+
+## 相关角色
+
+- AbstractExpression
+
+  定义了表达式共同的接口
+
+- TerminalExpression
+
+  终结符表达式
+
+- NonterminalExpression
+
+  非终结符表达式
+
+- Context
+
+  上下文
+
+- Client
+
+  调用表达式
 
