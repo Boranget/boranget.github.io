@@ -342,6 +342,12 @@ ln [option]  \<文件名\>
 
 注意的是。如果删除软链接时，文件名末尾带斜杠，会显示资源忙
 
+## 移动复制
+
+cp 软链接到另一个位置，该软连接会失效，若试图将其打开会提示没有那个文件或目录。
+
+cp硬链接到另一个位置正常。
+
 # history
 
 用于查看最近的指令
@@ -528,6 +534,63 @@ cron 服务管理
   - -h 带计量单位
   - -c 列出明细增加汇总值
   - --max-depth=1 查询子目录深度
+
+## 挂载多个物理磁盘到一个逻辑磁盘
+
+1. 创建PV
+
+   physical volume 物理卷，物理磁盘，可以通过fdisk -l查看操作系统上有几块硬盘
+
+   ```bash
+   pvcreate /dev/sdb # 创建磁盘1
+   pvcreate /dev/sdc # 创建磁盘2
+   ```
+
+2. 创建VG
+
+   volume group 卷组，一组物理磁盘的组合，其中可以有一块或多块磁盘。
+
+   卷组在创建时可以指定磁盘，创建完成也可以通过拓展增加磁盘。
+
+   ```bash
+   # 创建磁盘组 lvm_data
+   vgcreate lvm_data /dev/sdb /dev/sdd
+   # 扩展磁盘组 lvm_data
+   vgextend lvm_data /dev/sdc
+   ```
+
+3. 创建LV
+
+   logic volume 逻辑卷
+
+   ```bash
+   # 从lvm_data 中划分出一块110G大小的空间分配给逻辑块 vg_data
+   lvcreate -110.0G -n vg_data lvm_data
+   ```
+
+4. 格式化分区
+
+   ```bash
+   # mkfs -t [文件系统] [分区位置]
+   mkfs -t ext4 /dev/lvm_data/vg_data
+   ```
+
+5. 挂载分区
+
+   ```bash
+   # mount [分区位置] [目录地址]
+   mount /dev/lvm_data/vg_data /data
+   ```
+
+6. 设置开机加载
+
+   在/etc/fstab文件末尾添加如下行
+
+   ```
+   /dev/lvm_data/vg_data  /data  ext4  defaults  0 0
+   ```
+
+   
 
 # 文件统计
 
