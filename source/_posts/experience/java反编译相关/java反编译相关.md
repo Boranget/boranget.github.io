@@ -9,14 +9,15 @@ categories:
 
 # 字符串replace问题
 
-起因是当时在做一个系统升级的需求，当时由于新系统并不是向下兼容的，故需要反编译新系统的源码来适配旧系统中自定义的调用，结果在某个类的反编译结果中出现了一个很奇怪的现象。该段代码通过jd-gui反编译的结果如下：
+某系统升级后并不是向下兼容的，新系统在运行后，自定义的模块一直报错NoSuchMethodException，查阅代码发现该方法属于在旧系统中存在但是新系统中移除的一个方法，为保证自定义模块继续执行，需要反编译新系统的源码添加该方法来适配自定义的调用。但在某个类的反编译结果中出现了一个很奇怪的现象。该段代码通过jd-gui反编译的结果如下：
 
 ```java
-String a = "...";
+String a;
+...
 a.replace(false, '1');
 ```
 
-开始还以为是String还有我没见过的replace方法，结果查了一下确实不存在这个方法。那就根据之前的经验，猜测应该是原字符转成数字之后，jd-gui又转成布尔值了，而表示成布尔值之后为false的数，按理来说是0。于是使用java的命令行反编译工具javap，反编译结果如下
+已知String类没有首个参数为布尔值的replace方法，不做修改的话编译肯定是无法通过的。根据经验，猜测应该是原字符转成数字之后，jd-gui又转成布尔值了，而表示成布尔值之后为false的数，按理来说是0。于是使用java的命令行反编译工具javap，反编译结果如下：
 
 ```powershell
 javap -c -v Trace.class > Trace.txt
@@ -30,7 +31,7 @@ javap -c -v Trace.class > Trace.txt
 
 果然是iconst_0，说明这里确实是塞了一个0进去，由于java是用Unicode来编码字符的，那么能作为0保存的字符，按理来说就是 '\\0' 了。
 
-于是自己写了一个代码测试了一下：
+于是自己编写了一段代码测试了一下：
 
 ```java
 public abstract class Test {
@@ -54,7 +55,7 @@ public abstract class Test {
 11 return
 ```
 
-果然，接着再次使用jd-gui打开class文件
+果然有相同的iconst_0操作，于是再次使用jd-gui打开class文件
 
 ![image-20230627141817068](java反编译相关/image-20230627141817068.png)
 

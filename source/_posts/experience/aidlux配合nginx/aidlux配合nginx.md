@@ -8,8 +8,6 @@ categories:
   - 经验
 ---
 
-aidlux 配合 nginx
-
 # 内网渗透工具
 
 选择一款的内网渗透工具，such as [飞鸽，点击注册](https://www.fgnwct.com/register.html?utm_from=MzU1MjE=)，注意客户端要下载arm64的
