@@ -37,7 +37,7 @@ Start building，取一个子域名，Create a Worker
 
 # Hostry注册
 
-经过尝试，现在Hostry已经无法使用qq邮箱和163邮箱注册，于是使用了临时接码平台（因为Hostry只用一次）
+经过尝试，现在Hostry已经无法使用qq邮箱和163邮箱注册，于是使用了临时接码平台（Hostry只用一次）
 
 使用工具中的虚拟地址生成器生成信息
 
@@ -57,7 +57,7 @@ Start building，取一个子域名，Create a Worker
 
 首先会接收到一封账户验证的邮件，点击进入登陆界面
 
-登入后，界面比较简答，点击New Domain创建域名
+登入后，界面比较简单，点击New Domain创建域名
 
 已有信息无需修改
 

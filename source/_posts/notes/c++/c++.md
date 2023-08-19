@@ -1576,6 +1576,51 @@ PS E:\test\zm> ./pointTest
 
 **静态数组初始化时大小不能传入变量**
 
+## 函数指针
+
+可以把函数的首地址赋给一个指针变量，指针变量会指向函数所在的内存区域，然后通过该指针就可以找到并调用该函数
+
+函数指针的定义形式为：
+
+```cpp
+retrunType(*pointerName)(param list);
+```
+
+注意区分
+
+```cpp
+int *fun(int a,int b); //返回值是int类型指针的函数
+int (*p)(int a,int b); //一个指向函数的指针
+```
+
+比如这里的结构体里就使用了函数指针
+
+```cpp
+static struct
+{
+  const char *name;
+  const char *description;
+  int (*handler)(char *);
+} cmd_table[] = {
+    {"help", "Display information about all supported commands", cmd_help},
+    {"c", "Continue the execution of the program", cmd_c},
+    {"q", "Exit NEMU", cmd_q},
+
+    /* TODO: Add more commands */
+
+};
+```
+
+其中的cmd_help、cmd_c、cmd_q是函数名
+
+调用的时候：
+
+```cpp
+cmd_table[i].handler(args);
+```
+
+
+
 # 引用
 
 已经存在的变量的另一个名字

@@ -163,7 +163,7 @@ win11
 
 ## 刷机
 
-1. 重新把棒子插到电脑上, 进入tool文件夹, cmd执行adb reboot bootloaser, cmd执行fastboot devices, 出现设备列表则说明棒子已经进入fastboot模式
+1. 重新把棒子插到电脑上, 进入tool文件夹, cmd执行adb reboot bootloader, cmd执行fastboot devices, 出现设备列表则说明棒子已经进入fastboot模式
 
 2. 进入base文件夹, 运行flash.bat,一路回车,直到cmd窗口关闭
 
