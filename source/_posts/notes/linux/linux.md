@@ -283,6 +283,10 @@ categories:
 
 例如：ls -l > a.txt 将ls -l 的显示内容覆盖到a.txt中， 如果文件不存在则创建
 
+- tee 指令
+
+  -a 追加
+
 # echo
 
 输出内容到控制台
