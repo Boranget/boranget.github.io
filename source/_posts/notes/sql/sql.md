@@ -7,21 +7,6 @@ categories:
   - 笔记
 ---
 
-# excel中生成SQL语句
-
-```sql
-=CONCAT(
-"UPDATE amer_model SET description='",C6,
-"',sender='",D6,
-"',receiver='",E6,
-"',model_code='",F6,
-"',req_mes_type='",G6,
-"',res_mes_type='",H6,
-"',is_sync='",J6,
-"' WHERE model_name='",B6,
-"';")
-```
-
 
 
 # 虚拟表

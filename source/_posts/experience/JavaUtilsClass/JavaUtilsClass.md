@@ -353,3 +353,71 @@ public class TransformXmlToJson {
     }
 ```
 
+# 文件按行拷贝并筛除不需要的行
+
+```java
+import java.io.*;
+
+/**
+ * @author boranget
+ * @date 2023/8/16
+ */
+public class CollectUserInfo {
+    public static final String ROLE_PREFIX = "role=";
+    public static final String GROUP_PREFIX = "group=";
+
+    public static void main(String[] args) {
+        File to = new File("./to.txt");
+        // 删除已有结果
+        if(to.exists()){
+            to.delete();
+        }
+        File fromDir = new File("./User Export");
+        if (fromDir.exists()&&fromDir.isDirectory()) {
+            for (File file : fromDir.listFiles()) {
+                if(file.isDirectory()){
+                    for (File listFile : file.listFiles()) {
+                        copy(listFile, to);
+                    }
+                }
+            }
+        }
+    }
+
+    static void copy(File from, File to) {
+        BufferedReader bufferedReader = null;
+        BufferedWriter bufferedWriter = null;
+        try {
+            bufferedReader = new BufferedReader(new FileReader(from));
+            // new FileWriter(to, true) true：追加形式打开文件
+            bufferedWriter = new BufferedWriter(new FileWriter(to, true));
+            String tempStr = null;
+            while ((tempStr = bufferedReader.readLine()) != null) {
+                if (!(tempStr.startsWith(ROLE_PREFIX) || tempStr.startsWith(GROUP_PREFIX))) {
+                    System.out.println(tempStr);
+                    bufferedWriter.write(tempStr + "\n");
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+```
