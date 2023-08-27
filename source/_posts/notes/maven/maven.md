@@ -32,6 +32,50 @@ Maven生命周期及常用命令
 
 解决：删除user->.m2文件夹
 
+## pom中配置远程仓库repository不生效
+
+pom中配置了
+
+```xml
+	<repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+```
+
+但若maven的Setting配置文件中镜像的mirrorOf配置为*，则会跳过pom中的配置，去mirror中寻找，找不到报找不到异常
+
+mirrorOf意思就是当前镜像是为那个仓库做镜像？配置为*意思就是为所有仓库做镜像
+
+解决方法
+
+- 将Setting中的mirrorOf排除仓库id
+
+  注意是 !jitpack.io，做排除用
+
+  ```xml
+  <mirrorOf>*,!jitpack.io</mirrorOf>
+  ```
+
+- 或将Setting中的mirrorOf修改为central
+
+  ```XML
+  <mirrorOf>central</mirrorOf>
+  ```
+
+**插件需要单独配仓库**
+
+```xml
+	<pluginRepositories>
+        <pluginRepository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
+```
+
 # Maven 概念
 
 ## maven是什么
@@ -199,3 +243,5 @@ maven的三种打包方式：pom、jar、war
 # 聚合
 
 ![](maven/clip_image001-1659080776838.png)
+
+# 

@@ -1528,9 +1528,9 @@ clinit的执行会加锁，确保每个类的clinit只会执行一次
 
   完全随机性的，不运行到该段代码的时候是完全不知道动态类型到底是Man还是Woman。
 
-  PS：静态类型可以改变吗？
+  Q：静态类型可以改变吗？
 
-  Ans：使用强制转换 
+  A：使用强制转换 
 
   ```java
   sr.sayHello((Man) human) // hello gentleman
@@ -1650,7 +1650,7 @@ invokedynamic与MethodHandle的作用相同。字节码为invokedynamic的位置
 - /shared目录：被所有web应用程序共同使用，对tomcat不可见
 - /WebApp/WEB-INF目录：仅能被当当前web程序使用，对其他web程序和tomcat不可见
 
-在tomcat中，针对这些路径构建了多个类加载器：Common类加载器、Catelina加载器、Shared类加载器、WebApp类加载器和Jsp类加载器（jasperLoader）。分别对应common、server、shared、webapp目录，其中webapp和jsp的类加载器还可能存在多个实例，因为每一个web应用都要对应单独的webapp类加载器，每个jsp文件对应以恶jasperLoader类加载器。
+在tomcat中，针对这些路径构建了多个类加载器：Common类加载器、Catelina加载器、Shared类加载器、WebApp类加载器和Jsp类加载器（jasperLoader）。分别对应common、server、shared、webapp目录，其中webapp和jsp的类加载器还可能存在多个实例，因为每一个web应用都要对应单独的webapp类加载器，每个jsp文件对应一个jasperLoader类加载器。
 
 ![image-20230816101312859](深入理解计Java虚拟机/image-20230816101312859.png)
 
