@@ -1409,6 +1409,17 @@ clinit的执行会加锁，确保每个类的clinit只会执行一次
 
 双亲委派的一个现象是，子类加载器加载的类可以访问父类加载器加载的类，但父类加载器加载的类不能访问子类加载器加载的类，因为加载器在 寻找一个类的时候是向上查找的，若找不到会报类找不到异常。
 
+### 破坏双亲委派
+
+- 在双亲委派之前出现的类加载器：1.2之前的jdk
+
+- 使用ContextClassLoader 上下文类加载器，可以向下申请类加载器
+
+  ```java
+  Thread.currentThread().setContextClassLoader(Main.class.getClassLoader());
+  final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+  ```
+
 ### jdk9
 
 引入了模块化的概念，同时类加载器也有很多变化，这里不做记录
@@ -1653,4 +1664,52 @@ invokedynamic与MethodHandle的作用相同。字节码为invokedynamic的位置
 在tomcat中，针对这些路径构建了多个类加载器：Common类加载器、Catelina加载器、Shared类加载器、WebApp类加载器和Jsp类加载器（jasperLoader）。分别对应common、server、shared、webapp目录，其中webapp和jsp的类加载器还可能存在多个实例，因为每一个web应用都要对应单独的webapp类加载器，每个jsp文件对应一个jasperLoader类加载器。
 
 ![image-20230816101312859](深入理解计Java虚拟机/image-20230816101312859.png)
+
+### OSGi
+
+动态的模块加载机制，一个模块一个加载器
+
+作者曾经碰到过一个死锁问题，原因是A模块需要调用B模块的加载器加载B模块中的类，而B模块恰好也会同时调用A模块的类加载器加载A模块中的类，而由于jdk7之前的loadClass是同步方法：
+
+```java
+protected synchronized Class<?> loadClass(String var1, boolean var2) throws ClassNotFoundException {
+    Class var3 = this.findLoadedClass(var1);
+    if (var3 == null) {
+        try {
+            if (this.parent != null) {
+                var3 = this.parent.loadClass(var1, false);
+```
+
+导致双方会互相等待造成死锁
+
+用户可启动单线程串行加载
+
+在jdk7之后，代码更新为
+
+```java
+protected Class<?> loadClass(String name, boolean resolve)
+    throws ClassNotFoundException
+{
+    synchronized (getClassLoadingLock(name)) {
+        // First, check if the class has already been loaded
+        Class<?> c = findLoadedClass(name);
+```
+
+锁从类加载器本身变为要加载的对象名
+
+### 字节码生成与动态代理
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

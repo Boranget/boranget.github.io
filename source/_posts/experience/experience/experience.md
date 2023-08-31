@@ -676,3 +676,17 @@ str.split("\\|")
     </build>
 ```
 
+# java日期格式化的时候设置时区
+
+```java
+public static void main(String[] args) {
+    final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd 'T' HH:mm:ss Z");
+    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+    System.out.println(
+            simpleDateFormat
+                    .format(new Date(System.currentTimeMillis()))
+    );
+}
+```
+
+除Asia/Shanghai之外还可以使用Etc或者UTC时区

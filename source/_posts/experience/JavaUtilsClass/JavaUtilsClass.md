@@ -298,60 +298,216 @@ public class TransformXmlToJson {
 
 ```
 
-# 文件解压
+# 文件压缩解压
 
 ```java
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.22</version>
-        </dependency>
+package com.boranget;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Stack;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
 /**
-     * 可解压中文文件名
-     * 但不支持windows自带的zip压缩的中文文件名
-     * @param zipFilePath
-     * @param targetSaveDirPath
+ * @author boranget
+ * @date 2023/8/30
+ */
+public class ZipUtil {
+    /**
+     * 编码 charset
+     */
+    public static final String UTF_8 = "UTF-8";
+    public static final String GBK = "GBK";
+
+    public static void main(String[] args) throws IOException {
+//        // 压缩示例
+//        String originalFilePath = ("./zip/b");
+//        String targetFilePath = ("./zip/res.zip");
+//        zip(originalFilePath, targetFilePath, GBK, false);
+//        // 解压示例
+//        String zipFilePath = "./zip/你好.zip";
+//        String targetSavePath = ("./zip/");
+//        unzip(zipFilePath, targetSavePath, GBK);
+
+    }
+
+
+    /**
+     * 解压
+     * 支持压缩包内多个文件，或者目录嵌套
+     *
+     * @param zipFilePath       压缩文件地址
+     * @param targetSaveDirPath 目标解压目录
+     * @param charset           文件名编码格式
      * @throws FileNotFoundException
      */
-    private static void unzipFile(String zipFilePath, String targetSaveDirPath) throws FileNotFoundException {
-        // 检查文件是否存在
+    static void unzip(String zipFilePath, String targetSaveDirPath, String charset) throws FileNotFoundException {
+        // 检查待解压文件是否存在
         File zipFile = new File(zipFilePath);
         if (!zipFile.exists()) {
             throw new FileNotFoundException("can not find zip file");
         }
+        // 创建带解压文件夹,不存在则创建
         File targetSaveDir = new File(targetSaveDirPath);
         if (!targetSaveDir.exists()) {
             targetSaveDir.mkdirs();
         }
-        // 获取输入流
-        ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
+        // 获取zip包输入流,第二个参数为读取压缩包名时的编码格式
+        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile), Charset.forName(charset));
+        ZipEntry zipEntry = null;
         try {
-            ZipArchiveEntry entry = null;
-            while ((entry = zipArchiveInputStream.getNextZipEntry()) != null) {
-                if (entry.isDirectory()) {
-                    File directory = new File(targetSaveDir, entry.getName());
-                    directory.mkdirs();
-                } else {
-                    OutputStream outputStream = null;
-                    try {
-                        File targetFile = new File(targetSaveDir, entry.getName());
-                        File parentFile = targetFile.getParentFile();
-                        if(!parentFile.exists()){
-                            parentFile.mkdirs();
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                FileOutputStream fileOutputStream = null;
+                try {
+                    // 创建解压后的文件
+                    File afterUnzipFile = new File(targetSaveDir, zipEntry.getName());
+                    // 如果文件名以”/“结尾，说明是文件夹
+                    if (zipEntry.getName().endsWith("/")) {
+                        afterUnzipFile.mkdirs();
+                        // 解析下一个文件
+                        continue;
+                    }
+                    // 如果是文件
+                    // 1. 建立上层文件夹
+                    File parentFile = afterUnzipFile.getParentFile();
+                    if (!parentFile.exists()) {
+                        parentFile.mkdirs();
+                    }
+                    // 2. 写入文件
+                    fileOutputStream = new FileOutputStream(afterUnzipFile);
+                    byte[] buffer = new byte[1024];
+                    int len = 0;
+                    while ((len = zipInputStream.read(buffer)) > 0) {
+                        fileOutputStream.write(buffer, 0, len);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fileOutputStream != null) {
+                        fileOutputStream.close();
+                    }
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // 重新包装异常
+            new IllegalArgumentException("请检查编码格式是否正确", e).printStackTrace();
+        } finally {
+            try {
+                if (zipInputStream != null) {
+                    zipInputStream.closeEntry();
+                    zipInputStream.close();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 压缩，支持文件夹嵌套，空文件夹压缩
+     * @param originalFilePath 待压缩文件夹或文件路径
+     * @param targetZipFilePath 压缩包路径（包括压缩包文件名）
+     * @param charset 压缩时文件名的字符集
+     * @param includeTopDir 是否要包含最顶层文件夹
+     * @throws FileNotFoundException
+     */
+    static void zip(String originalFilePath, String targetZipFilePath, String charset, boolean includeTopDir) throws FileNotFoundException {
+        // 创建输出流
+        ZipOutputStream zipOutputStream = null;
+        // 检查源文件对象是否存在
+        File originalFile = new File(originalFilePath);
+        if (!originalFile.exists()) {
+            throw new FileNotFoundException("can not find zip file");
+        }
+        // 创建目标文件对象
+        File zipFile = new File(targetZipFilePath);
+        File parentFile = zipFile.getParentFile();
+        if (parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        try {
+            // 打开输出流
+            zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
+            Stack<FileWithPath> dirStack = new Stack<>();
+            dirStack.push(new FileWithPath(originalFile, includeTopDir ? originalFile.getName() + "/" : ""));
+            while (!dirStack.empty()) {
+                FileWithPath currentDir = dirStack.pop();
+                // 当前文件路径前缀
+                // 如果当前Path是个文件夹
+                if (currentDir.getFile().isDirectory()) {
+                    // 在不包含最顶层文件夹时，会出现空名Entry
+                    if (!currentDir.getPath().trim().equals("")) {
+                        // 创建文件夹Entry
+                        zipOutputStream.putNextEntry(new ZipEntry(currentDir.getPath()));
+                    }
+                    for (File currentFile : currentDir.getFile().listFiles()) {
+                        if (currentFile.isDirectory()) {
+                            dirStack.push(new FileWithPath(currentFile, currentDir.getPath() + currentFile.getName() + "/"));
+                        } else {
+                            // 组装元素名
+                            final StringBuilder entryName = new StringBuilder();
+                            entryName.append(currentDir.getPath()).append(currentFile.getName());
+                            zipOutputStream.putNextEntry(new ZipEntry(entryName.toString()));
+                            final FileInputStream fileInputStream = new FileInputStream(currentFile);
+                            int temp = 0;
+                            while ((temp = fileInputStream.read()) != -1) {
+                                zipOutputStream.write(temp);
+                            }
                         }
-                        outputStream = new BufferedOutputStream(new FileOutputStream(targetFile));
-                        IOUtils.copy(zipArchiveInputStream, outputStream);
-                    } finally {
-                        IOUtils.closeQuietly(outputStream);
+                    }
+                } else {
+                    // 由于在处理过程中只有文件夹会进入栈，
+                    // 故如果出现栈中弹出文件的情况则说明本来就只需要压缩一个文件
+                    zipOutputStream.putNextEntry(new ZipEntry(currentDir.getFile().getName()));
+                    final FileInputStream fileInputStream = new FileInputStream(currentDir.getFile());
+                    int temp = 0;
+                    while ((temp = fileInputStream.read()) != -1) {
+                        zipOutputStream.write(temp);
                     }
                 }
             }
-
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (zipOutputStream != null) {
+                    zipOutputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * 包装文件与其路径的类
+     */
+    static class FileWithPath {
+        String path;
+        File file;
+
+        public FileWithPath(File file, String path) {
+            this.path = path;
+            this.file = file;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public File getFile() {
+            return file;
         }
     }
+}
+
 ```
 
 # 文件按行拷贝并筛除不需要的行
@@ -466,3 +622,93 @@ private String getRandomPassword() {
     }
 ```
 
+# AES加密
+
+```java
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+/**
+ * @author boranget
+ * @date 2023/8/17
+ */
+public class CryptUtils {
+    // 加密算法
+    public static final String ALGORITHM = "AES";
+
+    /**
+     * base64加密
+     * @param original
+     * @return
+     */
+    static byte[] base64Encrypt(byte[] original) {
+        return Base64.getEncoder().encode(original);
+    }
+
+    /**
+     * base64解密
+     * @param original
+     * @return
+     */
+    static byte[] base64Decrypt(String original){
+        return Base64.getDecoder().decode(original.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * aes加密 字节数组
+     * @param original
+     * @param password
+     * @return
+     */
+    static byte[] aesEncrypt(byte[] original, String password) {
+        try{
+            // 获取加密器
+            Cipher cipher = Cipher.getInstance("AES");
+            // 使用密钥初始化加密器，设置为加密模式
+            cipher.init(Cipher.ENCRYPT_MODE, getKey(password));
+            // 加密
+            byte[] result = cipher.doFinal(original);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * aes 解密
+     * @param ciphertext
+     * @param password
+     * @return
+     */
+    static byte[] aesDecrypt(byte[] ciphertext, String password) {
+        try{
+            // 获取加密器
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, getKey(password));
+            byte[] result = cipher.doFinal(ciphertext);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取密钥
+     * 传入的参数取其utf8编码值作为密钥，有长度要求
+     * @param password
+     * @return
+     */
+    static SecretKeySpec getKey(String password) {
+        try {
+            SecretKeySpec key = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8), ALGORITHM);
+            return key;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+```
