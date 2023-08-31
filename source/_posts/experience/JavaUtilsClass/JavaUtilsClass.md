@@ -420,6 +420,8 @@ public class ZipUtil {
     static void zip(String originalFilePath, String targetZipFilePath, String charset, boolean includeTopDir) throws FileNotFoundException {
         // 创建输出流
         ZipOutputStream zipOutputStream = null;
+        // 输入流
+        FileInputStream fileInputStream = null;
         // 检查源文件对象是否存在
         File originalFile = new File(originalFilePath);
         if (!originalFile.exists()) {
@@ -454,7 +456,7 @@ public class ZipUtil {
                             final StringBuilder entryName = new StringBuilder();
                             entryName.append(currentDir.getPath()).append(currentFile.getName());
                             zipOutputStream.putNextEntry(new ZipEntry(entryName.toString()));
-                            final FileInputStream fileInputStream = new FileInputStream(currentFile);
+                            fileInputStream = new FileInputStream(currentFile);
                             int temp = 0;
                             while ((temp = fileInputStream.read()) != -1) {
                                 zipOutputStream.write(temp);
@@ -465,7 +467,7 @@ public class ZipUtil {
                     // 由于在处理过程中只有文件夹会进入栈，
                     // 故如果出现栈中弹出文件的情况则说明本来就只需要压缩一个文件
                     zipOutputStream.putNextEntry(new ZipEntry(currentDir.getFile().getName()));
-                    final FileInputStream fileInputStream = new FileInputStream(currentDir.getFile());
+                    fileInputStream = new FileInputStream(currentDir.getFile());
                     int temp = 0;
                     while ((temp = fileInputStream.read()) != -1) {
                         zipOutputStream.write(temp);
@@ -475,6 +477,13 @@ public class ZipUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            try {
+                if(fileInputStream!=null){
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             try {
                 if (zipOutputStream != null) {
                     zipOutputStream.close();
