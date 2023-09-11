@@ -9,12 +9,31 @@ categories:
 
 # 一些别的
 
-Maven生命周期及常用命令
+- Maven生命周期及常用命令
+  - maven的生命周期:就是maven构建项目的过程，清理，编译，测试，报告，打包，安装，部署
+  - maven的命令: maven独立使用，通过命令，完成maven的生命周期的执行。
+    maven可以使用命令，完成项目的清理,编译，测试等
+  - maven的插件: maven命令执行时，真正完成功能的是插件，插件就是一些jar文件，一些类。
 
-- maven的生命周期:就是maven构建项目的过程，清理，编译，测试，报告，打包，安装，部署
-- maven的命令: maven独立使用，通过命令，完成maven的生命周期的执行。
-  maven可以使用命令，完成项目的清理,编译，测试等
-- maven的插件: maven命令执行时，真正完成功能的是插件，插件就是一些jar文件，一些类。
+- optional 与 provided
+
+  ```xmltext
+  <dependency>
+      <groupId>some.company</groupId>
+      <artifactId>project-c</artifactId>
+      <optional>true</optional>
+  </dependency>
+  
+  <dependency>
+      <groupId>some.company</groupId>
+      <artifactId>project-d</artifactId>
+      <scope>provided</scope>
+  </dependency>
+  ```
+  
+  效果相同，都是不传递依赖，optional表示可选，provided表示已有
+
+
 
 # 一些问题
 

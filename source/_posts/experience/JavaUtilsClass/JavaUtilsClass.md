@@ -591,44 +591,90 @@ public class CollectUserInfo {
 # 生成随机密码
 
 ```java
-private String getRandomPassword() {
-        char[] spec = new char[]{'@','#','$'};
+
+/**
+ * @author boranget
+ * @date 2023/9/4
+ * 生成随机密码组合
+ * 调用示例：
+ * getRandomPassword(5, 5, 2, 5,'@','&')
+ *
+ */
+public class RandomPasswordUtil {
+    /**
+     *
+     * @param numCount 数字数量
+     * @param lowCaseCount 英文小写数量
+     * @param upCaseCount 英文大写数量
+     * @param specCharCount 特殊字符数量
+     * @param spec 允许的特殊字符
+     * @return
+     */
+    public static String getRandomPassword(int numCount, int lowCaseCount, int upCaseCount, int specCharCount, char... spec) {
         StringBuilder resBuilder = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
+        if(specCharCount>0&&spec.length==0){
+            throw new RuntimeException("specCharCount不为0时需要至少提供一个特殊字符");
+        }
+        next:
+        while ((numCount + lowCaseCount + upCaseCount + specCharCount) != 0) {
             // 字符种类判定
             final int random = getRandom(0, 3);
             switch (random) {
                 case 0:
                     // 数字
+                    if(numCount<=0){
+                        continue next;
+                    }
+                    numCount--;
                     final int randomInt = getRandom(0, 9);
                     resBuilder.append(randomInt);
                     break;
                 case 1:
                     // 英文大写
-                    final int randomUpCase = getRandom(65,90);
-                    resBuilder.append((char)randomUpCase);
+                    if(upCaseCount<=0){
+                        continue next;
+                    }
+                    upCaseCount--;
+                    final int randomUpCase = getRandom(65, 90);
+                    resBuilder.append((char) randomUpCase);
                     break;
                 case 2:
                     // 英文小写
+                    if(lowCaseCount<=0){
+                        continue next;
+                    }
+                    lowCaseCount--;
                     final int randomLowCase = getRandom(97, 122);
-                    resBuilder.append((char)randomLowCase);
+                    resBuilder.append((char) randomLowCase);
                     break;
                 case 3:
-                    final int randomIndex = getRandom(0, spec.length-1);
+                    // 特殊字符
+                    if(specCharCount<=0){
+                        continue next;
+                    }
+                    specCharCount--;
+                    final int randomIndex = getRandom(0, spec.length - 1);
                     resBuilder.append(spec[randomIndex]);
                     break;
                 default:
             }
         }
-        // 密码要求必须有一个数字位
-        resBuilder.append(getRandom(0,9));
         return resBuilder.toString();
     }
 
-    private int getRandom(int left, int right) {
+    /**
+     * 随机数生成，包括 left 和 right
+     *
+     * @param left
+     * @param right
+     * @return
+     */
+    private static int getRandom(int left, int right) {
         int bound = right - left + 1;
         return new Random().nextInt(bound) + left;
     }
+}
+
 ```
 
 # AES加密

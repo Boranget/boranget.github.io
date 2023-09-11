@@ -1282,7 +1282,7 @@ class Parent{
 
 ### 准备
 
-准备阶段是正式为类中定义的变量（static）分配内存并设置类变量初始值的阶段。（初始值一般是指0值，用户主动初始化的值会在clinit中赋值，但上面的静态常量我记得字符串和基本类型是不在clinit中的，字段本身有ConstantValue属性，可能这部分是在准备阶段完成的？是的）
+准备阶段是正式为类中定义的变量（static）分配内存并设置类变量初始值的阶段。（初始值一般是指0值，用户主动初始化的值会在clinit中赋值，但上面的静态常量我记得字符串和基本类型是不在clinit中的，字段本身有ConstantValue属性，在准备阶段就可以赋用户自定义值）
 
 JDK7及之前，静态变量会存储在方法区中，但在JDK8及之后，静态变量会随着Class对象一起存放在Java堆中。
 
@@ -1697,13 +1697,9 @@ protected Class<?> loadClass(String name, boolean resolve)
 
 锁从类加载器本身变为要加载的对象名
 
-### 字节码生成与动态代理
+### Backport
 
-
-
-
-
-
+工具如 Retrotranslator 可以将jdk5编译出的class文件转变为可以在jdk1.4或1.3上部署的版本。Retrolambda可以将lambda表达式转为内部类的实现
 
 
 

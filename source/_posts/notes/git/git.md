@@ -247,3 +247,50 @@ git stash
 - [ADD] 添加实现新功能
 - [REM] 删除不需要的文件
 
+# 常见开发流程
+
+[十分钟学会正确的github工作流，和开源作者们使用同一套流程_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV19e4y1q7JJ/?spm_id_from=autoNext&vd_source=7103983ce7cdb97d8715a21074de9a20)
+
+1. 将远端仓库代码clone到本地
+2. 本地checkout出一个新分支如feature
+3. 在 feature 分支进行开发，开发完成
+4. git diff 查看做了哪些修改
+5. git add 提交到暂存区
+6. git commit， 将当前修改提交到本地分支 feature
+7. git push origin feature 将本地 feature push到远程仓库的feature分支
+8. 本地切换到master分支
+9. git pull origin master 更新本地master分支
+10. 切换到feature分支，执行 git rebase master 进行合并
+11. git push -f origin feature 将 feature 分支强制提交到远程仓库
+12. 远程仓库新建一个 pull request，将feature合并到master
+13. 远程仓库进行squash and merge，squash用于将本次push中的许多commit合并为一个commit
+14. 删除远端feature分支
+15. 本地切回master，git branch - d feature 删除本地 feature 分支
+16. git pull origin master，更新本地master分支
+
+# gitignore
+
+.gitignore需要在项目初始阶段便配置好，若在push操作之后再修改或添加。gotignore是不起作用的，需要
+
+```shell
+git rm -r --cached .
+git add .
+git commit -m .gitignore
+// 下面命令是push远程的，可以用idea的工具直接push，也可以执行下面的命令
+git push origin ...
+```
+
+- 井号#用于注释
+- *表示任意多个字符
+- !叹号表示例外，将不被忽略
+- 名称最前面为/，表示要忽略的文件在当前目录下，但子目录中名称为该名称的文件不被忽略
+- 如果最后面是/，表示要忽略的是当前目录下的所有名称为该名称的目录
+
+```
+*.txt # 忽略所有txt文件
+!lib.txt # 但是lib.txt除外
+/temp #忽略项目根目录下的temp目录
+build/ # 忽略项目里所有的build目录
+doc/*.txt # 忽略项目中所有的doc目录下的txt文件，但不包括doc/*/*.txt
+```
+

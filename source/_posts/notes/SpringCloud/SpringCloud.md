@@ -260,8 +260,6 @@ P（Partition tolerance）：分区容错性
 @EnableHystrix
 ```
 
-- - 
-
 # Feign
 
 使用注解的方式进行远程方法的调用
