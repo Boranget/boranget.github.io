@@ -7,6 +7,198 @@ categories:
   - 笔记
 ---
 
+# 个人经验
+
+## 配置注入实体类
+
+1. 编写实体类
+
+   ```java
+   public class AppConfig {
+      	String appId;
+       String apigwPublicKey;
+       String priKey;
+       String baseUrl;
+   }
+   ```
+
+2. 参数注入需要set方法，所以加上@Data注解
+
+3. 交由Spring管理当前对象，添加@Component注解
+
+   或在启动类添加@EnableConfigurationProperties（{实体类class}）
+
+4. 设置前缀，添加@ConfigurationProperties(prefix = "app")注解
+
+5. 在配置文件进行配置
+
+   ```yml
+   app:
+     appId: 123
+     apigwPublicKey: 456
+     priKey: 789
+     baseUrl: 0
+   ```
+
+6. 使用，在需要用到的类@Autowired AppConfig即可
+
+## 配置文件优先级
+
+### 覆盖关系：
+
+  对于key不同，则直接生效；
+
+  对于key相同的同名配置项，后加载会覆盖掉前加载，故而最终为后加载的配置项生效
+
+### 本地配置
+
+- 同文件名配置 *.yaml **加载先于** *.properties
+- bootstrap配置 **加载先于** application配置
+- 不带profile的配置 **加载先于** 带profile的配置
+
+**故**
+
+1. bootstrap.yaml
+2. bootstrap.properties
+3. bootstrap-{profile}.yaml
+4. bootstrap-{profile}.properties
+5. application.yaml
+6. application.properties
+7. application-{profile}.yaml
+8. application-{profile}.properties
+
+### nacos配置
+
+- 本地配置 **加载先于** nacos配置中心
+-  nacos配置中心上共享配置(见下说明) **加载先于** nacos配置中心该服务配置（见下说明）
+- 不带profile的配置 **加载先于** 带profile的配置
+- nacos配置中心因需要通过data ID指定（或者通过spring.cloud.nacos.config.file-extension指定后缀），所以对于Nacos配置中心上的某个Data ID而言，不会存在既加载其*.yaml又加载其*.properties的情形。
+
+**故**
+
+1. 本地配置
+2. nacos配置中心共享配置（通过spring.cloud.nacos.config.shared-configs指定）
+3. Nacos配置中心该服务配置（通过spring.cloud.nacos.config.prefix和spring.cloud.nacos.config.file-extension指定）
+4. Nacos配置中心该服务-{profile}配置（通过spring.cloud.nacos.config.prefix和spring.cloud.nacos.config.file-extension、以及spring.profiles.active指定）
+
+## controller 请求参数注入命名转换
+
+**参考资料** [springboot项目配置参数请求及返回均为下划线方式_springboot responsebody 指定返回的格式 为下划线分割_偶系渣渣灰的博客-CSDN博客](https://blog.csdn.net/breakaway_01/article/details/119033959)
+
+在配置文件中添加配置
+
+```yaml
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE #下划线参数
+```
+
+CamelCase策略，Java对象属性：personId，序列化后属性：persionId
+
+PascalCase策略，Java对象属性：personId，序列化后属性：PersonId
+
+SnakeCase策略，Java对象属性：personId，序列化后属性：person_id
+
+KebabCase策略，Java对象属性：personId，序列化后属性：person-id
+
+## 多配置切换
+
+可同时定义多个配置文件，命名方式为“application-*.yml”，如
+
+![image-20230919085531459](springboot/image-20230919085531459.png)
+
+- 切换方法一：修改springboot配置文件
+
+  在application.yml中配置
+
+  ```properties
+  spring.profiles.active=dev
+  spring.profiles.active=local
+  spring.profiles.active=prod
+  ```
+
+- 切换方法二：maven配置
+
+  maven在编译时可以动态决定当前编译环境
+
+  application.yml中配置为：
+
+  ```properties
+  # @@中变量名可自定义，但要与下面的配置中标签相同
+  spring.profiles.active=@profiles.active@
+  ```
+
+  maven中配置profiles内容
+
+  ```xml
+   <profiles>
+      <!-- 本地 -->
+      <profile>
+        <id>local</id>
+        <properties>
+          <!--profile.active对应application.yml中的@profile.active@-->
+          <profile.active>local</profile.active>
+        </properties>
+        <activation>
+          <!-- 默认选择的配置 -->
+          <activeByDefault>true</activeByDefault>
+        </activation>
+      </profile>
+      <!-- 测试 -->
+      <profile>
+        <id>dev</id>
+        <properties>
+          <!--profile.active对应application.yml中的@profile.active@-->
+          <profile.active>dev</profile.active>
+        </properties>
+      </profile>
+      <!-- 正式 -->
+      <profile>
+        <id>prod</id>
+        <properties>
+          <!--profile.active对应application.yml中的@profile.active@-->
+          <profile.active>prod</profile.active>
+        </properties>
+      </profile>
+    </profiles>
+  ```
+
+  该配置会在maven工具中生成profile菜单，可进行勾选
+
+  ![image-20230919091551764](springboot/image-20230919091551764.png)
+
+  如果想要在编译时排除其他环境的配置，可以在pom中配置
+
+  ```xml
+  <build>
+      <resources>
+        <!--排除配置文件-->
+        <resource>
+          <directory>src/main/resources</directory>
+          <!--先排除所有的配置文件-->
+          <excludes>
+            <!--使用通配符，当然可以定义多个exclude标签进行排除-->
+            <exclude>application*.yml</exclude>
+          </excludes>
+        </resource>
+   
+        <!--根据激活条件引入打包所需的配置和文件-->
+        <resource>
+          <directory>src/main/resources</directory>
+          <!--引入所需环境的配置文件-->
+          <filtering>true</filtering>
+          <includes>
+            <include>application.yml</include>
+            <!--根据maven选择环境导入配置文件-->
+            <include>application-${profile.active}.yml</include>
+          </includes>
+        </resource>
+      </resources>
+    </build>
+  ```
+
+  
+
 # 别的一些
 
 **SpringBoot与Spring的关系、SpringAOP/IOC了解**

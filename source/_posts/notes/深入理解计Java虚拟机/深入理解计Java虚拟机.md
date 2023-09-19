@@ -1701,11 +1701,104 @@ protected Class<?> loadClass(String name, boolean resolve)
 
 工具如 Retrotranslator 可以将jdk5编译出的class文件转变为可以在jdk1.4或1.3上部署的版本。Retrolambda可以将lambda表达式转为内部类的实现
 
+### 实战
 
+在根据书实战的过程中，出现了main方法访问权限不足的问题，解决方法是在method invoke之前先设置一下访问权限为true
 
+# 前端编译与优化
 
+前端编译指将java文件转变为class文件的过程
 
+- 前端编译器： JDK的javac、Eclipse JDT中的增量式编译器（ECJ）
+- 即时编译器：HotSpot虚拟机的C1、C2编译器，Graal编译器
+- 提前编译器：JDK的Jaotc、GNU Compiler for the Java（GVJ）、Excelsior JET
 
+## javac编译器
 
+javac编译器是由java语言实现的
 
+## 泛型
 
+泛型是参数化类型的应用，将操作的数据类型指定为方法签名的一种特殊参数，这种参数类型能用在类、接口和方法的创建中，分别构成泛型类、泛型接口和泛型方法。
+
+java泛型实现方式称为类型擦除式泛型，只存在于程序源码中，在编译后的字节码文件中，全部被替换为原来的裸类型，并且在相应的地方插入了强制转型代码
+
+导致的问题是无法对基本类型做强制转型，故使用了包装类且不支持基本类型
+
+## 语法糖
+
+- for each循环的底层实现是使用了iterater
+
+```java
+public static void main(String[] args) {
+ List<Integer> list = Arrays.asList(1, 2, 3, 4);
+ int sum = 0;
+ for (int i : list) {
+ sum += i;
+ }
+ System.out.println(sum);
+}
+// 编译后
+public static void main(String[] args) {
+ List list = Arrays.asList(new Integer[]{
+ Integer.valueOf(1),
+ Integer.valueOf(2),
+ Integer.valueOf(3), Integer.valueOf(4)});
+ int sum = 0;
+ for (Iterator localIterator = list.iterator(); localIterator.hasNext(); ) {
+ int i = ((Integer) localIterator.next()).intValue();
+ sum += i;
+ }
+ System.out.println(sum);
+}
+
+```
+
+- 关于自动拆箱装箱
+
+  java中会将128到-127中的Integer数据进行缓存，
+
+  ```java
+  	public static void main(String[] args) {
+          Integer a = 1;
+          Integer b = 2;
+          Integer c = 3;
+          Integer d = 3;
+          Integer e = 321;
+          Integer f = 321;
+          Long g = 3L;
+          System.out.println(c == d);
+          System.out.println(e == f);
+          System.out.println(c == (a + b));
+          System.out.println(c.equals(a + b));
+          System.out.println(g == (a + b));
+          System.out.println(g.equals(a + b));
+      }
+  ```
+
+  这里引用文心一言的回答
+
+  >在Java中，`==`运算符用于比较两个对象的引用是否相等，即它们是否指向内存中的同一对象。对于`Integer`类型，Java在内部对值在-128到127之间的对象进行了缓存，因此当比较两个在这个范围内的`Integer`对象时，直接使用`==`可能会得到预期的结果。但是对于超出这个范围的值，Java并没有进行这样的缓存，因此直接使用`==`进行比较通常不会得到预期的结果。
+  >
+  >Integer 、Byte 、Short 、Long 、Character 五大包装类都有缓冲机制，且缓冲的默认值范围都是-128~127
+  >
+  >而Float,Double,Boolean 三大包装类并没有缓冲机制。
+  >
+  >在你的代码中：
+  >
+  >- `c == d`：由于`c`和`d`都是指向同一个`Integer`对象（值为3），所以结果为true。
+  >- `e == f`：由于`e`和`f`都是`Integer`对象，但它们的值（321）超出了Java的缓存范围，所以它们并不指向同一个对象，结果为false。
+  >- `c == a + b`：由于`a + b`的结果（3）在Java的缓存范围内，所以`a + b`返回的实际上是一个已经存在的`Integer`对象，这个对象和`c`指向的是同一个对象，所以结果为true。
+  >- `c.equals(a + b)`：这是使用`equals()`方法进行比较，这个方法在`Integer`类中已经被重写，用于比较两个`Integer`对象的值是否相等，所以结果为true。
+  >- `g == (long)(a + b)`：这里将`a + b`的结果强制转换为`long`类型，且结果在缓存范围，结果为true。
+  >- `g.equals(a + b)`：这里同样使用了`equals()`方法进行比较。但equals不会处理数据转型，故这里是false
+
+- 条件编译
+
+  在java中，if如果使用常量作为条件，在编译期便不会编译无法执行到的部分。
+
+- 内部类也算一种语法糖，在内部类创建时，Init方法会将外部类的对象传入，名为this$0，内部类中如果调用OutClass.this，实际上是调用this$0.
+
+  自然的，静态内部类由于可能被别的对象使用，故不能将外部类对象传入，也无法使用外部类的this。但静态内部类是可以有自己的main方法的
+
+- String的switch，使用hashcode和equals

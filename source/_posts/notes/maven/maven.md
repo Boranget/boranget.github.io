@@ -7,35 +7,7 @@ categories:
   - 笔记
 ---
 
-# 一些别的
-
-- Maven生命周期及常用命令
-  - maven的生命周期:就是maven构建项目的过程，清理，编译，测试，报告，打包，安装，部署
-  - maven的命令: maven独立使用，通过命令，完成maven的生命周期的执行。
-    maven可以使用命令，完成项目的清理,编译，测试等
-  - maven的插件: maven命令执行时，真正完成功能的是插件，插件就是一些jar文件，一些类。
-
-- optional 与 provided
-
-  ```xmltext
-  <dependency>
-      <groupId>some.company</groupId>
-      <artifactId>project-c</artifactId>
-      <optional>true</optional>
-  </dependency>
-  
-  <dependency>
-      <groupId>some.company</groupId>
-      <artifactId>project-d</artifactId>
-      <scope>provided</scope>
-  </dependency>
-  ```
-  
-  效果相同，都是不传递依赖，optional表示可选，provided表示已有
-
-
-
-# 一些问题
+# 个人经验
 
 ## idea和maven版本有匹配关系
 
@@ -45,9 +17,7 @@ categories:
  NoSuchMethodError: DefaultModelValidator: method 'void <init>()
 ```
 
-## 命令行maven
-
-**使用了默认库**
+## 命令行maven使用了默认库
 
 解决：删除user->.m2文件夹
 
@@ -84,7 +54,7 @@ mirrorOf意思就是当前镜像是为那个仓库做镜像？配置为*意思�
   <mirrorOf>central</mirrorOf>
   ```
 
-**插件需要单独配仓库**
+**此插件也需要单独配仓库**
 
 ```xml
 	<pluginRepositories>
@@ -94,6 +64,66 @@ mirrorOf意思就是当前镜像是为那个仓库做镜像？配置为*意思�
         </pluginRepository>
     </pluginRepositories>
 ```
+
+## Maven生命周期及常用命令
+
+- maven的生命周期:就是maven构建项目的过程，清理，编译，测试，报告，打包，安装，部署
+- maven的命令: maven独立使用，通过命令，完成maven的生命周期的执行。
+  maven可以使用命令，完成项目的清理,编译，测试等
+- maven的插件: maven命令执行时，真正完成功能的是插件，插件就是一些jar文件，一些类。
+
+## optional 与 provided
+
+```xmltext
+<dependency>
+    <groupId>some.company</groupId>
+    <artifactId>project-c</artifactId>
+    <optional>true</optional>
+</dependency>
+
+<dependency>
+    <groupId>some.company</groupId>
+    <artifactId>project-d</artifactId>
+    <scope>provided</scope>
+</dependency>
+```
+
+效果相同，都是不传递依赖，optional表示可选，provided表示已有
+
+## maven引入非maven依赖
+
+将依赖的jar包放入项目根目录的lib目录下
+
+依赖这样写
+
+```xml
+<dependency>
+	<groupId>com.icbc</groupId>
+	<artifactId>icbc-api-sdk-cop-io</artifactId>
+	<version>1.0</version>
+	<scope>system</scope>
+	<systemPath>${basedir}/lib/icbc-api-sdk-cop-io.jar</systemPath>
+</dependency>
+```
+
+插件配置这样写
+
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+                <!--值为true是指打包时包含scope为system的第三方Jar包-->
+				<includeSystemScope>true</includeSystemScope>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+```
+
+
 
 # Maven 概念
 
