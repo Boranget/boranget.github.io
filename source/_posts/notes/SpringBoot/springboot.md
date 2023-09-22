@@ -42,6 +42,21 @@ categories:
 
 6. 使用，在需要用到的类@Autowired AppConfig即可
 
+### 提示配置
+
+引入依赖
+
+```xml
+<!--自定义配置处理器-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-configuration-processor</artifactId>
+    <optional>true</optional>
+</dependency>
+```
+
+如果无效果，检查maven插件版本是否吻合，尝试install查看是否会报错
+
 ## 配置文件优先级
 
 ### 覆盖关系：

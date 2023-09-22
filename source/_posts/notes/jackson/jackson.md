@@ -119,3 +119,13 @@ public static void main(String[] args) throws IOException {
     objectMapper.writeValue(System.out,person);
 }
 ```
+
+# SpringBoot更改@RequestBody参数注入逻辑（参数名映射）
+
+[springboot项目配置参数请求及返回均为下划线方式_springboot responsebody 指定返回的格式 为下划线分割_偶系渣渣灰的博客-CSDN博客](https://blog.csdn.net/breakaway_01/article/details/119033959)
+
+```yaml
+spring:
+  jackson:
+     property-naming-strategy: SNAKE_CASE #下划线参数
+```
