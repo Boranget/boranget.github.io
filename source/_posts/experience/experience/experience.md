@@ -739,6 +739,15 @@ string在split的时候如果分割字符为竖杠‘|’或者别的正则表�
 str.split("\\|")
 ```
 
+# jar包指定主类
+
+修改Manifest文件中的 Main-Class: 主类全类名，注意是类名而不是文件名
+
+```yml
+Manifest-Version: 1.0
+Main-Class: UserInfoFactory
+```
+
 # 一个maven项目中存在多个main方法指定运行主类
 
 ```xml
@@ -782,3 +791,14 @@ public static void main(String[] args) {
 ```
 
 除Asia/Shanghai之外还可以使用Etc或者UTC时区
+
+# 循环依赖问题
+
+springboot最新版本禁止循环依赖
+
+循环依赖场景比如:
+
+Aservice中注入了Bservice
+
+故建议注入BMapper而不是Bservice
+
