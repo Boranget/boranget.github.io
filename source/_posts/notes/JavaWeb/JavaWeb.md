@@ -7,13 +7,104 @@ categories:
   - 笔记
 ---
 
-# HTML基础
+# 一些经验
 
-## HTML
+- vscode liveserver插件需要在文件夹中打开文件
+- shift + 刷新 强制刷新
 
-HyperText marking language
+# HTML
 
-### \<a>
+## 语义
+
+标签的默认效果不重要，语义最重要
+
+1. 代码的可读性
+2. 利于SEO 
+3. 方便盲人阅读器等设备解析
+
+## 文档声明
+
+```html
+H5：
+<!DOCTYPE html>
+不声明可能会触发怪异模式
+```
+
+## 编码
+
+决定了浏览器打开文档的编码
+
+```html
+<head>
+    <meta charset="UTF-8">
+</head>
+```
+
+## 语言
+
+可提供给浏览器的翻译功能使用
+
+```html
+<html lang = "en">
+    
+</html>
+```
+
+## 图标
+
+图标放到根目录命名为favicon.ico
+
+## 注释
+
+```html
+<!-- annotation -->
+注释不可嵌套，可多行
+```
+
+## 排版标签
+
+- h：标题
+
+- p：段落
+
+  段落中不能嵌套标题或div甚至p
+
+- div：无语义
+
+```html
+<!-- 默认占满一行 -->
+<div>div1</div>
+<div>div2</div>
+<!--span标签的长度取决于其内容-->
+<span>span1</span>
+<span>span2</span>
+<!--p标签会上下各空一行，如果已有空行则不空-->
+<p>p1</p>
+<p>p2</p>
+```
+
+- br 换行
+- hr 分割线
+- pre 按照源代码排版显示
+
+## 块级标签和行内标签
+
+块级元素会独占一行
+
+- 块级元素中可以嵌套块级元素和行内元素
+  - h元素不能互相嵌套
+  - p标签中不能写块元素
+
+行内元素中可以写行内元素，当不能写块级元素 
+
+## 文本标签
+
+- em 着重内容
+- strong 比em重
+- span 无语义
+- i 多用于呈现字体图标 
+
+## 超链接  
 
 - herf 打开链接
 - target 在哪打开
@@ -26,11 +117,44 @@ HyperText marking language
 <a href="http://www.baidu.com" target="_top">baidu top</a>
 ```
 
-### 列表
+超链中不可嵌套超链接，可嵌套除超链接以外的任何元素
 
-- ul li
-- ol li
-- dl dt dd
+- download 属性可以触发下载，而不是直接展示
+
+### 锚点
+
+```html
+# 定义
+<a name = "htl"></a>
+<p id = "atm"></p>
+# 跳转
+<a href = "#htl"></a>
+<a href = "#atm"></a>
+<a href = "#">回到顶部</a>
+<a href = "">刷新当前页面</a>
+```
+
+### 执行js
+
+```html
+<a href = "javascript:alert("666");"></a>
+```
+
+### 唤醒应用
+
+```html
+<a href = "mailto:123@qq.com"></a>
+<a href = "tel:10086"></a>
+<a href = "sms:10086"></a>
+```
+
+
+
+## 列表
+
+- 有序 ul li
+- 无序 ol li
+- 自定义 dl dt dd
 
 ```html
 <ul>
@@ -86,7 +210,7 @@ HyperText marking language
 
 
 
-###  内联框架
+##  内联框架
 
 ```html
 <!--内联框架，name取名-->
@@ -97,7 +221,7 @@ HyperText marking language
 </ul>
 ```
 
-### 图片
+## 图片
 
 ```html
 <!--alt为图片加载不出来时显示的文字，src为图片地址-->
@@ -105,68 +229,73 @@ HyperText marking language
     src="https://scpic.chinaz.net/files/pic/pic9/201311/apic2098.jpg" />
 ```
 
-### 表格
+**防盗链**
+
+图片地址可以直接访问，且可显示图片，但不能放入图片标签的src中
+
+**格式**
+
+- webp 谷歌推出的图片格式，可透明可动态占用空间小保留细节多，但是只有谷歌浏览器内核支持
+- base64格式，src属性直接填图片的base64编码
+
+## 表格
 
 ```html
 <!--border为边框，align为位置，cellspacing为表格间距-->
-<table border="10" ,width="500" ,height="500" ,align="center" cellspacing="5">
-    <tr>
-        <!--
-            rowspan，colspan为一个表格合并的方向与大小
-            colspan为横向
-            rowspan为纵向
-        -->
+<table border="10" width="500" height="500" align="center" cellspacing="5">
+    <caption>表格标题</caption>
+    <thead>
+    	<tr>
+        	<th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <!--
+                rowspan，colspan为一个表格合并的方向与大小
+                colspan为横向
+                rowspan为纵向
+            -->
 
-        <td rowspan="2">1.1</td>
-        <td>1.2</td>
-        <td>1.3</td>
-        <td colspan="2" ,rowspan="2">1.2</td>
-    </tr>
-    <tr>
-        <td>1.2</td>
-        <td>1.3</td>
-        <td colspan="2">1.4</td>
-    </tr>
-    <tr>
-        <td>1.1</td>
-        <td>1.2</td>
-        <td>1.3</td>
-        <td>1.4</td>
-        <td>1.5</td>
-    </tr>
-    <tr>
-        <th colspan="3">
-            1.4
-        </th>
-        <td>1.2</td>
-        <td>1.3</td>
-    </tr>
+            <td rowspan="2">1.1</td>
+            <td>1.2</td>
+            <td>1.3</td>
+            <td colspan="2" ,rowspan="2">1.2</td>
+        </tr>
+        <tr>
+            <td>1.2</td>
+            <td>1.3</td>
+            <td colspan="2">1.4</td>
+        </tr>
+        <tr>
+            <td>1.1</td>
+            <td>1.2</td>
+            <td>1.3</td>
+            <td>1.4</td>
+            <td>1.5</td>
+        </tr>
+        <tr>
+            <th colspan="3">
+                1.4
+            </th>
+            <td>1.2</td>
+            <td>1.3</td>
+        </tr>
+    </tbody>
+    <tfoot></tfoot>
 </table>
 ```
 
 ![image-20221102133334436](JavaWeb/image-20221102133334436.png)
 
-### 元数据
+## 元数据
 
 ```html
 <meta charset="UTF-8">
 ```
 
-### 结构控制
-
-```html
-<!-- 默认占满一行 -->
-<div>div1</div>
-<div>div2</div>
-<!--span标签的长度取决于其内容-->
-<span>span1</span>
-<span>span2</span>
-<!--p标签会上下各空一行，如果已有空行则不空-->
-<p>p1</p>
-<p>p2</p>
-```
-
-### 表单
+## 表单
 
 ```html
  <form action="https://www.baidu.com" method="get">
@@ -218,11 +347,11 @@ HyperText marking language
 
 ![image-20221102140935231](JavaWeb/image-20221102140935231.png)
 
-## CSS
+# CSS
 
 cascading style sheet
 
-### 选择器
+## 选择器
 
 - 标签名选择器
 
@@ -258,11 +387,11 @@ table{
 </style>
 ```
 
-## JS
+# JS
 
-### javaScript警告/弹窗
+## javaScript警告/弹窗
 
-#### alert(字符串或变量)
+### alert(字符串或变量)
 
 ```html
 <script type="text/javascript">
@@ -272,7 +401,7 @@ table{
 </script>
 ```
 
-#### confirm(字符串或变量)
+### confirm(字符串或变量)
 
 用户点击确定返回true,点击取消返回false
 
@@ -284,7 +413,7 @@ table{
     </script>
 ```
 
-#### prompt(标题,内容)
+### prompt(标题,内容)
 
 点击确定会返回内容,内容为空返回空字符串
 
@@ -298,9 +427,9 @@ table{
 </script>
 ```
 
-### 窗口操作
+## 窗口操作
 
-#### 打开新窗口
+### 打开新窗口
 
 open()方法
 
@@ -339,7 +468,7 @@ window.open([URL],[窗口名称],[参数字符串])
 	| top=pixels                | 窗口顶部的位置.仅限IE浏览器                                  |
 	| width=pixels              | 窗口的宽度.最小.值为100                                      |
 
-#### 关闭窗口
+### 关闭窗口
 
 - 关闭本窗口
 
@@ -358,15 +487,15 @@ window.open([URL],[窗口名称],[参数字符串])
 
   
 
-### HTML元素操作
+## HTML元素操作
 
-#### 通过ID获取元素
+### 通过ID获取元素
 
 ```js
 document.getElementById("id")
 ```
 
-#### innerHTML属性
+### innerHTML属性
 
 ```js
 object.innerHTML
@@ -374,7 +503,7 @@ object.innerHTML
 
 用于获取html标签内部的内容,不包括标签本身
 
-#### 更改html元素样式
+### 更改html元素样式
 
 ```html
 <p id = "pid">样式修改测试</p>
@@ -386,13 +515,13 @@ object.innerHTML
 
 通过style.display可以设置元素是否显示
 
-#### 控制类名
+### 控制类名
 
 ```js
 object.className = classname
 ```
 
-### 变量
+## 变量
 
 没有赋值的变量值为undefined
 
@@ -414,7 +543,7 @@ a===b : false
 
 在做逻辑运算时，0, null, undefinde, ""空串都认为是false值，其余为true
 
-### 逻辑运算
+## 逻辑运算
 
 与其他语言不同的是，js中的逻辑运算并不是返回true或false，而是返回做逻辑运算中的值，返回哪个值取决于在哪个值可以决定的当前表达式的真假性，根据与短路运算：
 
@@ -430,7 +559,7 @@ a===b : false
 
 当表达式中有一个真，则返回第一个真值
 
-### 数组
+## 数组
 
 同样与别的语言不同: js中的数组是非定长的，可以在程序的运行过程中改变数组的长度，其长度取决于最后一个存储了有效值的位置。
 
@@ -441,9 +570,9 @@ var x = []
 x[2] = 1 // 此时数组长度会变为3去存储1
 ```
 
-### 函数
+## 函数
 
-#### 函数定义
+### 函数定义
 
 ```js
 function fname(a,b){
@@ -456,7 +585,7 @@ var fname = function(a,b){
 var fname = ()=>{}
 ```
 
-#### 隐形参数列表
+### 隐形参数列表
 
 ```js
 function fun(){
@@ -464,9 +593,9 @@ function fun(){
 }
 ```
 
-### 对象
+## 对象
 
-#### 定义一个对象
+### 定义一个对象
 
 ```js
 var obj = new Object();
@@ -477,13 +606,13 @@ obj.func = functiom(){
 }
 ```
 
-#### 调用
+### 调用
 
 ```js
 alert(obj.name)
 ```
 
-#### 使用大括号定义对象
+### 使用大括号定义对象
 
 ```js
 var obj = {
@@ -495,9 +624,9 @@ var obj = {
 }
 ```
 
-### 事件监听
+## 事件监听
 
-#### 常用事件
+### 常用事件
 
 > onload 加载完成事件 页面加载完成之后
 >
@@ -509,9 +638,9 @@ var obj = {
 >
 > onsubmit 表单提交事件 用于表单提交前,验证所有表单项是否合法
 
-### DOM模型
+## DOM模型
 
-### 正则表达式
+## 正则表达式
 
 判断用户名和密码是否符合格式
 
@@ -585,7 +714,7 @@ var obj = {
 
 ## 意义
 
-客户端与服务端之间的绘画是无状态的, 无状态:会话之间无关联性,无法识别该用户曾经访问过
+客户端与服务端之间的会话是无状态的, 无状态:会话之间无关联性,无法识别该用户曾经访问过
 
 session可以将关键数据存放在服务器端. 与cookie不同,cookie是将数据存放在客户端的浏览器中
 
