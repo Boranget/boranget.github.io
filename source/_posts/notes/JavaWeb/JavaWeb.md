@@ -30,15 +30,52 @@ H5：
 不声明可能会触发怪异模式
 ```
 
-## 编码
+## meta
 
-决定了浏览器打开文档的编码
+- 编码
 
-```html
-<head>
-    <meta charset="UTF-8">
-</head>
-```
+    决定了浏览器打开文档的编码
+
+    ```html
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    ```
+
+- ie兼容配置
+
+    针对ie浏览器的兼容性配置
+
+    ```html
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    ```
+
+- 移动端适配
+
+    ```html
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    ```
+
+- 关键词和描述
+
+    ```html
+    <meta name="keywords" content="博客,boranget,技术">
+    <meta name="description" content="boranget的博客"
+    ```
+
+- 爬虫设置
+
+    ```html
+    <meta name="robots" content="...">
+    ```
+
+- 自动刷新/跳转
+
+    ```html
+    <meta http-equiv="refresh" content="3;url=http://baidu.com">
+    ```
+
+    
 
 ## 语言
 
@@ -212,6 +249,9 @@ H5：
 
 ##  内联框架
 
+- 除了网页还可以嵌入比如图片视频等其他内容
+- name可作为a的target
+
 ```html
 <!--内联框架，name取名-->
 <iframe src="formtest.html", width="500", height="500", name = "framtest"></iframe>
@@ -297,6 +337,16 @@ H5：
 
 ## 表单
 
+- action 地址 method请求方式 target 打开方式
+
+- radio name相同会划分进同一组，只能选一个
+- type="hidden"
+- intput type="reset" 相当于 button type="reset"
+- button 默认为submit，若需要无功能，type为button 
+- disabled 禁用
+- label 比直接用文子做标签的好处在于，点击label可以为其for属性的对象获取焦点，或者用label标签将两个对象框在一起
+- 预选类的组件要设置value，用于提交的值
+
 ```html
  <form action="https://www.baidu.com" method="get">
         <!--
@@ -331,7 +381,7 @@ H5：
         国籍：
         <select name = "country">
             <option value="none">--please select--</option>
-            <option value="china">chaina</option>
+            <option value="china" selected>chaina</option>
             <option>americanaaaa</option>
             <option value="japanesessssssssssss">japanese</option>
         </select><br>
@@ -347,45 +397,152 @@ H5：
 
 ![image-20221102140935231](JavaWeb/image-20221102140935231.png)
 
+### fieldset
+
+可以分栏表单
+
+```html
+<fieldset>
+    <legend>
+        主要信息
+    </legend>
+     用户名称：<input type="text" name="name" /><br>
+     用户邮箱：<input type="text" name="name" /><br>
+</fieldset>
+<fieldset>
+    <legend>
+       次要信息
+    </legend>
+     qq：<input type="text" name="name" /><br>
+</fieldset>
+```
+
+## 字符实体
+
+- \&nbsp; 空格（包含分号）
+- \&lt; 小于
+- \&gt; 大于
+- \&amp; &
+
+## 全局属性
+
+各种标签都有
+
+- id
+- class
+- style
+- dir
+- title
+
 # CSS
 
 cascading style sheet
 
+## 行内样式
+
+标签的style属性中，又称内联样式
+
+```html
+<h1 style="color: aliceblue;font-size: 60px;"
+```
+
+## 内部样式
+
+定义在html内部
+
+```html
+ <style>
+     h1{
+         color:green;
+     }
+     h2{
+         color:green;
+     }
+</style>
+```
+
+## 外部样式
+
+在HTML文件中引入
+
+```html
+<link rel = "stylesheet" href="./xxx.css">
+```
+
+实际开发中常用，结构清晰
+
+css文件
+
+```css
+h1{
+    color:green;
+}
+h2{
+    color:green;
+}
+```
+
+## 优先级
+
+行内样式最优先，内外部相同，谁后定义的用谁
+
 ## 选择器
+
+### 种类
+
+- 通配选择
+
+    ```css
+    * {
+    	border: red 1px solid;
+    }
+    ```
+
+    
 
 - 标签名选择器
 
-```css
-table{
-	border: red 1px solid;
-}
-```
+    ```css
+    table{
+        border: red 1px solid;
+    }
+    ```
 
 - id选择器
-```css
-#idname{
-	border: red 1px solid;
-}
-```
+    ```css
+    #idname{
+        border: red 1px solid;
+    }
+    ```
 - class选择器
-```css
-.classname{
-	border: red 1px solid;
-}
-```
+    ```css
+    .classname{
+        border: red 1px solid;
+    }
+    ```
 - 组合选择器
-```html
-<style>
-    /* 类为a 并且 id为id1 */
-    .a#id1{
-        border: red 1px solid;
-    }
-    /* 类为a 或者 id为id1 */
-    .a,#id1{
-        border: red 1px solid;
-    }
-</style>
-```
+    ```html
+    <style>
+        /* 交集，中间无间隔：类为a 并且 id为id1 */
+        .a#id1{
+            border: red 1px solid;
+        }
+        /* 并集，逗号分隔：类为a 或者 id为id1 */
+        .a,#id1{
+            border: red 1px solid;
+        }
+    </style>
+    ```
+
+### 语法
+
+- 一个标签只能有一个class属性，但class属性中可包含多个class
+
+	```html
+	<h1 class = "class1 class2">标题</h1>
+	```
+
+
 
 # JS
 

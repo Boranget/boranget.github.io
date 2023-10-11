@@ -802,3 +802,6 @@ Aservice中注入了Bservice
 
 故建议注入BMapper而不是Bservice
 
+# 其余浏览器向ie跳转打开了edge
+
+edge中设置
