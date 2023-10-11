@@ -804,4 +804,4 @@ Aservice中注入了Bservice
 
 # 其余浏览器向ie跳转打开了edge
 
-edge中设置
+edge中设置“让ie在microsoft edge中打开网站”为从不可以直接打开ie浏览器
