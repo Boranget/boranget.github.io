@@ -802,6 +802,86 @@ Aservice中注入了Bservice
 
 故建议注入BMapper而不是Bservice
 
-# 其余浏览器向ie跳转打开了edge
+# 非ie浏览器向ie跳转打开了edge
 
 edge中设置“让ie在microsoft edge中打开网站”为从不可以直接打开ie浏览器
+
+# poi导出到excel
+
+老版本的excel行号限制最多65535，响应的当时的poi也有这个限制
+
+```
+java.lang.IllegalArgumentException: Invalid row number (65536) outside allowable range (0..65535)
+	at org.apache.poi.hssf.usermodel.HSSFRow.setRowNum(HSSFRow.java:239)
+	at org.apache.poi.hssf.usermodel.HSSFRow.<init>(HSSFRow.java:85)
+	at org.apache.poi.hssf.usermodel.HSSFRow.<init>(HSSFRow.java:69)
+	at org.apache.poi.hssf.usermodel.HSSFSheet.createRow(HSSFSheet.java:256)
+
+```
+
+新版本的excel行号限制为
+
+> Excel 2003版：zhi列数dao最大256(IV，2的8次方)列，行数最大65536(2的16次方)行；
+>
+> Excel 2007版：列数最大16384(XFD，2的14次方)，行数最大1048576(2的20次方)；
+>
+> Excel 2013版：列数最大16384(XFD，2的14次方)，行数最大1048576(2的20次方)；
+
+可将poi升级，使用 org.apache.poi.xssf下相应的方法
+
+# tomcat url字符
+
+参考：https://blog.csdn.net/qq_41024101/article/details/106413102
+
+```
+13-Oct-2023 14:22:31.449 INFO [http-nio-80-exec-4] org.apache.coyote.http11.Http11Processor.service Error parsing HTTP request header
+ Note: further occurrences of HTTP header parsing errors will be logged at DEBUG level.
+	java.lang.IllegalArgumentException: Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986
+		at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:483)
+		at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:682)
+		at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+		at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:810)
+
+```
+
+这时由于新版tomcat对URL中可以出现的字符做了限制，会严格按照对RFC 3986规范进行访问解析。
+
+ RFC 3986规范定义了Url中只允许包含英文字母（a-zA-Z）、数字（0-9）、-_.~4种特殊字符以及所有保留字符(RFC3986中指定了以下字符为保留字符：! * ’ ( ) ; : @ & = + $ , / ? # [ ])。而我们的系统在通过地址传参时，在url中传了一段参数包含有有不在RFC3986中的保留字段中，所以会报这个错。
+
+- 换低版本的tomcat (tomcat 7.0.76之前的版本不会出现这个问题)
+
+- 修改tomcat目录底下的/conf/catalina.properties配置文件
+
+    查看catalina.properties文件中是否存在着下面这句话，没有就不用尝试了，说明这个版本不支持。
+
+    ```cobol
+    ＃tomcat.util.http.parser.HttpParser.requestTargetAllow=|
+    ```
+
+    如果存在上面这句话就可以尝试去除#来开启该配置，然后在后面添加URL中可能会出现的非保留字符
+
+    ```cobol
+    tomcat.util.http.parser.HttpParser.requestTargetAllow=|{}-
+    ```
+
+    注：上面的{}-就是你填入想要非保留字符。
+
+    上面这种做法应该在tomcat7.076、tomcat8.042、tomcat8.512之后这些子版本才支持。tomcat9.022版本不支持(亲测)
+
+- 修改tomcat目录底下的/conf/server.xml 
+
+     打开tomcat目录底下/conf/server.xml
+
+     往Connector中添加relaxedQueryChars和relaxedPathChars，这里也是设置允许的字符
+
+     ```xml
+     <Connector port="xxx" relaxedQueryChars="[]|{}-^&#x60;&quot;&lt;&gt;"relaxedPathChars="[]|{}-^&#x60;&quot;&lt;&gt;"
+     ```
+
+     ```cobol
+     注：其中的&#x60; &quot; &lt; &gt;   分别代表  \  `   <  >   四种符号
+     ```
+
+     第三种方法用tomcat9.022版本亲测是成功的。
+
+- tomcat6 (6.0.51，6.0.48)也会出现这个问题，是因为CVE-2017-5647这个漏洞，详细可以看看评论区，里面有从源码解释为什么该版本不支持。
