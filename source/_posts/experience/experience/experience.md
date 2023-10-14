@@ -804,11 +804,11 @@ Aservice中注入了Bservice
 
 # 非ie浏览器向ie跳转打开了edge
 
-edge中设置“让ie在microsoft edge中打开网站”为从不可以直接打开ie浏览器
+其他浏览器使用ietab会直接跳到edge，edge中设置“让ie在microsoft edge中打开网站”为“从不”可以直接打开ie浏览器
 
 # poi导出到excel
 
-老版本的excel行号限制最多65535，响应的当时的poi也有这个限制
+老版本的excel行号限制最多65535，相应的当时的poi也有这个限制
 
 ```
 java.lang.IllegalArgumentException: Invalid row number (65536) outside allowable range (0..65535)
@@ -866,7 +866,7 @@ java.lang.IllegalArgumentException: Invalid row number (65536) outside allowable
 
     注：上面的{}-就是你填入想要非保留字符。
 
-    上面这种做法应该在tomcat7.076、tomcat8.042、tomcat8.512之后这些子版本才支持。tomcat9.022版本不支持(亲测)
+    上面这种做法应该在tomcat7.076、tomcat8.042、tomcat8.512之后这些子版本才支持。tomcat9.022版本不支持（原作者测试）
 
 - 修改tomcat目录底下的/conf/server.xml 
 
@@ -884,4 +884,4 @@ java.lang.IllegalArgumentException: Invalid row number (65536) outside allowable
 
      第三种方法用tomcat9.022版本亲测是成功的。
 
-- tomcat6 (6.0.51，6.0.48)也会出现这个问题，是因为CVE-2017-5647这个漏洞，详细可以看看评论区，里面有从源码解释为什么该版本不支持。
+- tomcat6 (6.0.51，6.0.48)也会出现这个问题，是因为CVE-2017-5647这个漏洞，似乎无法解决。

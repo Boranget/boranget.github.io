@@ -812,6 +812,79 @@ c: 元素、伪元素选择器个数
     - 可以给某元素定义多个字体，统称为字体族，从前往后依次检查是否能使用该字体
 
     - 衬线字体与非衬线字体   
+        - 衬线字体族最后可加 serif 告诉浏览器自适应
+        - 非衬线体族最后可加 sans-serif
+
+- font-style 字体样式/字体风格
+
+    -  normal 正常字体
+    - italic 寻找倾斜字体，没有则强制倾斜
+    - oblique 强制倾斜
+
+- font-weight
+
+    - lighter
+    - normal
+    - bold
+    - bolder
+
+- font
+
+    - \* \* 字体大小 字体族
+    - 各个属性之间空格隔开
+    - 字体大小字体族必写且顺序且必须在最后两位
+
+## 文本
+
+ - 文本颜色 直接定义标签color
+
+    背景色是background-color
+
+- 文本间距  letter-spacing 单位像素，可为负值
+- 单词间距 word-spacing  单位像素，通过空格识别
+- 文本修饰  text-decoration
+    -  位置
+        - overline
+        - underline
+        - line-through
+        - none 可以去掉超链接的下划线 
+    - 样式
+        - dotted
+        - wavy
+    - 颜色
+- 文本缩进
+    - 首行缩进 text-indent
+- 文本对齐 text-aline
+    - left right center
+
+- 行高 line-height，不是行与行之间的距离，但会影响
+    - 取值   
+        - normal 浏览器决定
+        - 像素
+        - 数字（比例）建议
+        - 百分比
+    - 现象
+        - 行高过小，文字会重叠
+        - 行高可继承
+        - 与height的关系
+            - 没写height，随lineheight变化
+            - 写了height，各自为值
+    - 主要应用
+        - 调整多行文字间距
+- 垂直对齐 vertical-align 只能控制父元素中的子行内元素，不能直接控制文本（但可控制表格单元格内文本）
+    - top
+    - bottom
+    - baseline
+    - middle(与父元素中的小写X垂直居中)
+
+## 列表
+
+- list-style-type 列表样式（符号）
+- list-style-position 位置
+    - inside
+    - outside
+- list-style-image 列表符号改为图片
+- 复合属性 list-style
 
 # JS
 
