@@ -223,6 +223,23 @@ git stash
 
 将公钥内容复制到远程仓库公钥配置界面即可
 
+## bundle
+
+git bundle 命令用于将本地数据打包到一个文件中，然后共享给别人。在网络不通畅时，可以将本地的修改打包成一个文件，然后通过 U 盘等共享给别人。
+
+在只有.git目录的情况下，利用bundle恢复仓库的方法
+
+```
+cd repo.git
+# 创建budele文件
+git bundle create ./reponame.bundle --all
+# 从bundle文件中clone出代码
+git clone ./reponame.bundle reponame
+# 这是文件夹内会出现一个 reponame 文件夹，这个文件夹内就是所有的代码文件
+```
+
+
+
 # 规范
 
 ## 分支命名规范

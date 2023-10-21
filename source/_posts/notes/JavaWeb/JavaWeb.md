@@ -853,10 +853,12 @@ c: 元素、伪元素选择器个数
         - wavy
     - 颜色
 - 文本缩进
+  
     - 首行缩进 text-indent
 - 文本对齐 text-aline
-    - left right center
-
+  
+- left right center
+  
 - 行高 line-height，不是行与行之间的距离，但会影响
     - 取值   
         - normal 浏览器决定
@@ -885,6 +887,392 @@ c: 元素、伪元素选择器个数
     - outside
 - list-style-image 列表符号改为图片
 - 复合属性 list-style
+
+## 表格
+
+- 边框（除表格外，其余元素也能用）
+    - 粗细 border-width
+    - 颜色 border-color
+    - 样式 border-style
+    - 复合 borde
+- 列宽 table-layout
+    - auto
+    - fixed
+- 单元格间距 border-spacing
+- 合并单元格边框 border-collapse（间距失效）
+    - collapse
+- 隐藏没有内容的单元格 empty-cells: hide
+
+## 背景
+
+- 背景颜色 background-color
+- 背景图片 background-image
+    - 重复方式 background repeat/repeat-x/repeat-y
+        - no-repeat 不重复
+    - 位置 background-position
+        - left top right bottom center
+        - x,y
+- 复合属性 background
+
+## 悬停鼠标
+
+- cursor
+    - wait
+    - move
+    - ....
+    - url(图片地址)
+
+## 盒子模型
+
+### 长度单位
+
+- px 像素
+- em 当前元素或其父元素的fontsize值的倍数，适合用在字体缩进
+- rem html的fontsize
+
+### 显示模式
+
+### 分类
+
+- 块元素
+    - 页面中独占一行 
+    - 默认宽度是撑满父元素 
+    - 默认高度由 内容撑开
+    - 可通过css设置宽高
+- 行内元素
+    - 页面中不独占一行，从左到右排列，自动换行
+    - 默认宽度由内容撑开
+    - 默认高度由内容撑开
+    - 无法通过css设置宽高
+- 行内块元素/内联块元素
+    - 页面中不独占一行，从左到右排列，自动换行
+    - 默认宽度由内容撑开
+    - 默认高度由内容撑开
+    - 可通过css设置宽高
+
+### 修改
+
+- display: 
+    - none 隐藏
+    - block 块级元素
+    - inline 行内/内联
+    - inline-block 行内块
+
+### 盒子模型组成部分
+
+- 内容 cotent
+- 边框 border
+    - 背景色也会填充
+- 内容和边框中间为内边距  padding
+    - 背景色填充 
+    - 大小会影响盒子大小
+- 边框外面为外边距 margin 
+    - 背景色不会影响
+    - 大小不会影响盒子大小
+
+### 盒子内容区
+
+- 宽度 width
+
+- 最小宽度 min-width
+
+    上限随页面
+
+- 最大宽度 max-width
+
+    下限随页面
+
+- 高度 height
+
+- 最小高度 min-height
+
+    最大跟随内容
+
+- 最大高度 max-height
+
+    最小跟随内容
+
+- 内边距 padding
+
+    - 不能为负数
+    - 行内元素的上下内边距不能完美设置
+    - 块级和行内块四个内边距都可以完美设置
+
+- 边框 border
+
+    四个属性分别可以不同方向控制
+
+    - 宽度 border-width/border-left-width
+    - 颜色 border-color/border-left-color
+    - 样式 border-style/border-left-style
+
+- 外边距 margin
+
+    - margin-left/。。。
+    - 子元素的margin是参考父元素对的content计算的
+    - 上左margin影响自己的位置，下右margin影响后面兄弟的位置
+    - 块级元素、行内块元素可完美设置四个方向的margin，行内元素上下margin无效
+    - margin可以是auto，可用于居中
+    - 可为负值
+    - margin塌陷：第一个，最后一个子元素加margintop和bottom会发生到父元素上
+        - 父元素设置边框
+        - 父元素设置内边距
+        - 父元素设置overflow: hidden (建议)
+    - 上下margin会与兄弟的重叠，取最大值
+
+## overflow
+
+溢出元素的处理，可显示，隐藏，默认显示滚动条或者自动
+
+## 隐藏
+
+- display: none 不占位
+- visiable: hidden 占位
+
+## 样式继承
+
+字体属性、文本属性（除了vertical-align）、文字颜色等
+
+## 布局技巧
+
+- 行内元素、行内块元素可以被父元素当作文本处理
+
+    可以像处理文本对齐一样，处理行内或行内块元素在父元素中的对齐，例如tex-alogn、line-height、text-indent等
+
+- 子元素在父元素中水平居中
+    - 子元素为块元素，子元素加上margin: 0 auto
+    - 子元素为行内/块元素，父元素添加 text-align: center
+- 子元素在父元素中垂直居中
+    - 子元素为块元素，子元素添加margin-top，值为父元素content-子元素盒子总高后再除2
+    - 子元素为行内/块元素 父元素的height=line-height（不是减号），给每个子元素添加vertical-align: middle 若想设置绝对垂直居中，父元素font-size 设置为0
+- 元素间由于代码中换行导致的空白问题
+    - 去掉源码中的换行和空格
+    - 给父元素设置字体大小为0（推荐）
+- 行内块的幽灵空白
+    - 原因，行内块与文本基线对齐，基线离文字底部有距离
+    - 解决
+        - 行内块设置vertical，值不为baseline
+        - 设置图片为块显示
+        - 设置字体大小为0
+
+## 浮动
+
+- 元素浮动后的特点
+
+    - 感觉像是变成了行内块
+    - 脱离文档流
+    - 默认内容撑开，可设置宽高
+    - 不会独占一行 
+    - 可设置margin
+    - 不会像行内块一样被当成文本处理
+    - 后兄弟元素会占据浮动元素之前的位置，对前兄弟无影响
+    - 不能撑起父元素高度，但父元素宽度依然束缚浮动的元素
+
+- 解决浮动产生的影响
+
+    - 给父元素指定高度
+
+    - 给父元素设置浮动（带来其他影响）
+
+    - 给父元素设置overflow: hidden
+
+    - 在所有浮动元素后面添加一个块级元素，给块级元素设置clear: both
+
+    - ```css
+        parent::after{
+            content: "";
+            display: block;
+            clear: both;
+        }
+        ```
+
+    - 原则：兄弟元素要么全部浮动要么全都不浮动
+
+- 浮动练习
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            /* 清除默认样式 */
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            /* 浮动公共类 */
+            .leftfix{
+                float: left;
+            }
+            .rightfix{
+                float: right;
+            }
+            /* 清除浮动公共类 */
+            .clearfix::after{
+                content: "";
+                display: block;
+                clear: both;
+            }
+            .container{
+                width: 960px;
+                margin: 0 auto;
+                text-align: center;
+            }
+            .logo{
+                width: 200px;
+            }
+            .banner1{
+                width: 540px;
+                margin: 0 10px;
+            }
+            .banner2{
+                width: 200px;
+            }
+            .logo,.banner1,.banner2{
+                height: 80px;
+                background-color: #ccc;
+                line-height: 80px;
+            }
+            .menu{
+                height: 30px;
+                background-color: #ccc;
+                margin-top: 10px;
+                line-height: 30px;
+            }
+            .item1,.item2{
+                width: 368px;
+                height: 198px;
+                border: 1px solid black;
+                margin-right: 10px;
+            }
+            .content{
+                margin-top: 10px;
+            }
+            .item3,.item4,.item5,.item6{
+                width: 178px;
+                height: 198px;
+                border: 1px solid black;
+                margin-right: 10px;
+                line-height: 198px;
+            }
+            .bottom{
+                margin-top: 10px;
+            }
+            .item7,.item8,.item9{
+                width: 198px;
+                height: 128px;
+                border: 1px solid black;
+                line-height: 198px;
+            }
+            .item8{
+               margin: 10px 0;
+            }
+            .foot{
+                height:  60px;
+                line-height: 60px;
+                background-color: #ccc;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="page-header clearfix">
+                <div class="logo leftfix">logo</div>
+                <div class="banner1 leftfix">banner1</div>
+                <div class="banner2 leftfix">banner2</div>
+            </div>
+            <div class="menu">菜单</div>
+            <div class="content clearfix">
+                <div class="left leftfix">
+                    <div class="top clearfix">
+                        <div class="item1 leftfix">栏目一</div>
+                        <div class="item2 leftfix">栏目二</div>
+                    </div>
+                    <div class="bottom clearfix">
+                        <div class="item3 leftfix">栏目三</div>
+                        <div class="item4 leftfix">栏目四</div>
+                        <div class="item5 leftfix">栏目五</div>
+                        <div class="item6 leftfix">栏目六</div>
+                    </div>
+                </div>
+                <div class="right leftfix">
+                    <div class="item7">栏目七</div>
+                    <div class="item8">栏目八</div>
+                    <div class="item9">栏目九</div>
+                </div>
+            </div>
+            <div class="foot">页脚</div>
+        </div>
+    </body>
+    </html>
+    ```
+
+    ![image-20231016092133377](JavaWeb/image-20231016092133377.png)
+
+## 定位
+
+- 相对定位 position: relative 
+    - left:../right/top/bottom
+    - 相对于自己原来的位置
+    - 盒子模型多个一个position，但不影响其余元素位置
+    - 定位元素层级最高，多个定位元素，后写的层级高
+    - left和right不能一起设置，left生效
+    - top bottom一起设置，top生效
+    - 可与浮动，margin同时生效，但不建议使用
+    - 多数时候与绝对定位一起使用
+    
+- 绝对定位 position: absolute 
+
+    绝对定位参考的点是他的包含块（不考虑padding）
+
+    - 包含块
+        - 没有脱离文档流，父元素为包含块
+        - 脱离文档流的，第一个开启定位的祖先元素，就是他的包含块 
+    - 故一般会将父亲开启00的相对定位，以便子元素绝对定位
+    - 绝对与浮动共存，浮动失效，绝对定位为主
+    - 绝对定位后的元素称为定位元素，默认宽高由内容撑开，可设置宽高
+
+- 固定定位 position: fixed 
+
+    - 直接找视口（非网页）的坐标 ，会随着浏览器上下滚动条移动，而不会因为滚动条移到下方被隐藏
+    - 同样，与浮动冲突，且优先级高于浮动
+    - 固定定位后的元素称为定位元素，默认宽高由内容撑开，可设置宽高
+
+- 粘性定位 position: sticky 
+
+    - 相对于当前定位元素的最近的、有滚动条的祖先元素（即使不可滚动），且当当前元素的父元素滚动消失后，当前元素会跟随消失
+
+- 图层 z-index
+
+    - 定位元素都会比普通元素高
+
+    - 会被父元素的z影响
+
+- 定位的特殊用法
+
+    - 未设置大小的元素绝对定位同时设置 left和rignt，可用于设置宽度，未设置大小的元素  绝对定位同时设置 top和bottom，可用于设置宽度。如果设置了大小，可用此方法加margin auto实现居中
+
+## 布局
+
+- 版心
+
+    版心大小固定且水平居中，显示网页主要内容
+
+    一般在960-1200之间 
+
+- 响应式
+
+    随屏幕大小变化
+
+## 清除默认样式
+
+- 通配符选择器*
+- reset.css
+- normalize.css
 
 # JS
 
