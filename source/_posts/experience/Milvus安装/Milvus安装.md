@@ -13,6 +13,8 @@ categories:
 
 [Docker: Error response from daemon: Ports are not available 端口没被占用，却显示被占用-CSDN博客](https://blog.csdn.net/u012558210/article/details/127999746)
 
+https://milvus.io/
+
 # 前置条件
 
 已安装Docker桌面版（windows系统）
@@ -52,7 +54,7 @@ net start winnat
 
 # 映射端口
 
-映射端口到19530
+映射milvus-standalone服务端口到19530，用于其他程序调用
 
 ```
  docker port milvus-standalone 19530/tcp

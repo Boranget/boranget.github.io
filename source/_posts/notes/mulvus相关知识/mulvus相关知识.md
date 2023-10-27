@@ -11,6 +11,8 @@ categories:
 
 https://www.bilibili.com/video/BV11a4y1c7SW/?spm_id_from=333.880.my_history.page.click
 
+https://milvus.io/
+
 # 向量
 
 给定一个数据，提取其多维度的特征，这些维度中的特征共同组成了该数据在坐标系中的坐标点，从原点指向数据坐标点的带有方向和大小的数据称为向量，一个向量即可在一个坐标系中表示一个数据
