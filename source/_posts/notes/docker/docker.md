@@ -23,7 +23,7 @@ categories:
 
 # 安装
 
- 需要在linux上部署docker
+需要在linux上部署docker
 
 仓库安装时注意不要选择国外镜像
 阿里云个人加速服务 

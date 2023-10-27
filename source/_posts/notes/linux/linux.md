@@ -646,36 +646,87 @@ cron 服务管理
 
 # 网络
 
-- netstat
-  - -an 按一定顺序
-  - -p 显示哪个进程在调用
-  
-- ip
+## netstat
 
-  类似于ifconfig
+- -an 按一定顺序
+- -p 显示哪个进程在调用
 
-  ```bash
-  ip link show                     # 显示网络接口信息
-  ip link set eth0 up             # 开启网卡
-  ip link set eth0 down            # 关闭网卡
-  ip link set eth0 promisc on      # 开启网卡的混合模式
-  ip link set eth0 promisc offi    # 关闭网卡的混个模式
-  ip link set eth0 txqueuelen 1200 # 设置网卡队列长度
-  ip link set eth0 mtu 1400        # 设置网卡最大传输单元
-  ip addr show     # 显示网卡IP信息
-  ip addr add 192.168.0.1/24 dev eth0 # 设置eth0网卡IP地址192.168.0.1
-  ip addr del 192.168.0.1/24 dev eth0 # 删除eth0网卡IP地址
-  
-  ip route show # 显示系统路由
-  ip route add default via 192.168.1.254   # 设置系统默认路由
-  ip route list                 # 查看路由信息
-  ip route add 192.168.4.0/24  via  192.168.0.254 dev eth0 # 设置192.168.4.0网段的网关为192.168.0.254,数据走eth0接口
-  ip route add default via  192.168.0.254  dev eth0        # 设置默认网关为192.168.0.254
-  ip route del 192.168.4.0/24   # 删除192.168.4.0网段的网关
-  ip route del default          # 删除默认路由
-  ip route delete 192.168.1.0/24 dev eth0 # 删除路由
-  ```
+## ip
 
-  
+类似于ifconfig
+
+```bash
+ip link show                     # 显示网络接口信息
+ip link set eth0 up             # 开启网卡
+ip link set eth0 down            # 关闭网卡
+ip link set eth0 promisc on      # 开启网卡的混合模式
+ip link set eth0 promisc offi    # 关闭网卡的混个模式
+ip link set eth0 txqueuelen 1200 # 设置网卡队列长度
+ip link set eth0 mtu 1400        # 设置网卡最大传输单元
+ip addr show     # 显示网卡IP信息
+ip addr add 192.168.0.1/24 dev eth0 # 设置eth0网卡IP地址192.168.0.1
+ip addr del 192.168.0.1/24 dev eth0 # 删除eth0网卡IP地址
+
+ip route show # 显示系统路由
+ip route add default via 192.168.1.254   # 设置系统默认路由
+ip route list                 # 查看路由信息
+ip route add 192.168.4.0/24  via  192.168.0.254 dev eth0 # 设置192.168.4.0网段的网关为192.168.0.254,数据走eth0接口
+ip route add default via  192.168.0.254  dev eth0        # 设置默认网关为192.168.0.254
+ip route del 192.168.4.0/24   # 删除192.168.4.0网段的网关
+ip route del default          # 删除默认路由
+ip route delete 192.168.1.0/24 dev eth0 # 删除路由
+```
+
+## 防火墙
+
+- 查看防火墙状态
+
+    ```shell
+    firewall-cmd --state
+    ```
+
+- 开启/关闭防火墙
+
+    ```shell
+    systemctl start(stop) firewalld
+    ```
+
+- 查看防火墙已经开放的端口号
+
+    ```shell
+    firewall-cmd --list-ports
+    ```
+
+- 开放指定端口
+
+    ```shell
+    firewall-cmd --zone=public --and-port=3306/tcp --permanent
+    ```
+
+    >–zone #作用域
+    >–add-port=3306/tcp #添加端口，格式为：端口/通讯协议
+    >–permanent #永久生效，没有此参数重启后失效
+
+- 关闭指定端口
+
+    ```shell
+    firewall-cmd --remove-port=3306/tcp --permanent
+    ```
+
+- 重启防火墙
+
+    每次打开或者关闭防火墙需要重启才生效
+
+    ```shell
+    firewwall-cmd --reload
+    ```
+
+- 检查端口是否开放
+
+    ```shell
+    firewall-cmd --query-port=3306/tcp
+    ```
+
+    
 
 
