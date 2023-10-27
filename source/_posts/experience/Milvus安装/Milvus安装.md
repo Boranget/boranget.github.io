@@ -11,9 +11,12 @@ categories:
 
 [Install Milvus Standalone with Docker Compose (CPU) Milvus documentation](https://milvus.io/docs/install_standalone-docker.md)
 
+[安装环境需求](https://milvus.io/docs/prerequisite-docker.md)
+
 [Docker: Error response from daemon: Ports are not available 端口没被占用，却显示被占用-CSDN博客](https://blog.csdn.net/u012558210/article/details/127999746)
 
-https://milvus.io/
+[milvus 官网](https://milvus.io/)
+
 
 # 前置条件
 
