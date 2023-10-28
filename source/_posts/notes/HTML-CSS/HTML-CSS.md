@@ -2296,7 +2296,317 @@ h1{
 
 用数字可以表示的属性可以通过过渡
 
+过渡要给元素本身加，不要在动作选择器上加
+
 - transition-property: 写变化时需要过渡的属性名，如height;
     - all 所有能过渡的属性
 - transition-duration: 过渡时间
 - transition-delay 延迟
+- transition-timing-functuin 过渡方式
+    - ease 慢快慢
+    - linear 匀速
+    - ...
+    - cubic-bezier 贝塞尔曲线
+
+## 动画
+
+```css
+@keyframes name{
+    from{
+        
+    }
+    to{
+        transform: translate(900px);
+        background-color: red;
+    }
+    // 或者
+    0% {
+        
+    }
+    ...
+    100%{
+        
+    }
+}
+.box{
+    /*应用动画到元素*/
+    animation-name: name;
+    /*动画持续时间*/
+    animation-duration: 3s;
+    /*动画延迟时间*/
+    animation-delay: 0.2s;
+}
+```
+
+**其他属性**
+
+- animation-timing-functuin 过渡方式，可设step用于过渡背景图形式的动画
+
+- animation-iteration-count 过渡次数，可为infinite
+- animation-direction 过渡方向，可往返或者反向
+- animation-fill-mode 动画停止时的位置/模式
+- animation-play-state 动画播放状态
+
+**与过渡区别**
+
+动画不需要过度条件，过渡需要
+
+## 多列布局
+
+column-count: 5，当前元素内容分为五列
+
+column-width 每列宽度
+
+column-rule-width 间隔宽度
+
+column-rule style 实线虚线
+
+column-rule-color 颜色
+
+column-span 跨列元素加：nono与all
+
+## 伸缩盒模型
+
+弹性盒子
+
+使用display: flex属性开启一个元素的flex布局，当前元素会变为伸缩容器，其直接子元素会自动变为伸缩项目
+
+也可使用display:inline-flex，会将当前元素变为行内元素&伸缩容器，但用的少
+
+### 主轴
+
+- 主轴默认从左到右，侧轴从上到下
+- flex-direction 调整主轴方向
+- 侧轴方向会随着主轴方向改变
+- 主轴方向上排列的元素默认会更改自己的宽度（即使指定宽度）来保证不换行
+    - 可通过flex-wrap调整换行方式：wrap换行  no-wrap默认不换行
+
+- flex-flow： row wrap 复合属性 
+- 主轴对齐方式 
+    - justify-content：center/flex-end/flex-start/ space-around/space-between
+-  侧轴对齐方式
+    - align-items: flex-start/flex-end/center/baseline/stretch(不给高度拉伸到整个容器)
+    - 多行对齐时 align-content: flex-start/flex-end/center/space-around/space/between/space-evenly
+
+### 技巧
+
+元素居中
+
+- justify-content: center
+
+    align-items: center
+
+- display: flex
+
+    子元素 margin: auto
+
+### 基准长度
+
+设置伸缩项目在主轴上的基准长度
+
+flex-basis: auto/**px 
+
+### 伸缩
+
+伸：将主轴富余空间分配给标注了flex-grow的伸缩项目，具体分多少看权重
+
+缩：将主轴减小的空间按其长度为比例乘权重flex-shrink从伸缩项目中去掉
+
+基准长度与伸缩规则可简写为flex
+
+### 排序
+
+给伸缩项目加order属性，默认为0
+
+### 单独侧轴位置
+
+align-self
+
+### 练习
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            font-family: Arial;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        a{
+            text-decoration: none;
+        }
+        ul{
+            list-style: none;
+        }
+        /* body和html都没有内容，所以去找其父元素，html没有父元素，所以去找视口 */
+        body,html{
+            width: 100%;
+            height: 100%;
+        }
+        body{
+            background-image: url("images/bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .page-header{
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .page-header-nav{
+            display: flex;
+            
+        }
+        .page-header-nav a{
+            color: white;
+            font-size: 20px;
+            border: 1px solid white;
+            border-radius: 8px;
+            padding: 10px;
+            margin-right: 20px;
+        }
+        .page-header-nav li:last-child a{
+        
+            margin-right: 0px;
+        }
+        
+        .page-content{
+            display: flex;
+            /* 可进行计算，注意运算符两边的空格是必须的 */
+            height: calc(100vh - 70px);
+        }
+        .content-nav{
+            width: 1000px;
+            height: 300px;
+            background-color: skyblue;
+            margin: auto;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        .content-nav .item{
+            width: 180px;
+            height: 200px;
+            background-color: orange;
+            display: flex;
+            flex-direction:column;
+            align-items: center;
+            justify-content: space-evenly;
+            /* 过渡 */
+            transition: 0.2s linear;
+            cursor: pointer;
+        }
+        .content-nav .item:hover{
+            box-shadow: 0px 0px 20px black;
+        }
+        .content-nav .item span{
+            font-size: 20px;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <a href="#">
+            <img src="images/logo.png" alt="logo">
+        </a>
+        <ul class="page-header-nav">
+            <li><a href="#">国内校区</a></li>
+            <li><a href="#">国内校区</a></li>
+            <li><a href="#">国内校区</a></li>
+            <li><a href="#">国内校区</a></li>
+        </ul>
+    </header>
+    <div class="page-content">
+        <div class="content-nav">
+            <div class="item"><img src="images/item1.png" alt="item1"><span>我的邮箱</span></div>
+            <div class="item"><img src="images/item2.png" alt="item1"><span>我的邮箱</span></div>
+            <div class="item"><img src="images/item3.png" alt="item1"><span>我的邮箱</span></div>
+            <div class="item"><img src="images/item4.png" alt="item1"><span>我的邮箱</span></div>
+            <div class="item"><img src="images/item5.png" alt="item1"><span>我的邮箱</span></div>
+
+        </div>
+    </div>
+</body>
+</html>
+```
+
+## 响应式布局
+
+- 媒体查询
+
+    ```html
+    <style>
+    	/*当当前媒体为打印机时，要放在最下面，否则会被别的样式覆盖，没有优先 */    
+        @media print{
+            
+        }
+        /*当当前视口为800px */    
+        @media (width: 800px){
+            
+        }
+        /*当当前视口小于等于800px */    
+        @media (max-width: 800px){
+            
+        }
+        /*当当前屏幕等于800px */    
+        @media (device-width: 800px){
+            
+        }
+        /*当当前视口小于等于800px且大于等于400px */    
+    	/*且 and 或 or 否 not */    
+        @media (max-width: 800px) and (min-width: 800px){
+            
+        }
+    </style>
+    ```
+
+### 常用阈值
+
+768px 992px 1200px 
+
+### 条件引用
+
+```html
+<link rel="stylesheet" media="这里写媒体查询" href="style.css">
+<link rel="stylesheet" media="device-width: 800px" href="style.css">
+```
+
+## BFC
+
+某元素的一种状态
+
+- 块级格式上下文
+- 默认处于关闭状态
+
+### 功能
+
+当某元素开启BFC
+
+- 其子元素不会产生margin塌陷问题
+- 自己不会被其他浮动元素覆盖
+- 自身高度不会被其子元素是否浮动影响
+
+### 如何开启
+
+- 默认开启
+    - html
+    - 浮动元素
+    - 绝对定位、固定定位的元素
+    - 行内块元素
+    - 变革单元格
+    - overflow值不为visible的块元素
+    - 伸缩项目
+    - 多列容器
+    - column-span为all的元素
+    - display值为flow-root
