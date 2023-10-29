@@ -141,6 +141,15 @@ H5：
 - span 无语义
 - i 多用于呈现字体图标 
 
+## 路径
+
+- 完整url
+- 相对路径
+    - ./当前资源所在路径
+    - ../当前资源上一层
+- 绝对路径
+    - / 从网站根目录开始寻找
+
 ## 超链接  
 
 - herf 打开链接
@@ -148,8 +157,8 @@ H5：
 
 ```html
 <a href="http://www.baidu.com">baidu</a>
-<a href="http://www.baidu.com" target="_self">baidu self</a>
-<a href="http://www.baidu.com" target="_blank">baidu blank</a>
+<a href="http://www.baidu.com" target="_self">baidu self 当前窗口</a>
+<a href="http://www.baidu.com" target="_blank">baidu blank 新窗口</a>
 <a href="http://www.baidu.com" target="_parent">baidu parent</a>
 <a href="http://www.baidu.com" target="_top">baidu top</a>
 ```
@@ -396,6 +405,21 @@ H5：
 ```
 
 ![image-20221102140935231](HTML-CSS/image-20221102140935231.png)
+
+### method
+
+**GET**
+
+- 参数会以键值对形式放在url后提交
+- 暴露在地址栏，相对不安全
+- 地址栏长度有限
+- 不能提交文件
+
+**POST**
+
+- 相对安全
+- 通过请求体发送
+- 数据量比较大
 
 ### fieldset
 
@@ -1059,7 +1083,6 @@ c: 元素、伪元素选择器个数
 
 - 元素浮动后的特点
 
-    - 感觉像是变成了行内块
     - 脱离文档流
     - 默认内容撑开，可设置宽高
     - 不会独占一行 
@@ -1067,7 +1090,7 @@ c: 元素、伪元素选择器个数
     - 不会像行内块一样被当成文本处理
     - 后兄弟元素会占据浮动元素之前的位置，对前兄弟无影响
     - 不能撑起父元素高度，但父元素宽度依然束缚浮动的元素
-
+    
 - 解决浮动产生的影响
 
     - 给父元素指定高度
@@ -1218,7 +1241,7 @@ c: 元素、伪元素选择器个数
 - 相对定位 position: relative 
     - left:../right/top/bottom
     - 相对于自己原来的位置
-    - 盒子模型多个一个position，但不影响其余元素位置
+    - 盒子模型多个一个position，不会脱离文档流，不影响其余元素位置
     - 定位元素层级最高，多个定位元素，后写的层级高
     - left和right不能一起设置，left生效
     - top bottom一起设置，top生效
@@ -1227,13 +1250,15 @@ c: 元素、伪元素选择器个数
     
 - 绝对定位 position: absolute 
 
+    - 绝对定位的元素会脱离文档流，影响其他元素的布局
+
     绝对定位参考的点是他的包含块（不考虑padding）
 
     - 包含块
-        - 没有脱离文档流，父元素为包含块
-        - 脱离文档流的，第一个开启定位的祖先元素，就是他的包含块 
+        - 没有脱离文档流的元素，其父元素为包含块
+        - 脱离文档流的元素，第一个开启定位的祖先元素，就是他的包含块 
     - 故一般会将父亲开启00的相对定位，以便子元素绝对定位
-    - 绝对与浮动共存，浮动失效，绝对定位为主
+    - 绝对与浮动共同定义时，浮动效果失效，绝对定位为主
     - 绝对定位后的元素称为定位元素，默认宽高由内容撑开，可设置宽高
 
 - 固定定位 position: fixed 
