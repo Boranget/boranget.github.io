@@ -41,6 +41,7 @@ categories:
     - onreset 表单重置
 - 其他事件 
     - onload 加载完成事件 页面加载完成之后自动执行，此时所有元素阅读完毕，可以开始绑定事件
+        - window.onload=function(){}
 
 ## 特点
 
@@ -424,9 +425,18 @@ JSON.stringify(obj)
 
 - Math. 
 
+# BOM编程
+
+浏览器对象模型
+
+window
+
+- history 历史
+- location 地址栏
+- document
+- console
+
 # DOM编程
-
-
 
 # 正则表达式
 

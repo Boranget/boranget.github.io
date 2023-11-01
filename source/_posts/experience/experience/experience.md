@@ -885,3 +885,11 @@ java.lang.IllegalArgumentException: Invalid row number (65536) outside allowable
      第三种方法用tomcat9.022版本亲测是成功的。
 
 - tomcat6 (6.0.51，6.0.48)也会出现这个问题，是因为CVE-2017-5647这个漏洞，似乎无法解决。
+
+# mysql时间戳与java时间戳的转换
+
+mysql的时间戳为10位数字而java中时间戳为13位数字
+
+这是因为mysql时间戳中不保存毫秒精度的值
+
+故mysql时间戳转java时间戳可通过*1000实现，相反可通过/1000实现
