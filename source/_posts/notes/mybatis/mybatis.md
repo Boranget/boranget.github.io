@@ -5,8 +5,29 @@ tags:
   - mybatis
 categories:
   - 笔记
-
 ---
+
+# 基本思路
+
+- 引入mybatis与数据库驱动的依赖
+- 配置数据源信息
+- 编写mapper接口
+- 编写mapper映射文件
+- 使用mapper
+
+# 一些问题
+
+## 扫不到mapper
+
+mapper上使用@Repository出现无法扫描到mapper的情况
+
+在springboot 中，给mapper的接口上加上@Repository，无法生成相应的bean,从而无法@Autowired，这是因为spring扫描注解时，自动过滤掉了接口和抽象类。
+
+这种情况下可以在启动的类前加上@MapperScan（“×××.×××.mapper”)，从而使mapper可以自动注入，但是idea还会提示bean无法找到，但是不会影响运行。
+
+## set自动消除逗号
+
+set自动消除多余的逗号需要把逗号后置
 
 # 引入依赖
 
@@ -17,7 +38,7 @@ categories:
     <artifactId>druid</artifactId>
     <version>1.2.8</version>
 </dependency>
-<!--mysql-->
+<!--mysql驱动-->
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
@@ -44,112 +65,7 @@ spring:
     password: 123456
 ```
 
-# 一对一查询
 
-association 标签
-
-需要注意的是, association必须在collection之前
-
-且必须要有一个column属性
-
-```xml
- <resultMap id="RoleResultMap" type="com.orange.eneity.OrangeRole">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="desc" property="desc"/>
-        <association property="user"
-                     javaType="com.orange.eneity.User"
-                     select="selectAllUser"
-                     column="id"
-        />
-        <collection property="derivedRoleList"
-                    ofType="com.orange.eneity.OrangeRole"
-                    select="selectDerivedRoleList"
-                    column="id"
-        />
-        <collection property="baseRoleList"
-                    ofType="com.orange.eneity.OrangeRole"
-                    select="selectBaseRoleList"
-                    column="id"
-        />
-
-    </resultMap>
-```
-
-
-
-# 一对多查询
-
-- xml配置
-
-  ```xml
-  <mapper namespace="com.example.firstdemo.domain.repository.HandStudentCourseCoreRepository">
-      <resultMap id="HandStudentCourseCoreResultMap" type="com.example.firstdemo.domain.vo.HandStudentCourseCore">
-              <result column="STUDENT_NO" property="studentNo"/>
-          <collection property="studentCourseCore"
-                      ofType="com.example.firstdemo.domain.entity.HandStudentCore"
-                      foreignColumn="STUDENT_NO">
-              <id column="STUDENT_NO" property="studentNo"/>
-              <id column="COURSE_NO" property="courseNo"/>
-              <id column="CORE" property="core"/>
-          </collection>
-      </resultMap>
-      <select id="selectHandStudentCourseCore" resultMap="HandStudentCourseCoreResultMap">
-          select hs.STUDENT_NO,
-                 hsc.*
-          from hand_student hs left join hand_student_core hsc on hs.STUDENT_NO = hsc.STUDENT_NO
-          where hs.STUDENT_NO = #{studentNo};
-      </select>
-  
-  </mapper>
-  ```
-
-- vo类构造
-
-  ```java
-  @Data
-  public class HandStudentCourseCore {
-      private String studentNo;
-      List<HandStudentCore> studentCourseCore;
-  }
-  ```
-
-- 运行结果
-
-  ```txt
-  HandStudentCourseCore(
-  studentNo=s001,
-  studentCourseCore=[
-  HandStudentCore(studentNo=s001, courseNo=c001, core=58.9), HandStudentCore(studentNo=s001, courseNo=c002, core=82.9), HandStudentCore(studentNo=s001, courseNo=c003, core=59.0)
-  ])
-  ```
-
-# resultType/Map的区别
-
-- resultTpye:必须字段名与属性名完全对应
-- resultMap:可以自定义映射关系
-
-除去简单的区别外，resultType由于是固定的实体类，所以只有填充功能，但resultMap中可以自定义查询，也就是说，如果将查询结果指定resultMap， 若resultMap中有查询操作，则会调用该查询操作。
-
-```xml
- <resultMap id="RoleResultMap" type="com.orange.eneity.OrangeRole">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="desc" property="desc"/>
-        <collection property="derivedRoleList"
-                    ofType="com.orange.eneity.OrangeRole"
-                    select="selectDerivedRoleList"
-                    column="id"
-        />
-        <collection property="baseRoleList"
-                    ofType="com.orange.eneity.OrangeRole"
-                    select="selectBaseRoleList"
-                    column="id"
-        />
-    </resultMap>
-```
-
-像这里的collection中就包含一个select操作
 
 # mybatis配置
 
@@ -175,18 +91,6 @@ public interface CityMapper {
     public void insert(City city);
 }
 ```
-
-
-
-# 一些问题
-
-1. mapper上使用@Repository出现无法扫描到mapper的情况
-
-   在springboot 中，给mapper的接口上加上@Repository，无法生成相应的bean,从而无法@Autowired，这是因为spring扫描注解时，自动过滤掉了接口和抽象类。
-
-   这种情况下可以在启动的类前加上@MapperScan（“×××.×××.mapper”)，从而使mapper可以自动注入，但是idea还会提示bean无法找到，但是不会影响运行。
-
-2. set自动消除多余的逗号需要把逗号后置
 
 # 数据类型映射
 
@@ -347,3 +251,134 @@ e.g.
     </insert>
 ```
 
+# 一对一查询
+
+association 标签
+
+需要注意的是, association必须在collection之前
+
+且必须要有一个column属性
+
+```xml
+ <resultMap id="RoleResultMap" type="com.orange.eneity.OrangeRole">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="desc" property="desc"/>
+        <association property="user"
+                     javaType="com.orange.eneity.User"
+                     select="selectAllUser"
+                     column="id"
+        />
+        <collection property="derivedRoleList"
+                    ofType="com.orange.eneity.OrangeRole"
+                    select="selectDerivedRoleList"
+                    column="id"
+        />
+        <collection property="baseRoleList"
+                    ofType="com.orange.eneity.OrangeRole"
+                    select="selectBaseRoleList"
+                    column="id"
+        />
+
+    </resultMap>
+```
+
+
+
+# 一对多查询
+
+- xml配置
+
+    ```xml
+    <mapper namespace="com.example.firstdemo.domain.repository.HandStudentCourseCoreRepository">
+        <resultMap id="HandStudentCourseCoreResultMap" type="com.example.firstdemo.domain.vo.HandStudentCourseCore">
+                <result column="STUDENT_NO" property="studentNo"/>
+            <collection property="studentCourseCore"
+                        ofType="com.example.firstdemo.domain.entity.HandStudentCore"
+                        foreignColumn="STUDENT_NO">
+                <id column="STUDENT_NO" property="studentNo"/>
+                <id column="COURSE_NO" property="courseNo"/>
+                <id column="CORE" property="core"/>
+            </collection>
+        </resultMap>
+        <select id="selectHandStudentCourseCore" resultMap="HandStudentCourseCoreResultMap">
+            select hs.STUDENT_NO,
+                   hsc.*
+            from hand_student hs left join hand_student_core hsc on hs.STUDENT_NO = hsc.STUDENT_NO
+            where hs.STUDENT_NO = #{studentNo};
+        </select>
+    
+    </mapper>
+    ```
+
+- vo类构造
+
+    ```java
+    @Data
+    public class HandStudentCourseCore {
+        private String studentNo;
+        List<HandStudentCore> studentCourseCore;
+    }
+    ```
+
+- 运行结果
+
+    ```txt
+    HandStudentCourseCore(
+    studentNo=s001,
+    studentCourseCore=[
+    HandStudentCore(studentNo=s001, courseNo=c001, core=58.9), HandStudentCore(studentNo=s001, courseNo=c002, core=82.9), HandStudentCore(studentNo=s001, courseNo=c003, core=59.0)
+    ])
+    ```
+
+# resultType/Map
+
+这两者都是作为查询结果的存在
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.threetree.mapper.TicketInfoMapper">
+    <resultMap id="TicketInfo" type="com.threetree.pojo.TicketInfo">
+        <id column="_ID" property="_id"/>
+        <result column="NUMBER" property="number"/>
+        <result column="FLOW" property="flow"/>
+        <result column="FLOWNAME" property="flowName"/>
+    </resultMap>
+    <select id="queryAll" resultMap="TicketInfo">
+        select * from CDS_INNOVATE.TICKET_INFO;
+    </select>
+	<select id="queryAll" resultType="com.threetree.pojo.TicketInfo">
+        select * from CDS_INNOVATE.TICKET_INFO;
+    </select>
+</mapper>
+```
+
+不同点在于：
+
+- resultTpye：必须字段名与属性名完全对应
+- resultMap：可以自定义映射关系
+
+除去简单的区别外，resultType由于是固定的实体类，所以只有填充功能，而在resultMap中可以自定义查询，也就是说，如果将查询结果指定resultMap， 若resultMap中有查询操作，则会调用该查询操作。
+
+```xml
+ <resultMap id="RoleResultMap" type="com.orange.eneity.OrangeRole">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="desc" property="desc"/>
+        <collection property="derivedRoleList"
+                    ofType="com.orange.eneity.OrangeRole"
+                    select="selectDerivedRoleList"
+                    column="id"
+        />
+        <collection property="baseRoleList"
+                    ofType="com.orange.eneity.OrangeRole"
+                    select="selectBaseRoleList"
+                    column="id"
+        />
+    </resultMap>
+```
+
+像这里的collection中就包含一个select操作

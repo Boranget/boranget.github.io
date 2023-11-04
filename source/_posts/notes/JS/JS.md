@@ -49,44 +49,6 @@ categories:
 - 一个元素可以监听多个事件
 - 可以用元素的属性绑定方法
 
-# 警告/弹窗
-
-## alert(字符串或变量)
-
-```html
-<script type="text/javascript">
-    var mynum = 30
-    alert("hello")
-    alert(mynum)
-</script>
-```
-
-## confirm(字符串或变量)
-
-用户点击确定返回true,点击取消返回false
-
-```html
-<script type="text/javascript">
-        var mynum = 20
-        var one = confirm("hello:"+mynum)
-        confirm(one)
-    </script>
-```
-
-## prompt(标题,内容)
-
-点击确定会返回内容,内容为空返回空字符串
-
-点击取消返回null
-
-```html
-<script type="text/javascript">
-    var mynum = 20
-    var str = prompt("aa",mynum)
-    alert(str)
-</script>
-```
-
 # 打印
 
 - 控制台打印 console.log()
@@ -329,6 +291,16 @@ switch(){
 
 ## 循环结构
 
+**for**
+
+```js
+for(var i = 1; i <=9; i ++){
+    
+}
+```
+
+
+
 **foreach**
 
 把冒号换成in，且i不会赋值为数组中的元素，而是被赋值为数组中元素的索引
@@ -429,16 +401,248 @@ JSON.stringify(obj)
 
 浏览器对象模型
 
-window
+window的属性：
 
 - history 历史
 - location 地址栏
-- document
-- console
+- document 浏览器打开的网页文档
+- console 控制台
+- screen 屏幕
+- navigator 浏览器本身
+- sessionStorage 会话级存储
+- localStorage 持久级存储
+
+## 弹窗
+
+window.alert，但window.可以省略
+
+- alert(字符串或变量)
+
+    ```html
+    <script type="text/javascript">
+        var mynum = 30
+        alert("hello")
+        alert(mynum)
+    </script>
+    ```
+
+- confirm(字符串或变量)
+
+    用户点击确定返回true,点击取消返回false
+
+    ```html
+    <script type="text/javascript">
+    var mynum = 20
+    var one = confirm("hello:"+mynum)
+    confirm(one)
+    </script>
+    ```
+
+- prompt(标题,内容)
+
+    点击确定会返回内容,内容为空返回空字符串
+
+    点击取消返回null
+
+    ```html
+    <script type="text/javascript">
+        var mynum = 20
+        var str = prompt("aa",mynum)
+        alert(str)
+    </script>
+    ```
+
+
+## 定时任务
+
+```js
+window.setTimeout(function(){
+    // 只能执行一次，两秒后执行
+},2000)
+```
+
+```
+window.setInterval(() => {
+
+  setTimeout(fun(){
+  	// 可不停执行
+  }, 0)
+
+}, 30000)
+```
+
+## 前后翻页
+
+```js
+history.back() // 向前
+history.forward() // 向后
+history.go()//1...向前翻几页
+```
+
+## 跳转
+
+```js
+location。href="http://www.ffff.com"
+```
+
+## 存储
+
+```js
+sessionStorage.setItem("key","v")// 浏览器重启消失
+localStorage.setItem("key","v")
+sessionStorage.getItem("key")
+localStorage.getItem("key")
+sessionStorage.removeItem("key")
+localStorage.removeItem("key")
+```
+
+
 
 # DOM编程
 
+文档对象模型，可修改页面内容
+
+document本质是个树状对象 
+
+dom树上的节点类型
+
+- node节点
+    - 元素节点 element 标签
+    - 属性节点 attribute 属性
+    - 文本节点 text 双标签中的文字 
+
+![image-20231102192015382](JS/image-20231102192015382.png)
+
+
+
+## 获取dom树
+
+window.document，window.可省略
+
+## 从document中获取要操作的元素
+
+- 直接获取
+
+    - document.getElementById(“”) // 根据id获取唯一元素
+
+    - document.getElementsByTagName(“”) // 根据标签名获取多个元素，获取到一个collection，可通过方括号+下标获取
+
+    - document.getElementsByName(“”) // 根据Name属性获取多个元素 
+
+    - document.getElementsByClassName(“”) // 根据ClassName属性获取多个元素 
+
+- 间接获取
+
+    - document.getElementBy..().children // 通过父元素获取全部子元素
+
+        document.getElementBy..().firstElementChild // 通过父元素获取第一个子元素
+
+        document.getElementBy..().lastElementChild // 通过父元素获取最后一个子元素
+
+    - document.getElementBy..().parentElement // 通过子元素获取父元素
+
+    - document.getElementBy..().previousElementSibling // 通过当前元素获取兄弟元素
+
+        document.getElementBy..().nextElementSibling // 通过当前元素获取兄弟元素
+
+## 对元素操作
+
+- 操作元素的属性
+
+    获取：元素名.属性名
+
+    修改：元素名.属性名=""
+
+- 操作元素的样式
+
+    元素名.style.样式名=“”
+
+    注意原始样式名中的中划线命名要变成小驼峰
+
+- 操作元素的文本
+
+    元素名.innerText
+
+    或 元素名.innerHTML(可解析标签)
+
+- 增元素
+
+    ```js
+    // 创建一个新元素
+    var newElement = document.createElement("div");
+    // 设置元素的属性、文本、样式
+    newElement.id = "newElement";
+    newElement.style.color = "red";
+    newElement.innerText = "I am New";
+    // 将子元素放入父元素
+    var parent = document.getElemenstByTagName("body");
+    // 追加到父元素中最后
+    parent[0].appendChild(newElement);
+    // 指定插到谁前
+    parent[0].insertBefore(newElement,参照元素);
+    // 指定替换谁
+    parent[0].replaceChild(newElement,被替换元素);
+    ```
+
+- 删元素
+
+    ```
+    needRemoveElement.remove()
+    // 删除父元素中所有元素
+    var fc = parent.firstChild;
+    while(fc!=null){
+    	fc.remove;
+    	fc = parent.firstChild;
+    }
+    // or
+    parent,innerHTML = "";
+    ```
+
+    
+
 # 正则表达式
+
+描述字符串格式
+
+## 定义
+
+```js
+var reg = /正则表达式/
+var reg = /正则表达式/g		全文匹配
+var reg = /正则表达式/i		忽略大小写
+```
+
+## 校验
+
+```js
+reg.test(str)
+```
+
+## 匹配
+
+```js
+var res = str.match(reg)
+```
+
+## 替换
+
+```js
+var after = str.replace(reg,'用于替换的文本')
+```
+
+## 一些规则
+
+- 开头^ 结尾$ 方便控制长度
+    - ^java$ 只能匹配java不能匹配javajava，因为正则表达式中只控制了四个字符，没有允许四个外字符的出现
+- [] 表示一位的规则，一个方括号表示一位
+- \- 从哪个字符到哪个字符 
+    - [a-zA-Z0-9_] 字母数字下划线
+- {}前一位的规则可以重复多少次
+    - {5,9}重复5到9次
+    - 简化写法（不需写在大括号里）：+前一位规则出现1到多次，*出现零到多次
+- ()包裹住某个规则便于重复
+
+## 常用
 
 判断用户名和密码是否符合格式
 
