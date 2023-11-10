@@ -132,3 +132,56 @@ categories:
 6. 解决idea日志乱码
 
     同样找到logging.properties，修改catalina的encoding为gbk
+
+## idea运行tomcat原理
+
+idea启动javaweb工程时会将tomcat主体复制一份到c盘，但其中只有配置文件，没有运行文件，运行时，使用tomcat主体中的运行文件来运行复制出来的配置文件。
+
+配置文件中会通过catalina指定项目源位置的方式指定到编译结果
+
+# tomcat部署文件并开放https
+
+- 使用jdk 的 keytool生成一个ssl证书
+
+    ```shell
+    keytool -genkey -alias tomcat -keysize 2048 -validity 3650 -keyalg RSA -keystore tomcat.jks
+    ```
+
+    回车之后，首先设置两次密钥库的密码，不显示
+
+    提问名字与姓氏的时候，输入域名，这里使用loc.test.com.cn（本机测试配置host文件）
+
+    其余的默认回车，直到问是否正确 【否】的时候，输入y确认
+
+    接着设置密钥密码，如果与密钥库密码相同，直接回车即可
+
+    此时便会在keytool运行目录生成一个*.jks文件
+
+- 修改tomcat的server.xml配置文件
+
+    添加https（可以直接在http配置下挨着粘贴进去就好）
+
+    ```xml
+    <Connector port="443" protocol="HTTP/1.1" SSLEnabled="true"
+        maxThreads="150" scheme="https" secure="true"
+        keystoreFile="/usr/local/tomcat/ssl/YourDomain.jks"
+        keystorePass="SSLPass"
+        clientAuth="false" sslProtocol="TLS" />
+    注意：
+        keystoreFile ：证书存放目录，可以写绝对路径或Tomcat相对路径；
+        keystorePass：证书私钥密码；
+    ```
+- 修改两个localhost
+
+  ```xml
+  <Engine name="Catalina" defaultHost="localhost">   
+  ## 这里指定的localhost是默认HOST的名称，修改为证书绑定的域名即可
+  ## .........
+  ## .........
+  ## .........
+        <Host name="localhost"  appBase="webapps"  
+  ### 将这里的localhost修改Wie刚才添加解析的域名即可，且必须与证书的通用名称保持一致
+            unpackWARs="true" autoDeploy="true">
+  ```
+
+- 重启tomcat，查看 https://loc.test.com.cn/...是否能够访问

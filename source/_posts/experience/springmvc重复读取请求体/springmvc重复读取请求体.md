@@ -84,6 +84,7 @@ public class SafeHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     /**
      * 获取输入流（后续步骤使用）
+     * 这一个增强就是因为输入流已经被消耗了，但我们要个让接下来的处理可以读到东西
      * @return
      * @throws IOException
      */

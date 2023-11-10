@@ -461,14 +461,41 @@ window.setTimeout(function(){
 },2000)
 ```
 
-```
-window.setInterval(() => {
-
-  setTimeout(fun(){
-  	// 可不停执行
-  }, 0)
-
-}, 30000)
+```js
+ window.setInterval(() => {
+    window.setTimeout(function () {
+      var source = lines[l].source;
+      var target = lines[l].target;
+      var sourceItem = items[source];
+      var targetItem = items[target];
+      sourceItem.symbolSize = 30;
+      targetItem.symbolSize = 30;
+      lines[l] = {
+        source: lines[l].source,
+        target: lines[l].target,
+        lineStyle: {
+          color: '#f00',
+          width: 5
+        }
+      };
+      // sourceItem.label.show = true;
+      // targetItem.label.show = true;
+      myChart.setOption(option);
+      sourceItem.symbolSize = 10;
+      targetItem.symbolSize = 10;
+      // sourceItem.label.show = false;
+      // targetItem.label.show = false;
+      lines[l] = {
+        source: lines[l].source,
+        target: lines[l].target,
+        lineStyle: {
+          color: 'blue',
+          width: 1
+        }
+      };
+      l = (l + 1) % linesSize;
+    }, 0);
+  }, 1000);
 ```
 
 ## 前后翻页
