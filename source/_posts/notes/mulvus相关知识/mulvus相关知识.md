@@ -4,7 +4,7 @@ date: 2023-10-26 10:35:19
 tags:
   - mulvus
 categories:
-  - 笔 记
+  - 笔记
 ---
 
 # 参考资料

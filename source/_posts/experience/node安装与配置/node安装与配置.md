@@ -49,7 +49,7 @@ npm config set cache D:\tools\node\node_cache
 打开命令行，执行
 
 ```bash
-npm install -g cnpm --registry=http://registry.npm.taobao.org
+npm install -g cnpm --registry=https://registry.npmmirror.com
 ```
 
 D:\tools\node\node_global\node_modules 文件夹中出现 cnpm 文件夹即代表配置成功
