@@ -1,5 +1,5 @@
 ---
-title: Vue
+ title: Vue
 date: 2023-11-11 14:50:30
 tags:
   - vue
@@ -805,3 +805,154 @@ defineProps({ msg: String });
 <style scoped>
 </style>
 ```
+
+# Router
+
+通过当前地址栏的路径切换vue组件
+
+```bash
+npm install vue-router
+```
+
+App.vue，定义何处使用路由替换
+```vue
+<script setup>
+
+</script>
+<template> 
+  <div>
+    内容在下面
+    <!-- 该标签会被替换为具体的vue -->
+   	<router-view></router-view>
+   内容在上面
+  </div>
+</template>
+<style scoped>
+
+</style>
+```
+
+main.js
+
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './routers/router.js';
+const app = createApp(App);
+// 让app使用路由
+app.use(router)
+app.mount('#app')
+```
+
+路由.js
+
+```js
+import {createRouter, createWebHashHistory} from 'vue-router';
+import Home from '../components/Home.vue';
+import List from '../components/List.vue';
+import Add from '../components/Add.vue';
+import Update from '../components/Update.vue';
+
+// 创建一个路由对象
+const router = createRouter({
+
+    // history属性用于记录路由的历史
+    history:createWebHashHistory(),
+    // routes 用于定义多个不同的路径和组件之间的对应关系
+    routes:[
+        {
+            path:"/",
+            component:Home
+        },
+        {
+            path:"/home",
+            component:Home
+        },
+        {
+            path:"/list",
+            component:List
+        },
+        {
+            path:"/Add",
+            component:Add
+        },
+        {
+            path:"/update",
+            component:Update
+        }
+    ]
+}
+);
+
+// 暴露
+export default router;
+```
+
+## 路径跳转组件
+
+```vue
+<router-link to="/add">add</router-link>
+```
+
+## 重定向
+
+```js
+{
+    path:"/update",
+    // 注意这里是重定向的地址而不是组件
+    redirect:"/list"
+}
+```
+
+## router-view
+
+一个页面可以有多个router-view，每个router-view可以展示不同内容
+
+```vue
+<script setup>
+
+</script>
+<template> 
+  <div>
+    内容在下面
+    <!-- 该标签会被替换为具体的vue -->
+      <router-view name="homeView"></router-view>
+      <router-view name="listView"></router-view>
+   内容在上面
+  </div>
+</template>
+<style scoped>
+
+</style>
+```
+
+```js
+routes:[
+        {
+            path:"/",
+            component:{
+                homeView:Home
+            }
+        },
+        {
+            path:"/home",
+            component:{
+                homeView:Home
+            }
+        },
+        {
+            path:"/list",
+            component:{
+                listView:List
+            }
+        },
+        {
+            path:"/Add",
+            component:{
+                // 没有设置name的router-view
+                default: Add
+            }
+        },
+    ]
+```
+
