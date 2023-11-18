@@ -171,6 +171,8 @@ import ‘.../*.css’
 
 # 响应式数据
 
+响应式数据是指在变量的数据变化之后，页面渲染的数据会随着变量改变
+
 在vue2中，数据默认就是响应式的，但在vue3中，数据需要经过ref/reactive函数的处理.
 
 ref函数更适合单个字面量
@@ -954,5 +956,698 @@ routes:[
             }
         },
     ]
+```
+
+## 编程式路由
+
+通过代码而非router-link实现页面的跳转 
+
+```vue
+<script setup>
+import {ref} from "vue"
+import {useRouter} from "vue-router"
+const router = useRouter();
+let target = ref("/home")
+function changeRoute(){
+  router.push(target.value)
+  // 或
+  router.push(path:target.value)
+}
+</script>
+<template> 
+  <div>
+    <button @click="changeRoute">去target</button>
+    <!-- 动态接收目标路由 -->
+    <input type="text" v-model="target">
+    内容在下面
+    <!-- 该标签会被替换为具体的vue -->
+   <router-view></router-view>
+   内容在上面
+   <router-link to="/add">add</router-link>
+  </div>
+</template>
+<style scoped>
+
+</style>
+```
+
+## 路由传参 
+
+- 路径参数
+
+    路由定义时使用冒号开头作为路径参数接收形参的定义
+
+    ```js
+    import {createRouter, createWebHashHistory} from 'vue-router';
+    import Home from '../components/Home.vue';
+    import Add from '../components/Add.vue';
+    // 创建一个路由对象
+    const router = createRouter({
+        // history属性用于记录路由的历史
+        history:createWebHashHistory(),
+        // routes 用于定义多个不同的路径和组件之间的对应关系
+        routes:[
+            {
+                path:"/",
+                component:Home
+            },
+            {
+                path:"/home",
+                component:Home
+            },
+            {
+                path:"/add/:addItem1/:addItem2",
+                component:Add
+            }
+        ]
+    }
+    );
+    // 暴露
+    export default router;
+    ```
+
+    接收方使用route.params. 获取值，这里用到的useRoute与上方获取跳转路径的userRouter不是一个东西
+    
+    ```vue
+    <script setup>
+    import { useRoute} from 'vue-router';
+    let route=useRoute()
+    let a = parseInt(route.params.addItem1);
+    let b = parseInt(route.params.addItem2);
+    </script>
+    <template>
+      <div>
+      add Result {{ a+b }}
+      </div>
+    </template>
+    <style scoped>
+      
+    </style>
+    ```
+    
+    **同组件内传参**
+    
+    在比如/add/1/2跳转到/add/3/4时，如果页面有使用路径参数渲染的数据，数据不会主动变化，可以使用update更新
+    
+    ```vue
+    <script setup>
+    import { useRoute } from "vue-router";
+    import { onUpdated, ref } from "vue";
+    let route = useRoute();
+    let a = ref(parseInt(route.params.addItem1));
+    let b = ref(parseInt(route.params.addItem2));
+    onUpdated(() => {
+      a.value = parseInt(route.params.addItem1);
+      b.value = parseInt(route.params.addItem2);
+    });
+    </script>
+    <template>
+      <div>{{ a }} + {{ b }} = {{ a + b }}</div>
+    </template>
+    <style scoped>
+    </style>
+    ```
+
+- 键值对传参
+
+    路由正常定义
+
+    ```js
+    import {createRouter, createWebHashHistory} from 'vue-router';
+    import Home from '../components/Home.vue';
+    import Add from '../components/Add.vue';
+    // 创建一个路由对象
+    const router = createRouter({
+        // history属性用于记录路由的历史
+        history:createWebHashHistory(),
+        // routes 用于定义多个不同的路径和组件之间的对应关系
+        routes:[
+            {
+                path:"/",
+                component:Home
+            },
+            {
+                path:"/home",
+                component:Home
+            },
+            {
+                path:"/add",
+                component:Add
+            }
+        ]
+    }
+    );
+    // 暴露
+    export default router;
+    ```
+
+    接收：使用query
+
+    ```vue
+    <script setup>
+    import { useRoute } from "vue-router";
+    import { onUpdated, ref } from "vue";
+    let route = useRoute();
+    let a = ref(parseInt(route.query.addItem1));
+    let b = ref(parseInt(route.query.addItem2));
+    onUpdated(() => {
+      a.value = parseInt(route.query.addItem1);
+      b.value = parseInt(route.query.addItem2);
+    });
+    </script>
+    <template>
+      <div>{{ a }} + {{ b }} = {{ a + b }}</div>
+    </template>
+    <style scoped>
+    </style>``
+    ```
+
+    传参
+
+    ```vue
+    <router-link to="/add?addItem1=5&addItem2=6">5+6</router-link>
+    router.push("/add?addItem1=5&addItem2=6")
+    或者
+    <router-link v-bind:to=”{path:'/add',query:{addItem1:2,addItem2:3}}“>5+6</router-link>
+    router.push({path:'/add',query:{addItem1:2,addItem2:3}})
+    ```
+
+# 路由守卫
+
+在路由切换前后使用回调函数的方式进行处理，可做登录校验：（在展现页面前先判断下存储中有没有登录成功的凭证）
+
+- 全局前置守卫
+- 全局后置守卫
+
+在router.js中定义
+
+```js
+// 设置全局前置守卫
+// 每次路由切换页面前，都会执行beforeEach中的回调函数
+router.beforeEach(
+    // to 到哪去。from 从哪来，next放行方法
+    // next() 放行
+    // next("/..") 要求浏览器重定向到哪个路径，一定要有条件，否则会死循环
+    (to,from,next)=>{
+        console.log("before");
+        console.log(to,from,next);
+        next();
+    }
+)
+// 设置全局后置守卫
+// 每次路由切换页面后，都会执行afterEach中的回调函数
+router.afterEach(
+    (to,from)=>{
+        console.log("after");
+        console.log(to,from);
+    }
+)
+// 暴露
+export default router;
+```
+
+如果当前已在目标组件但还要往目标组件跳，会执行after但不会执行before
+
+## 登录实践
+
+```js
+import {createRouter, createWebHashHistory} from 'vue-router';
+import Home from '../components/Home.vue';
+import Login from '../components/Login.vue';
+
+// 创建一个路由对象
+const router = createRouter({
+
+    // history属性用于记录路由的历史
+    history:createWebHashHistory(),
+    // routes 用于定义多个不同的路径和组件之间的对应关系
+    routes:[
+        {
+            path:"/",
+            component:Home
+        },
+        {
+            path:"/home",
+            component:Home
+        },
+        {
+            path:"/login",
+            component:Login
+        }
+    ]
+}
+);
+// 设置全局前置守卫
+// 每次路由切换页面前，都会执行beforeEach中的回调函数
+router.beforeEach(
+    // to 到哪去。from 从哪来，next放行方法
+    // next() 放行
+    // next("/..") 转到哪个也买你
+    (to,from,next)=>{
+        if(to.path == '/login'){
+            next();
+        }else{
+            // 用户未登录则拦截
+            const username = sessionStorage.getItem("username");
+            if(null != username){
+                next();
+            }else{
+                next('/login')
+            }
+        }
+        
+    }
+)
+// 暴露
+export default router;
+```
+
+Login页面
+
+```vue
+<script setup>
+import { useRouter } from "vue-router";
+import { onUpdated, ref } from "vue";
+let username = ref("");
+let password = ref("")
+const router = useRouter();
+function login(){
+  if(username.value == "user"&&password.value == "123456"){
+    // 使用存储记录登陆状态
+    sessionStorage.setItem('username', username.value);
+    router.push("/home");
+  }else{
+    alert("用户名或者密码错误")
+  }
+}
+</script>
+<template>
+  <div>
+    <input type="text" v-model="username">
+    <input type="password" v-model="password">
+    <button @click="login">登录</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+Home
+
+```vue
+<script setup>
+import { useRouter } from 'vue-router';
+  let username = sessionStorage.getItem("username");
+  const router = useRouter();
+  function logout(){
+    sessionStorage.removeItem("username")
+    router.push("/login")
+  }
+</script>
+<template>
+  <div>
+    欢迎{{ username }} <br>
+    <button @click="logout">退出登录</button>
+  </div>
+</template>
+<style scoped>
+ 
+</style>
+```
+
+# promise
+
+**回调函数**
+
+回调函数是基于事件的自动调用函数，其他的代码不会等待回调函数执行完毕，异步的
+
+回调函数是一种未来会执行的函数，回调函数以外的其他代码不会等这个函数的执行结果就会执行下去
+
+回调函数相当于一种承诺，有三种状态
+
+- 进行中
+- 兑现（成功）
+- 失败
+
+针对承诺的三种状态要执行三种预案
+
+## 什么是promise
+
+promise是异步编程的一种解决方案，比传统的解决方案（回调函数和事件）更加强大，ES6原生提供了Promise对象。Promise类似于一个容器，其中保存着某个未来才会结束的事件（通常是一个异步操作）的结果
+
+有三种状态：
+
+- Pending 进行中
+- Resolved 已完成
+- Rejected 已失败
+
+只有其异步操作的结果可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。
+
+一旦状态改变就不会再改变。任何时候都可以得到这个结果，Promise的对象状态的改变，只有两种可能：Pending变为Resolved，或者从Pending变为Rejected，只要这两种情况发生，状态就凝固了，不会再改变了
+
+## 使用
+
+```js
+// 里面的函数便是回调函数
+let promise = new Promise(function(){});
+// 回调函数可接收两个参数
+// resolve 和 reject 参数是函数，再回调函数中调用可改变当前promise的状态
+let promise = new Promise(function(resolve,reject){});
+// then方法会在promise对象的状态发生改变后执行
+// then中传入两个参数，分别为两个方法
+// 第一个方法为状态转为resolved时会执行的函数
+// 第二个方法为状态转为reject时会执行的代码
+promise.then()
+// promise中的函数会在promise声明时执行
+// then方法会等待promise中的方法执行结束执行，then下方的方法不会等待then执行完成，但会等待promise代码执行完成
+promise.then(
+    function(){
+        console.log(resolve);
+    }
+    ,function(){
+        console.log(reject);
+    }
+)
+// resolve与reject函数可以传入参数，then中的回调函数中接收
+let promise = new Promise(function(resolve,reject){
+    resolve("success");
+    reject("fail");
+});
+promise.then(
+    function(value){
+        console.log(value);
+    }
+    ,function(value){
+        console.log(value);
+    }
+)
+// then方法会返回另一个Promise，可调用该对象的catch函数
+// catch函数当promise中的回调函数报错或promise状态为reject的时候执行
+// 可接参数，其值为回调函数中reject填入的值或者异常信息
+// 所以如果有catch处理的话，then中的第二个方法可以去掉
+let promise2 = promise.then(
+    function(value){
+        console.log(value);
+    }
+)
+promise2.catch(function(){})
+// 可连写
+promise.then(
+    function(value){
+        console.log(value);
+    }
+).catch(function(value){
+    console.log(value);
+})
+```
+
+## async
+
+```js
+async function a(){
+    
+}
+// 箭头
+let a = async ()=>{}
+```
+
+async 所标识的函数会被封装为一个返回结果是一个pomise对象的函数，方法体则是Promise对象声明时所接收的回调函数
+
+如果在a函数中返回结果，则该promise的状态会变为Resolved，返回的结果会放入resolve的参数中，
+
+如果在a函数中抛出异常，则该promise的状态会变为Rejected，异常信息放入reject的参数中。
+
+如果a函数return了一个promise对象，则该promise就是这个promise
+
+```js
+let promise = a();
+promise.then().catch()
+```
+
+## await
+
+用于快速获取promise成功状态下的返回值，只能在async修饰的方法中使用
+
+如果await操作的promise返回异常，则，await操作会抛出异常
+
+await后的代码会等待await执行结束
+
+```js
+let res = await Promise.resolve(obj)
+// res = obj
+```
+
+```js
+async function p(){
+    return 0;
+}
+async function fun(){
+    let res = await p();
+    console.log(res);
+}
+fun()
+```
+
+# Axios
+
+```bash
+npm install axios
+```
+
+```vue
+<script setup>
+import { ref } from "vue";
+import axios from "axios";
+
+let msg = ref("");
+function getMsg() {
+  // 方法返回一个promise对象
+  axios({
+    // url
+    url: "https://api.uomg.com/api/rand.qinghua?format=json",
+    // method
+    method: "get",
+    // params会以键值对形式拼接到url后，
+    params: {},
+    // data 会以json形式放入请求体
+    data: {}
+  })
+    .then((response) => {
+      /**
+       * response的结构
+       * {
+       *    data：服务端响应的数据，如果是个json数据，会自动转为对象
+       *    status：响应状态码
+       *    statusText：响应描述
+       *    headers：响应头
+       *    config：本次请求的配置信息
+       *    request：本次请求的XMLHttpRequest属性
+       * }
+       */
+      console.log(response);
+      console.log(response.data.content)
+      msg.value = response.data.content;
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+</script>
+<template>
+  <div>
+    <h1>{{ msg }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+**Object.assign(a,b)**
+
+可将b中的属性赋予a对象，若a对象中已有，则覆盖，没有则创建
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let data = reactive({});
+function getMsg() {
+  // 方法返回一个promise对象
+  axios({
+    // url
+    url: "https://api.uomg.com/api/rand.qinghua?format=json",
+    // method
+    method: "get",
+    // params会以键值对形式拼接到url后，
+    params: {},
+    // data 会以json形式放入请求体
+    data: {}
+  })
+    .then((response) => {
+      /**
+       * response的结构
+       * {
+       *    data：服务端响应的数据，如果是个json数据，会自动转为对象
+       *    status：响应状态码
+       *    statusText：响应描述
+       *    headers：响应头
+       *    config：本次请求的配置信息
+       *    request：本次请求的XMLHttpRequest属性
+       * }
+       */
+      console.log(response);
+      console.log(response.data.content)
+      Object.assign(data,response.data)
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+</script>
+<template>
+  <div>
+    <h1>{{ data.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+## 简写
+
+**get**
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let showData = reactive({});
+
+async function getMsg(){
+  // axios.get(url,{params,headers})
+  let promise = axios.get("https://api.uomg.com/api/rand.qinghua?format=json",{
+    params:{
+      name:"zs"
+    }
+  })
+  let {data} = await promise;
+  Object.assign(showData,data)
+}
+</script>
+<template>
+  <div>
+    <h1>{{ showData.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+**post**
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let showData = reactive({});
+
+async function getMsg() {
+  // axios.get(url,{params,headers})
+  let promise = axios.post(
+    "https://api.uomg.com/api/rand.qinghua?format=json",
+    // 这个对象是请求体
+    {
+      username: "zs",
+      password: "123456",
+    },
+    {
+      params: {
+        name: "zs",
+      },
+    }
+  );
+  let { data } = await promise;
+  Object.assign(showData, data);
+}
+</script>
+<template>
+  <div>
+    <h1>{{ showData.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+## 拦截器
+
+axios可通过creat方法生成一个实例，该实例有着与axios相似的方法调用，可在某具体js中生成该实例并将该实例暴露，且在js文件中给该实例添加拦截器，以下示例并没有单独抽离实例js
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let showData = reactive({});
+
+async function getMsg() {
+  // axios.get(url,{params,headers})
+  /**
+   * baseURL 使用该实例发送的请求之前会拼接baseURL
+   * timeout 请求超时时间，毫秒单位
+   */
+  let axiosins = axios.create({
+    baseURL: "https://api.uomg.com",
+    timeout: 10000,
+  });
+  // 设置请求拦截器，两个函数
+  axiosins.interceptors.request.use(
+    config => {
+      // 设置请求的信息，比如请求头、体等，最后需要返回这个config
+      // config.headers.Accept="application/json,123"
+      return config;
+    },
+    error => {
+      // 请求错误拦截，需要返回一个失败的promise
+      return Promise.reject(error)
+    }
+  );
+  // 设置响应拦截器，两个函数
+  axiosins.interceptors.response.use(
+    response => {
+      // 响应状态码为200时执行,response需要返回，否则没有响应
+      console.log(123)
+      return response
+    },
+    error => {
+      // 其他状态码执行, 最后需要返回一个失败的promise
+      console.log(error)
+      return Promise.reject(error)
+    }
+  );
+  let promise = axiosins.get("/api/rand.qinghua?format=json", {
+    params: {
+      name: "zs",
+    },
+  });
+  let { data } = await promise;
+  Object.assign(showData, data);
+}
+</script>
+<template>
+  <div>
+    <h1>{{ showData.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
 ```
 
