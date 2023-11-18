@@ -1,5 +1,5 @@
 ---
- title: Vue
+title: Vue
 date: 2023-11-11 14:50:30
 tags:
   - vue
@@ -1390,7 +1390,7 @@ promise.then().catch()
 
 如果await操作的promise返回异常，则，await操作会抛出异常
 
-await后的代码会等待await执行结束
+与await在同一个方法体中且在await后的代码会等待await执行结束
 
 ```js
 let res = await Promise.resolve(obj)
@@ -1517,6 +1517,8 @@ function getMsg() {
 ```
 
 ## 简写
+
+由于await后的代码会等待await执行结束，则若在提交按钮绑定的方法中使用await获取数据，通过获取到的数据来判断当前方法应该返回的值是可行的，因为return会等待await的执行结果
 
 **get**
 
@@ -1651,3 +1653,15 @@ async function getMsg() {
 </style>
 ```
 
+# 跨域
+
+原因，浏览器当前请求的视图中的某个目标指向的地址与视图的地址不在同一个域。
+
+- 方法一：前端服务器发请求
+- 方法二：先发送预检请求，用于检查目标服务器是否安全
+  - 前端先发送一个option的预检请求（自动发送）
+  - 后端新增一个过滤器，如果收到的请求是预检请求，则拦截处理，正常请求则放行。在预检请求的响应头中设置是否允许跨域等的信息。
+
+# pinia
+
+pinia中可以直接定义数据，默认是响应式的，多个vue文件可从中获取
