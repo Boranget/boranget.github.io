@@ -522,7 +522,6 @@ export{add,Person}
 指定引入某个js文件时默认引入的对象，默认导出只能有一个
 
 ```js
-function add(){};
 class Person{};
 export default Person
 ```

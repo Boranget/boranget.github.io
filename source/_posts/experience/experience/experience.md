@@ -895,3 +895,12 @@ mysql的时间戳为10位数字而java中时间戳为13位数字
 故mysql时间戳转java时间戳可通过*1000实现，相反可通过/1000实现
 
 # postman get请求可以带body
+
+# postman调用webservice服务
+
+使用post方式
+
+- 请求地址为soupui解析出的地址（非wsdl地址）
+- 请求体为xml完整报文
+- 请求头content-type设为application/xml
+- 其余认证等
