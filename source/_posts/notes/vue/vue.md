@@ -1664,4 +1664,5 @@ async function getMsg() {
 
 # pinia
 
-pinia中可以直接定义数据，默认是响应式的，多个vue文件可从中获取
+pinia中可以直接定义数据，默认是响应式的，多个vue文件可从中获取数据，pinia数据在浏览器刷新后会清除，一般会结合sessionsorage和gloablestorange使用  
+
