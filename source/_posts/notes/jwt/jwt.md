@@ -22,3 +22,44 @@ header.payload.signature
 - signature：签名，信息有无被修改的验证  
 
    
+
+# 示例
+
+- 原文
+
+    ```
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    ```
+
+- 解码后
+
+    - HEADER:ALGORITHM & TOKEN TYPE
+
+        ```json
+        {
+          "alg": "HS256",
+          "typ": "JWT"
+        }
+        ```
+
+    - PAYLOAD:DATA
+    
+        ```json
+        {
+          "sub": "1234567890",
+          "name": "John Doe",
+          "iat": 1516239022
+        }
+        ```
+    
+    - VERIFY SIGNATURE
+    
+        ```json
+        HMACSHA256(
+          base64UrlEncode(header) + "." +
+          base64UrlEncode(payload),
+          your-256-bit-secret
+        )
+        ```
+    
+        
