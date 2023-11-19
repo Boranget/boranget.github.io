@@ -453,6 +453,15 @@ v-show 将数据隐藏（display方式），总会被渲染，只是会被隐藏
 
 v-for 需要注意要定义key，建议使用属性id
 
+```vue
+  <tr v-for="item,index in data.list" :key = item.id>
+    <td>{{ index }}</td>
+    <td>{{ item.id }}</td>
+    <td>{{ item.name }}</td>
+    <td>{{ item.age }}</td>
+  </tr>
+```
+
 # 单/双向绑定
 
 - 单向绑定：v-bind 响应式数据变化时，会更新dom树，但用户对页面中内容的改变如输入框中数据的变化不会影响响应式数据
@@ -1664,4 +1673,192 @@ async function getMsg() {
 
 # pinia
 
-pinia中可以直接定义数据，默认是响应式的，多个vue文件可从中获取
+pinia中可以定义公共数据，默认是响应式的，多个vue文件可从中获取
+
+**在main.js中开启全局pinia功能**
+
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './routers/router.js';
+const app = createApp(App);
+// 让app使用路由
+app.use(router)
+// 开启全局pinia
+import { createPinia } from 'pinia';
+let pini = createPinia();
+app.use(pini);
+app.mount('#app');
+```
+
+**定义共享数据**
+
+```js
+// 共享数据
+import { defineStore } from "pinia";
+// 定义一个共享数据，这里返回的是一个方法，该方法的返回值为定义的响应式数据
+export const defindPerson = defineStore({
+  id: "defindPerson", //当前数据id，要求全局唯一
+  state: () => {
+    // 这里return的值为共享的数据
+    return {
+      uname: "张三",
+      pword: "123456",
+      patform: ["tecent", "ali", "baidu"],
+    };
+  },
+  // 定义获得数据或者使用数据计算结果的函数，不要定义修改数据的逻辑
+  getters: {
+    username() {
+      console.log(this);
+      return `name${this.uname}`;
+    },
+    password() {
+      return this.pword;
+    },
+    platform() {
+      return this.patform;
+    },
+  },
+  // 定义修改数据的函数
+  actions: {
+    changeName(name) {
+        console.log("set")
+      this.uname = name;
+    },
+  },
+});
+
+```
+
+**可以只定义数据体**
+
+```js
+// 共享数据
+import { defineStore } from "pinia";
+// 定义一个共享数据，这里返回的是一个方法，该方法的返回值为定义的响应式数据
+export const defindPerson = defineStore(
+ // id可单独取出作为一个参数定义
+ // "defindPerson",
+ {
+  id: "defindPerson", //当前数据id，要求全局唯一
+  state: () => {
+    // 这里return的值为共享的数据
+    return {
+      uname: "张三",
+      pword: "123456",
+      patform: ["tecent", "ali", "baidu"],
+    };
+  }
+});
+
+```
+
+
+
+**展示**
+
+```vue
+<script setup>
+import { reactive } from 'vue';
+import {defindPerson} from '../store/store.js'
+let data = defindPerson() 
+</script>
+<template>
+  <div>
+    <h1>P1</h1>
+  {{ JSON.stringify(data) }}
+  </div>
+</template>
+<style scoped>
+ 
+</style>
+```
+
+
+
+**修改**
+
+```vue
+<script setup>
+import { reactive } from 'vue';
+import {defindPerson} from '../store/store.js'
+let data = defindPerson();
+</script>
+<template>
+  <div>
+    <h1>P2</h1>
+    uname <input type="text" v-model="data.username">
+    pwoed <input type="text" v-model="data.pword">
+    <button @click="data.changeName('即刻')">changename</button>
+  </div>
+</template>
+<style scoped>
+ 
+</style>
+```
+
+**reset**
+
+.$reset
+
+```vue
+<script setup>
+import { reactive } from 'vue';
+import {defindPerson} from '../store/store.js'
+let data = defindPerson();
+</script>
+<template>
+  <div>
+    <h1>P2</h1>
+    uname <input type="text" v-model="data.uname">
+    pwoed <input type="text" v-model="data.pword">
+    <button @click="data.$reset()">重置</button>
+  </div>
+</template>
+<style scoped>
+ 
+</style>
+```
+
+**批量**
+
+```vue
+<script setup>
+import { reactive } from 'vue';
+import {defindPerson} from '../store/store.js'
+let data = defindPerson();
+</script>
+<template>
+  <div>
+    <h1>P2</h1>
+    uname <input type="text" v-model="data.uname">
+    pwoed <input type="text" v-model="data.pword">
+    <button @click="data.$patch({uname:'李四',pword:'password'})">批量</button>
+  </div>
+</template>
+<style scoped>
+ 
+</style>
+```
+
+# Element-plus
+
+项目构建时需要typescript
+
+组件库
+
+```bash
+npm install element-plus
+```
+
+全局引入
+
+**main.js**
+
+```js
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+app.use(ElementPlus)
+```
+
