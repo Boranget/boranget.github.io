@@ -904,3 +904,33 @@ mysql的时间戳为10位数字而java中时间戳为13位数字
 - 请求体为xml完整报文
 - 请求头content-type设为application/xml
 - 其余认证等
+
+# FastJSON反序列化列表出错
+
+报错：
+
+```
+Exception in thread "main" com.alibaba.fastjson2.JSONException: illegal input， offset 647, char [
+	at com.alibaba.fastjson2.JSONReader.read(JSONReader.java:2043)
+	at com.alibaba.fastjson2.reader.ObjectReaderImplMap.readObject(ObjectReaderImplMap.java:434)
+	at com.alibaba.fastjson2.reader.ORG_2_12_TicketsDto.readObject(Unknown Source)
+	at com.alibaba.fastjson2.reader.ORG_1_4_TicketsQueryRespDto.readObject(Unknown Source)
+	at com.alibaba.fastjson2.JSON.parseObject(JSON.java:726)
+	at com.alibaba.fastjson2.JSONObject.parseObject(JSONObject.java:1987)
+	at FastJsonTest.main(FastJsonTest.java:145)
+```
+
+原因：实体类中List使用了泛型接收
+
+```java
+  /**容联返回工单数据*/
+    private List<TicketsDto> data;
+```
+
+解决：去掉泛型声明
+
+```java
+ private List data;
+```
+
+其实是该List属性的set方法上不能加泛型
