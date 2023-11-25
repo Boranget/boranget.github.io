@@ -16,3 +16,7 @@ categories:
 - @RunWith 更改测试运行器
 - @BeforeClass 在@Test之前执行一次
 - @BeforeMethod 在每次@Test之前都执行一次
+
+# 测试API
+
+- Assertions.assertEquals(表达式1，表达式2)，判断两个表达式的结果是否相同
