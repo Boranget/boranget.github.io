@@ -2013,3 +2013,12 @@ public class NameCheckProcessor extends AbstractProcessor {
 ```
 
 # 后端编译与优化
+
+# 异常栈信息丢失
+
+若某个异常在某个方法内频繁抛出，则jvm会对该方法进行重编译，在一定条件下使用预先生成的异常代替真正的异常对象，这些预先生成的异常没有堆栈，抛出速度非常快也无需额外分配内存。解决：
+
+```jvm
+-XX:-OmitStackTraceInFastThrow
+```
+
