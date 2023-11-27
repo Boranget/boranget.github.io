@@ -152,6 +152,10 @@ maven的三种打包方式：pom、jar、war
 - war：打包为war包，用于服务器
 - pom：用在父级工程或者聚合工程中，用来做jar包的版本控制，需知名聚合工程的打包方式为pom
 
+# 安装
+
+将打包的结果存入本地仓，方便其他项目引用
+
 # 坐标
 
 三个向量
@@ -196,15 +200,121 @@ com.公司.业务线.子业务线，最多四级，一般三级
 
 ## 依赖范围
 
+通过设置坐标的依赖范围，可以设置对应jar包的作用范围：编译环境、测试环境、运行环境。三种依赖范围对应三个classpath。
+
+- compile
+  默认范围，在三个classpath中都会引用
+
+- test
+  只在测试classpath中有效，例如junit依赖
+
+- provided
+  provided，意思是被提供的，范围为provided的依赖会被认为在运行环境中已经默认存在了，所以运行环境的classpath并不会携带这个依赖。只在编译和测试两个classpath有效。
+
+- runtime
+  只在运行和测试classpath有效，比如jdbc的实现依赖
+
+- system
+  被系统提供。用于添加非maven仓库的本地依赖。通过dependency中的systemPath元素指定本地路径。与provided的效果相同，编译和测试有效。会导致可移植性降低
+
+- import
+  与dependencyManagement元素配合使用，其功能为将目标pom文件中的dependencyMenagement的配置导入并合并到当前pom的dependencyMenagement中。 
+
+  
+
 ![image-20220728204939652](maven/image-20220728204939652.png)
 
-## 依赖的传递与排除
+## 依赖的传递
+
+### 作用
+
+- 简化依赖导入过程
+- 确保依赖版本正确
+
+### 原则
+
+- 只有compile范围依赖可以传递
+- 若设置了optional标签，则不能传递（比如自定义starter）
+
+## 依赖冲突
+
+导入的不同依赖中引入了不同版本的同一依赖
 
 ![img](maven/{XG4{_E](@8CMUAIVYA%)I.png)
 
 ![计算机生成了可选文字: @依赖的原则 [1]作。鮃决凄工程之河时酊包冲突河题 [2]情景过定1睑i正莖径最短者优先原则 MakeFriends g4j．1.2．14 H》0i皂nd g4j．1.2．14 满景设2：验证径河盯先声明者优先 MakeFriends HelloFriend OurFriends H》0 g4j．1．2．17 《og4j．1.2．14 《og4j．1.2．17 先声明指的是dependen（y标签的声明顺吊](maven/clip_image001.png)
 
 ![image-20220728205457150](maven/image-20220728205457150.png)
+
+### 自动选择
+
+- 短路优先
+  顾名思义，依赖路径最短，关系最近的依赖优先
+- 先声明优先
+  在路径长度相同的情况下，dependency中先声明的依赖所引入的版本优先
+
+### 手动排除
+
+手动排除无需指定版本
+
+```xml
+<dependencies>  
+    ...  
+    <dependency>  
+        <groupId>sample.group</groupId>  
+        <artifactId>sample-artifact</artifactId>  
+        <version>1.0.0</version>  
+        <exclusions>  
+            <exclusion>  
+                <groupId>excluded.group</groupId>  
+                <artifactId>excluded-artifact</artifactId>  
+            </exclusion>  
+        </exclusions>  
+    </dependency>  
+    ...  
+</dependencies>  
+```
+
+
+
+# Properties
+
+properties中设置变量
+
+通过${变量名}引用
+
+# Build
+
+- 指定打包文件的名称
+  filename标签
+- 指定包含的文件格式和排除的文件
+  比如包中的xml文件（mapper）
+  resource标签
+- 配置更高版本的插件
+  比如修改jdk版本、tomcat插件、mybatis分页插件、mybatis逆向工程插件等
+
+```xml
+<project>  
+    <build>
+        <finalName>test.jar</finalName>  
+        <resources>  
+            <resource>  
+                <directory>src/main/java</directory> <!-- 指定XML文件的目录 -->  
+                <includes>  
+                    <include>**/*.xml</include> <!-- 匹配所有以.xml结尾的文件 -->  
+                </includes>  
+            </resource>  
+        </resources>  
+        <plugins>  
+            <plugin>  
+                
+            </plugin> 
+        </plugins>  
+    </build>  
+</project>
+```
+
+
 
 # 生命周期
 
@@ -233,13 +343,64 @@ com.公司.业务线.子业务线，最多四级，一般三级
 
 4. 相似的目标会由特定的插件完成：比如编译与测试编译都是由maven-compiler-plugin完成
 
-# 继承
+# 父工程
+
+父工程不应该有任何代码，只应该作为依赖管理，不参与打包，打包方式为pom。src文件夹可删除（建议），子工程应该建在父工程下面的module。子工程的groupid与version与父工程相同，子工程的坐标只需要指定artifactid
+
+- 父工程中引入的依赖会被继承到子工程中，这种传递没有范围限制，是无条件的。一般不会直接在父工程中引用依赖
+- 一般使用dependencyMenagement用于管理版本，子工程中引用父工程中控制的依赖的时候不需要填写版本号
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+  <modelVersion>4.0.0</modelVersion>  
+  
+  <parent>  
+    <groupId>com.example</groupId>  
+    <artifactId>parent-project</artifactId>  
+    <version>1.0.0</version>  
+  </parent>  
+  
+  <artifactId>child-project</artifactId>  
+  
+</project>
+```
+
+## 继承
+
+继承是指让一个项目从另一个项目中继承信息，继承可以让我们在多个项目中共享配置信息。简化项目的管理和维护工作 
 
 ![](maven/clip_image001-1659080814511.png)
 
 ![](maven/clip_image001-1659080836840.png)
 
-# 聚合
+## 聚合
+
+将多个项目组织到一个父级项目中，以便一起构建和管理
+
+- 管理多个子项目
+- 构建和发布一组相关的子项目
+- 优化构建顺序，先构建被依赖的，再构建依赖的
+- 统一管理依赖
+
+父工程中这样定义聚合项目
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+    <modelVersion>4.0.0</modelVersion>  
+    <groupId>com.example</groupId>  
+    <artifactId>parent</artifactId>  
+    <version>1.0-SNAPSHOT</version>  
+    <packaging>pom</packaging>  
+    <modules>  
+        <module>child1</module>  
+        <module>这里是子工程的路径而非工程名</module>  
+    </modules>  
+</project>
+```
+
+
 
 ![](maven/clip_image001-1659080776838.png)
 
@@ -361,7 +522,8 @@ mirrorOf意思就是当前镜像是为那个仓库做镜像？配置为*意思�
 
 # 依赖下载失败
 
-- 本地仓中删除该依赖后重新下载
+- 清除本地仓缓存（*.lastUpdated文件），缓存存在的情况下刷新不会重新下载。缓存在本地仓该依赖坐标文件夹中
+- 本地仓中删除该依赖后重新下载（删除版本文件夹）
 
 # Maven创建web项目
 
@@ -374,3 +536,129 @@ mirrorOf意思就是当前镜像是为那个仓库做镜像？配置为*意思�
     ![image-20231125153338143](maven/image-20231125153338143.png)
 
     src.main下会出现带蓝点的webapp目录 
+
+# Maven私服
+
+## 优势
+
+- 节省外网带宽
+- 下载速度更快
+- 便于部署第三方构建
+- 提升项目构建稳定性
+- 降低中央仓库压力
+
+## 产品
+
+- apache 的 archiva
+- Jfrog 的 Artifactory
+- Sonatytpe 的 Nexus
+
+## Nexus
+
+### 下载安装
+
+[下载地址 Download (sonatype.com)](https://help.sonatype.com/repomanager3/product-information/download)
+
+下载后的文件是一个zip，将其解压到指定目录，其中包含两个文件夹，带版本号的文件夹是软件主体，另一个是资源文件夹。
+
+管理员模式cmd进入软件目录的bin中，以下命令
+
+```bash
+# 启动
+./nexus /run
+# 出现 Started sonatype...为启动成功
+```
+
+默认端口号8081
+
+若首页一直转圈，返回命令行，ctrl+c
+
+### 初始化
+
+右上角登录，显示默认账号与密码存放位置，输入新密码。
+
+选择是否允许匿名访问。
+
+### 仓库
+
+- maven-central Nexus对Maven中央仓库的代理
+- maven-public Nexus默认创建，共开发人员下载使用的组仓库
+- maven-releases Nexus默认创建，共开发人员部署自己jar包的宿主仓库，要求为releases版本
+- maven-snapshots Nexus默认创建，共开发人员部署自己jar包的宿主仓库，要求为snapshots版本
+
+### 下载jar包
+
+将私服以镜像的方式配置到maven配置文件中，镜像地址从nexus管理页面中，仓库后面的URL-copy按钮获取
+
+- 若禁用了匿名访问
+  在maven配置文件中的servers标签中添加server配置
+
+  ```xml
+  <settings>  
+    ...  
+    <servers>  
+      <server>  
+        <!-- 这里的id与镜像的id需一致 -->
+        <id>nexus-private</id>  
+        <username>your-username</username>  
+        <password>your-password</password>  
+      </server>  
+    </servers>  
+    ...  
+  </settings>
+  ```
+
+- 若没有禁用匿名访问，则开放访问，无需配置
+
+### 发布jar包
+
+pom中：
+
+```xml
+<project>  
+  ...  
+  <distributionManagement>  
+    <snapshopRrepository>  
+      <!--这里的id值与xml中server的配置一致-->
+      <id>nexus-private</id>  
+      <name>demo</name>
+      <url>http://nexus.example.com/repository/private/</url>  
+    </snapshopRrepository>  
+  </distributionManagement>  
+  ...  
+</project>
+```
+
+生命周期运行deploy
+
+### 引用jar包
+
+pom中
+
+```xml
+<project>  
+  ...  
+  <repositories>  
+    <repository>  
+      <id>nexus-private</id>  
+      <url>http://nexus.example.com/repository/private/</url>  
+      <snapshots>  
+        <enabled>true</enabled>
+        <!--
+        <updatePolicy>always</updatePolicy>  
+        <checksumPolicy>warn</checksumPolicy>  
+		-->
+      </snapshots>  
+      <releases>  
+        <enabled>true</enabled>
+        <!--
+        <updatePolicy>always</updatePolicy>  
+        <checksumPolicy>warn</checksumPolicy>  
+		-->
+      </releases>  
+    </repository>  
+  </repositories>  
+  ...  
+</project>
+```
+
