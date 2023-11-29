@@ -723,7 +723,7 @@ information that should help you find out what is causing the crash.
 
 ![image-20230615232847769](experience/image-20230615232847769.png)
 
-查询资料后，感觉又可能是缓冲池的原因，接着查看数据库缓冲池配置，发现大小为8M，偏小，于是改为128M，启动之后，系统访问数据库，数据库正常运行。
+查询资料后，感觉可能是缓冲池的原因，接着查看数据库缓冲池配置，发现大小为8M，偏小，于是改为128M，启动之后，系统访问数据库，数据库正常运行。
 
 
 
@@ -896,6 +896,8 @@ mysql的时间戳为10位数字而java中时间戳为13位数字
 
 # postman get请求可以带body
 
+不只是postman，其实http协议本身就没有限制get请求带body，除此之外post请求也可以带query
+
 # postman调用webservice服务
 
 使用post方式
@@ -933,4 +935,35 @@ Exception in thread "main" com.alibaba.fastjson2.JSONException: illegal input，
  private List data;
 ```
 
-其实是该List属性的set方法上不能加泛型
+根本原因是该List属性的set方法上不能加泛型
+
+# 服务停止脚本
+
+```shell
+@echo off
+set port=9001
+for /f "tokens=1-5" %%i in ('netstat -ano^|findstr ":%port%"') do (
+ echo kill the process %%m who use the port 
+ taskkill /pid %%m -t -f
+ goto q
+)
+:q
+```
+
+> 这是一个批处理（Batch）脚本，主要用来查找并终止使用特定端口的进程。我们可以逐行解释这个脚本：
+>
+> 1. `@echo off`: 关闭命令的回显，这样在执行脚本时不会显示命令本身。
+> 2. `set port=9001`: 设置变量`port`的值为9001，这是你要查找和终止进程使用的端口号。
+> 3. `for /f "tokens=1-5" %%i in ('netstat -ano^|findstr ":%port%"') do (`: 这是一个for循环，它使用`netstat -ano`命令来获取当前系统所有打开的网络连接和监听的端口，然后通过`findstr ":%port%"`筛选出使用特定端口的行。
+>     - `netstat -ano`：这是一个Windows命令，用于显示所有网络连接和端口。
+>     - `findstr ":%port%"`：这是Windows的findstr命令，用于在文本中查找包含特定文本的行。这里它查找包含端口号的行。
+>     - `tokens=1-5`：这是一个for循环的选项，表示将每行的内容分割成5个部分，并用这些部分填充变量`%%i`、`%%j`、`%%k`、`%%l`和`%%m`。
+> 4. `echo kill the process %%m who use the port`: 显示一条消息，指出要终止的进程ID（PID）。
+> 5. `taskkill /pid %%m -t -f`: 使用`taskkill`命令终止特定的进程。这是终止进程的命令。
+>     - `/pid %%m`：指定要终止的进程ID。
+>     - `-t`：关闭所有使用该进程的窗口。
+>     - `-f`：强制关闭进程。
+> 6. `goto q`: 跳转到标签`q`。在批处理脚本中，`goto`命令用于跳转到指定的标签。
+> 7. `:q`: 这是标签`q`，表示脚本的结束。在批处理脚本中，标签是以`:`开头的。
+>
+> 这个脚本的目的是找到并终止使用端口9001的所有进程。不过要注意，使用强制关闭选项（-f）可能会导致数据丢失或其他问题，因此在使用时需要谨慎。

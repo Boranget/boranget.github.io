@@ -72,7 +72,7 @@ logging:
       <Policies>
         <!--每天生成一个日志文件-->
         <!-- 这里的策略是根据filePattern中的粒度决定的，
-             dilePatter粒度为天，这里就是一天一个日志 -->
+             filePatter粒度为天，这里就是一天一个日志 -->
         <TimeBasedTriggeringPolicy/>
       </Policies>
       <!--保留30天日志-->
