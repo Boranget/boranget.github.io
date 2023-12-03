@@ -46,89 +46,6 @@ categories:
 }
 ```
 
-# XML
-
-多以dom4j为例
-
-**注意：jdk1.8之前的版本（不包括1.8）需要使用dom4j 2.0.*的版本，与其后版本不兼容**
-
-## 无中生有
-
-逐个节点构建一个xml结构,并导出为字符串
-
-```jsva
-Document document = DocumentHelper.createDocument();
-Element rootElement = document.addElement("ROOT");
-Element empId = rootElement.addElement("ID");
-empId.setText("2021");
-Element empCode = rootElement.addElement("CODE");
-empCode.setText("200");
-Element empTime = rootElement.addElement("TIME");
-empTime.setText(time);
-String xmlStr = document.asXML().toString();
-```
-
-## xml字符串转为xml对象
-
-```java
-Document dom =DocumentHelper.parseText(xmlStr);
-Element root=dom.getRootElement();
-String id = root.element("ID").getText();
-String code = root.element("CODE").getText();
-String message = root.element("MESSAGE").getText();
-```
-
-## 通过xpath获取节点
-
-```java
-Document document = ....; 
-List<Node> nodes = document.selectNodes("//nodeName");
-```
-
-路径前带双斜杠为从寻找整个文档中所有的name为"nodeName"的节点
-
-路径前带单斜杠为在根节点下寻找某节点
-
-```jsva
-for (Node node : nodes) {
-    ......
-    String s = node.selectSingleNode("rn5:id").getText();
-    .............
-}
-```
-
-路径前不带斜杠为在当前调用node下寻找某节点.
-
-**注意**: 如果在selectSingleNode方法中传入了双斜杠表达式,他会寻找整个文档中第一个名称为nodeName的节点返回
-
-可添加 | 表示多个xpath
-
-## 命名空间问题
-
-带命名空间的xml字符串转为dom对象, 并且在寻找节点时要带命名空间
-
-```java
-		
- private static Document getDocumentFromXmlWithNameSpace(String xmlRes) {
-        Map<String, String> xmlMap = new HashMap<>();
-		// 将所有命名空间加入此map
-        xmlMap.put("rn0", "urn:java.lang");
-        xmlMap.put("rn2", "urn:com.sap.aii.mdt.api.data");
-        ...............
-        SAXReader reader = new SAXReader();
-        reader.getDocumentFactory().setXPathNamespaceURIs(xmlMap);
-        Document document = null;
-        try {
-            byte[] bytes = xmlRes.getBytes();
-            document = reader.read(new ByteInputStream(bytes, bytes.length));
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-        return document;
-}
-
-```
-
 # Base64
 
 ## jdk8之前commons-codec1.3
@@ -967,3 +884,19 @@ for /f "tokens=1-5" %%i in ('netstat -ano^|findstr ":%port%"') do (
 > 7. `:q`: 这是标签`q`，表示脚本的结束。在批处理脚本中，标签是以`:`开头的。
 >
 > 这个脚本的目的是找到并终止使用端口9001的所有进程。不过要注意，使用强制关闭选项（-f）可能会导致数据丢失或其他问题，因此在使用时需要谨慎。
+
+# java获取resources文件夹/jar包中的内容
+
+maven项目resources中的内容打包后会存放在jar包根目录，获得其内容的方法是使用class
+
+```java
+// 获取resources中的init目录URL
+final String init = Oexsder.class.getResource("/init").getFile();
+```
+
+但获取到的url也无法通过该路径读入jar包中的文件，也无法获取jar下文件夹的list，所以这里应该指定文件名并且直接获取文件输入流。
+
+```java
+inputStream = Oexsder.class.getResourceAsStream(sourceFileName);
+```
+

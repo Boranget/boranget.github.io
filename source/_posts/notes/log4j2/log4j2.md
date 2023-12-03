@@ -7,7 +7,67 @@ categories:
   - 笔记
 ---
 
-# 依赖
+# 单独使用
+
+## 依赖
+
+```xml
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.22.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.22.0</version>
+        </dependency>
+```
+
+## 配置
+
+单独使用需要自行编写配置文件放入指定目录
+
+> og4j 2.x版本不再支持像1.x中的.properties后缀的文件配置方式，2.x版本配置文件后缀名只能为".xml",".json"或者".jsn"。系统选择配置文件的优先级(从先到后)如下：
+>
+> (1).classpath下的名为log4j2-test.json 或者log4j2-test.jsn的文件。
+>
+> (2).classpath下的名为log4j2-test.xml的文件。
+>
+> (3).classpath下名为log4j2.json 或者log4j2.jsn的文件。
+>
+> (4).classpath下名为log4j2.xml的文件。
+>
+> 我们一般默认使用log4j2.xml进行命名。如果本地要测试，可以把log4j2-test.xml放到classpath，而正式环境使用log4j2.xml，则在打包部署的时候不要打包log4j2-test.xml即可。
+
+缺省配置文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+<Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+    </Console>
+</Appenders>
+<Loggers>
+    <Root level="error">
+        <AppenderRef ref="Console" />
+    </Root>
+</Loggers>
+</Configuration>
+```
+
+## 调用
+
+```java
+Logger logger = LogManager.getLogger(class);
+```
+
+# SpringBoot集成
+
+## 依赖
 
 ```xml
  <!--spring web-->
@@ -30,7 +90,7 @@ categories:
 
 
 
-# 配置配置文件的读取路径
+## 配置配置文件的读取路径
 
 application.yml中配置
 

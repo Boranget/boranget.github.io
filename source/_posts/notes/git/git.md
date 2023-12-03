@@ -166,6 +166,13 @@ git merge 分支名
 
 解决方式为: 打开冲突文件,删除特殊符号,继续编辑,保存后add commit,此时状态恢复正常
 
+## 删除分支
+
+- 删除远程仓库分支
+    git push origin --delete name
+- 删除本地分支
+    git branch -d name
+
 ## 创建远程仓库
 
 在github等平台上创建仓库
