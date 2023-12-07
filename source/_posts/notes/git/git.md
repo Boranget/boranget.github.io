@@ -148,6 +148,8 @@ git branch -v
 
 会列出一张表,其中*号所在位置代表当前所在的分区
 
+git branch -r 查看远程仓库分支
+
 ## 切换分支
 
 git checkout 分支名

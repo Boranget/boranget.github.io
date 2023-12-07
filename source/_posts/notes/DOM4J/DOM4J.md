@@ -194,5 +194,71 @@ Element complexType = new DefaultElement("complexType", DEFAULT_NAMESPACE);
 Element schema = new DefaultElement("xsd:schema");
 ```
 
+# 写入到文件
+
+将document的内容写入到文件，一种方式是使用asXML后获取字符串手动存储，另一种是使用dom4j的XMLWriter，可以同时设置格式化缩进与编码
+
+**一个坑，不要使用FileWriter配合XMLWriter的方式，这样会导致format设置的编码无效，正确搭配是FileOutPutStream**
+
+[xmlWriter以UTF-8格式写xml问题_xmlwriter里面可以操作outputformat-CSDN博客](https://blog.csdn.net/m0_37564426/article/details/88665677)
+
+```java
+/**
+ * @author boranget
+ * @date 2023/12/3
+ */
+public class OexsdWriter {
+    static final Logger logger = LogManager.getLogger(OexsdWriter.class);
+    public static void writeOexsdsToFile(String location, String excelFileName, Map<String, Document> ori) {
+
+        ori.forEach((fileName, document) -> {
+            // 格式化输出
+            OutputFormat format = new OutputFormat().createPrettyPrint();
+            // 紧凑输出
+            // OutputFormat format = new OutputFormat().createCompactFormat();
+            // 设置编码格式
+            format.setEncoding("utf-8");
+            // 获取文件夹
+            // 这里不直接用excelFileName.split()是避免输入参数为相对路径（./file.xlsx）的情况下会被第一个.干扰
+            File newFolder = new File(location, new File(excelFileName).getName().split("\\.")[0]);
+            if (!newFolder.exists()) {
+                newFolder.mkdirs();
+            }
+            // 创建目标文件
+            File targetXsdFile = new File(newFolder, fileName + ".xsd");
+            // 这里不能使用FileWriter，否则会导致format中设置的编码无效
+            // FileWriter fileWriter = null;
+            FileOutputStream fileOutputStream = null;
+            XMLWriter xmlWriter = null;
+            try {
+                fileOutputStream = new FileOutputStream(targetXsdFile);
+                xmlWriter = new XMLWriter(fileOutputStream,format);
+                xmlWriter.write(document);
+                logger.info("xsd [ "+targetXsdFile.getAbsolutePath()+" ]写入成功");
+            } catch (IOException e) {
+                logger.error("xsd [ "+targetXsdFile.getAbsolutePath()+" ]写入到文件时出现异常");
+                e.printStackTrace();
+            } finally {
+                if (xmlWriter != null) {
+                    try {
+                        xmlWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+}
+
+```
+
 
 

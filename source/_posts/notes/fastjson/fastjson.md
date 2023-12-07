@@ -86,3 +86,25 @@ JSONObject.parseObject(Files.readString(path), clazz, Feature.SupportSmartMatch)
     }
 ```
 
+# 字段序列化映射
+
+```java
+/在实体类的get方法中加上@JSONField注解，注解里面标识了需要转换成json格式字符串的字段名
+@JSONField(name ="Lifnr")
+public String getLifnr() {
+    return Lifnr;
+}
+```
+
+# 常用方法
+
+- 对象转为json字符串：JSON.toJSONString(Object object)
+
+    ```java
+    // 若需要保留null值
+    JSON.toJSONString(saveExportDto, String.valueOf(SerializerFeature.WriteMapNullValue));
+    ```
+
+- json字符串转为JSONObject对象：JSON.parseObject(String string)
+
+    
