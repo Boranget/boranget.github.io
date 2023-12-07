@@ -218,7 +218,7 @@ com.公司.业务线.子业务线，最多四级，一般三级
   被系统提供。用于添加非maven仓库的本地依赖。通过dependency中的systemPath元素指定本地路径。与provided的效果相同，编译和测试有效。会导致可移植性降低
 
 - import
-  与dependencyManagement元素配合使用，其功能为将目标pom文件中的dependencyMenagement的配置导入并合并到当前pom的dependencyMenagement中。 
+  与dependencyManagement元素配合使用，其功能为将目标pom文件中的dependencyMenagement的配置导入并合并到当前pom的dependencyMenagement中。 目标依赖要求打包方式为pom。
 
   
 
@@ -692,3 +692,34 @@ pom中
 ```
 
 会生成两个包，一个包（ori前缀）是没有依赖的，一个包是有依赖的
+
+# spring-boot-maven-plugin
+
+公共模块不能使用spring-boot-maven-plugin插件打包，因为spring-boot-maven-plugin打包出来的可以直接使用java-jar执行的，因为常出现父项目使用spring-boot-maven-plugin，导致整个项目不能打包
+
+解决方法：去掉父模块中的spring-boot-maven-plugin，在需要使用的使用的子模块中加入spring-boot-maven-plugin
+
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-maven-plugin</artifactId>
+      <!-- 2019.11.13 新增部分 -->
+      <configuration>
+        <!-- 如果将这个配置设置为 true，打包出来的 jar/war 就是 可执行 的了，可以用如下方式执行： -->
+        <executable>true</executable>
+        <!-- 提示有些包不存在 -->
+        <!-- 不在maven中的jar包，在编译打包的时候进行关联打包 -->
+        <includeSystemScope>true</includeSystemScope>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+```
+
+# idea识别maven项目
+
+一种，右侧maven插件中可以看到maven项目，但是java文件显示异常也无法对pom文件进行刷新操作：
+
+查看是否在maven插件中对应的模块右键Ignore Projects，取消勾选
