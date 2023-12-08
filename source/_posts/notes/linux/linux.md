@@ -761,3 +761,15 @@ ip route delete 192.168.1.0/24 dev eth0 # 删除路由
 - 安装sshserver
   
   apt-get install openssh-server
+
+# 环境变量配置
+
+编辑 `/etc/profile`，末尾添加export
+
+编辑完成保存
+
+```shell
+# 重新加载使其生效
+source /etc/profile
+```
+
