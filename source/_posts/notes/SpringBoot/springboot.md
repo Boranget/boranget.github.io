@@ -888,9 +888,7 @@ public class ajaxController {
 
 ```
 
-# 一些问题
-
-## restful风格的前端请求
+# restful风格的前端请求
 
 - ```
   spring boot 默认关闭了隐藏方法过滤器,使得前端 form 无法发送 put 或者 delete 请求,需要在 yml 中开启
@@ -901,17 +899,17 @@ public class ajaxController {
   *         enabled: true
   ```
 
-## required=false
+# required=false
 
 某些请求参数不一定会传入，为了防止400错误，可使用 required = false来设置该参数
 
 ![image-20220728165405845](springboot/image-20220728165405845.png)
 
-## thymeleaf非空判断
+# thymeleaf非空判断
 
 thymeleaf中如果要从一个对象中获取属性，但对象有可能为null，可使用问号进行非空判断![image-20220728165512917](springboot/image-20220728165512917.png)
 
-## ajax
+# ajax
 
 - ```js
    $.ajax({
@@ -931,4 +929,49 @@ thymeleaf中如果要从一个对象中获取属性，但对象有可能为null�
           }
       })
   ```
+
+# MultipartFile设置文件的大小
+
+```yaml
+ //spring boot进行了集成，需要进行文件大小的设置
+ spring:
+ 	servlet:
+    	multipart:
+      		max-file-size: 50MB
+      		max-request-size: 50MB
+```
+
+# 邮件发送
+
+使用spring-boot-starter-mail
+
+```yaml
+mail:
+    #配置smtp服务主机地址
+    host: smtp.mxhichina.com
+    #发送者邮箱
+    username: test@test.cn
+    #配置密码或者授权码
+    password: 
+    #端口号465或587
+    port: 465
+    #默认的邮件编码为UTF-8
+    default-encoding: UTF-8
+    #其他参数
+    properties:
+      mail:
+        #配置SSL 加密工厂
+        smtp:
+        	//账号信息认证
+          auth: true
+          #starttls:
+            #enable: true
+          ssl:
+            #本地测试，先放开ssl
+            enable: true
+            required: true
+            auth: true
+          #开启debug模式，这样邮件发送过程的日志会在控制台打印出来，方便排查错误
+        debug: true
+```
 

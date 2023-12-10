@@ -15,20 +15,6 @@ categories:
 - 编写mapper映射文件
 - 使用mapper
 
-# 一些问题
-
-## 扫不到mapper
-
-mapper上使用@Repository出现无法扫描到mapper的情况
-
-在springboot 中，给mapper的接口上加上@Repository，无法生成相应的bean,从而无法@Autowired，这是因为spring扫描注解时，自动过滤掉了接口和抽象类。
-
-这种情况下可以在启动的类前加上@MapperScan（“×××.×××.mapper”)，从而使mapper可以自动注入，但是idea还会提示bean无法找到，但是不会影响运行。
-
-## set自动消除逗号
-
-set自动消除多余的逗号需要把逗号后置
-
 # 引入依赖
 
 ```xml
@@ -75,7 +61,7 @@ mybatis:
   config-location: classpath:mybatis/mybatis-config.xml  #全局配置文件位置
   mapper-locations: classpath:mybatis/mapper/*.xml  #sql映射文件位置
   configuration:
-    map-underscore-to-camel-case: true # 下划线到驼峰的转换
+    map-underscore-to-camel-case: true # 下划线到驼峰的转换（不建议使用，还是建议自己在resultMap中配置）
 
 ```
 
@@ -110,16 +96,6 @@ public interface CityMapper {
 1. 不需要的字段也会传输到前端,臃肿且不安全
 2. 某些字段需要先行处理再展示
 3. 某些信息需要展示但不需要存入数据库
-
-# MyBatis Plus
-
-```xml
-<dependency>
-    <groupId>com.baomidou</groupId>
-    <artifactId>mybatis-plus-boot-starter</artifactId>
-    <version>最新版本</version>
-</dependency>
-```
 
 # Type Handler
 
@@ -259,6 +235,8 @@ association 标签
 
 且必须要有一个column属性
 
+这里association中有select属性，指向当前mapper中的其他方法，会分步调用该方法，将column作为参数传入，接着将结果注入实体类。
+
 ```xml
  <resultMap id="RoleResultMap" type="com.orange.eneity.OrangeRole">
         <id column="id" property="id"/>
@@ -292,25 +270,22 @@ association 标签
     ```xml
     <mapper namespace="com.example.firstdemo.domain.repository.HandStudentCourseCoreRepository">
         <resultMap id="HandStudentCourseCoreResultMap" type="com.example.firstdemo.domain.vo.HandStudentCourseCore">
-                <result column="STUDENT_NO" property="studentNo"/>
-            <collection property="studentCourseCore"
-                        ofType="com.example.firstdemo.domain.entity.HandStudentCore"
-                        foreignColumn="STUDENT_NO">
+            <result column="STUDENT_NO" property="studentNo"/>
+            <collection property="studentCourseCore" ofType="com.example.firstdemo.domain.entity.HandStudentCore" foreignColumn="STUDENT_NO">
                 <id column="STUDENT_NO" property="studentNo"/>
                 <id column="COURSE_NO" property="courseNo"/>
                 <id column="CORE" property="core"/>
             </collection>
         </resultMap>
         <select id="selectHandStudentCourseCore" resultMap="HandStudentCourseCoreResultMap">
-            select hs.STUDENT_NO,
-                   hsc.*
-            from hand_student hs left join hand_student_core hsc on hs.STUDENT_NO = hsc.STUDENT_NO
+            select hs.STUDENT_NO, hsc.*
+            from hand_student hs left join hand_student_core hsc
+            on hs.STUDENT_NO = hsc.STUDENT_NO
             where hs.STUDENT_NO = #{studentNo};
         </select>
-    
     </mapper>
     ```
-
+    
 - vo类构造
 
     ```java
@@ -383,8 +358,281 @@ association 标签
 
 像这里的collection中就包含一个select操作
 
-# sql语句
+# sql语句分号
 
 映射文件中编写sql语句时不需要加分号，mybatis执行时会自动添加，如果添加了分号，在使用分页插件时，分页插件会在sql语句后添加limit操作，如果前面有个分号会导致最终语句分割从而报错。
 
 ![image-20231207170839724](mybatis/image-20231207170839724.png)
+
+
+
+# 扫不到mapper
+
+mapper上使用@Repository出现无法扫描到mapper的情况
+
+在springboot 中，给mapper的接口上加上@Repository，无法生成相应的bean,从而无法@Autowired，这是因为spring扫描注解时，自动过滤掉了接口和抽象类。
+
+这种情况下可以在启动的类前加上@MapperScan（“×××.×××.mapper”)，从而使mapper可以自动注入，但是idea还会提示bean无法找到，但是不会影响运行。
+
+# Mapper接口Autowired爆红
+
+在Mapper接口上使用@Mapper注解，在别的类中使用Autowired会爆红
+
+不影响运行，无需解决
+
+# 多参数方法
+
+mybatis中，多参数的接口方法需要在形参上用@Param标注字段名，因为mybatis会将多个参数封装为map传给mapper，默认key为param1、param2.....，在增加自定义注解后，原先的默认参数名还可以使用，只是同时会增加自定义的key
+
+- 顺序传参
+
+```xml
+public Integer countRole(int a, int b);
+
+<select id="countRole" resultType="Integer">
+    select count(0)+#{param1}+#{param2} from role
+</select>
+```
+
+- @param传参
+
+```xml
+public Integer countRole(@Param("a") int a,@Param("b") int b);
+
+<select id="countRole" resultType="Integer">
+    select count(0)+#{a}+#{b} from role
+</select>
+```
+
+- map传参
+注意多个parameterType属性
+```xml
+public User selectUser(Map<String, Object> params);
+
+<select id="selectUser" parameterType="java.util.Map" resultMap="UserResultMap">
+    select * from user
+    where user_name = #{userName} and dept_id = #{deptId}
+</select>
+```
+
+- 实体类传参
+注意多个parameterType属性
+```xml
+public User selectUser(User user);
+
+<select id="selectUser" parameterType="com.test.User" resultMap="UserResultMap">
+    select * from user
+    where user_name = #{userName} and dept_id = #{deptId}
+</select>
+```
+
+# $与#的区别
+
+#{}的时候，sql中，#{}的内容会自动被加上“”，而${}是直接替换。
+
+- #{}是预编译处理
+- ${}原样输出,会直接插入sql语句中
+
+# 设置返回结果为map
+
+在接口方法上标注@MapKey("name")，name为作为key的列名
+
+```java
+@Mapper
+public interface RoleMapper extends BaseMapper<Role> {
+    @MapKey("name")
+    public Map getRole();
+}
+// 注意，xml中的resultMap配置的是map的值的类型，也就是这样配置返回的类型为Map<String,Map>
+<select id="getRole" resultType="Map">
+    select * from role
+</select>
+```
+
+一般应该这样配置
+
+```java
+@MapKey("name")
+public Map<String,Role> getRole();
+<select id="getRole" resultType="com.example.springweb.bean.Role">
+    select * from role
+</select>
+```
+
+# 返回结果List
+
+resultType定为List中的实体类
+
+```java
+public List<Role> getRole();
+<select id="getRole" resultType="com.example.springweb.bean.Role">
+    select * from role
+</select>
+```
+
+# 日志
+
+mybatis在debug级别日志下会打印sql语句
+
+# 缓存
+
+namespace：mapper映射文件
+
+缓存时key值为namespace+sqlId+ 参数
+
+- 一级缓存/本地缓存：sqlsession级别：底层是个map，相同的查询会命中，可以切换范围为statement
+- 二级缓存：被多个sqlsession共享，同一个namespace访问同一个cache
+
+每个session被创建时，mybatis会创建一个与之关联的本地缓存，只要是session执行过的查询结果都会被保存在本地缓存中，所以当再次执行参数相同的相同查询时，会查询本地缓存。本地缓存会在做出修改、事务的提交或回滚以及关闭session时清空。可以设置localCacheScope=STATEMENT来只在语句执行时使用缓存。
+
+如果 localCacheScope 被设置为 SESSION，对于某个对象，MyBatis 将返回在本地缓存中唯一对象的引用。对返回的对象（例如 list）做出的任何修改将会影响本地缓存的内容，进而将会影响到在本次 session 中从缓存返回的值。因此，不要对 MyBatis 所返回的对象作出更改，以防后患。
+
+可通过session.clearCache()方法清除缓存
+
+# 动态sql标签
+
+## if
+
+用于判断条件是否满足，若满足则将其所包含语句拼接到sql中
+
+```xml
+<select id="findActiveBlogWithTitleLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  WHERE state = ‘ACTIVE’
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+  <if test="author != null and author.name != null">
+    AND author_name like #{author.name}
+  </if>
+</select>
+```
+
+## choose、when、otherwise
+
+相当于switch
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+  <choose>
+    <when test="title != null">
+      AND title like #{title}
+    </when>
+    <when test="author != null and author.name != null">
+      AND author_name like #{author.name}
+    </when>
+    <otherwise>
+      AND featured = 1
+    </otherwise>
+  </choose>
+</select>
+```
+
+## trim
+
+自定义动态标签的功能
+
+```xml
+<trim prefix="WHERE" prefixOverrides="AND |OR ">
+  ...
+</trim>
+<trim prefix="SET" suffixOverrides=",">
+  ...
+</trim>
+```
+
+## where
+
+用于避免查询条件不满足导致的拼接过程中where后无条件或者where后丢失第一个条件直接接and
+
+此时会自动去除多余的AND或者OR等连接符，若都不满足也不会拼接where
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  <where>
+    <if test="state != null">
+         state = #{state}
+    </if>
+    <if test="title != null">
+        AND title like #{title}
+    </if>
+    <if test="author != null and author.name != null">
+        AND author_name like #{author.name}
+    </if>
+  </where>
+</select>
+```
+
+## set
+
+set关键字会在行首拼接set关键字，并且在行尾删除额外逗号，所以若要拼接应该把逗号后置而不是放在前面
+
+```xml
+<update id="updateAuthorIfNecessary">
+  update Author
+    <set>
+      <if test="username != null">username=#{username},</if>
+      <if test="password != null">password=#{password},</if>
+      <if test="email != null">email=#{email},</if>
+      <if test="bio != null">bio=#{bio}</if>
+    </set>
+  where id=#{id}
+</update>
+```
+
+## foreach
+
+```xml
+<select id="selectPostIn" resultType="domain.blog.Post">
+  SELECT *
+  FROM POST P
+  WHERE ID in
+  <foreach item="item" index="index" collection="list"
+      open="(" separator="," close=")">
+        #{item}
+  </foreach>
+</select>
+```
+
+## script
+
+用于简单接口的注解中，一般用不到，都这么复杂了还用什么简单接口
+
+```java
+    @Update({"<script>",
+      "update Author",
+      "  <set>",
+      "    <if test='username != null'>username=#{username},</if>",
+      "    <if test='password != null'>password=#{password},</if>",
+      "    <if test='email != null'>email=#{email},</if>",
+      "    <if test='bio != null'>bio=#{bio}</if>",
+      "  </set>",
+      "where id=#{id}",
+      "</script>"})
+    void updateAuthorValues(Author author);
+```
+
+## 内置参数
+
+\_databaseId在用于多数据源选择（方言），\_parameter是方法中的参数(如果有一个参数的情况下就是那个参数)
+
+## bind
+
+额外定义变量
+
+```xml
+<select id="selectBlogsLike" resultType="Blog">
+  <bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
+  SELECT * FROM BLOG
+  WHERE title LIKE #{pattern}
+</select>
+```
+
+# sql
+
+可以将重用sql抽取出来

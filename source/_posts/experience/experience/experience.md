@@ -723,29 +723,6 @@ Aservice中注入了Bservice
 
 其他浏览器使用ietab会直接跳到edge，edge中设置“让ie在microsoft edge中打开网站”为“从不”可以直接打开ie浏览器
 
-# poi导出到excel
-
-老版本的excel行号限制最多65535，相应的当时的poi也有这个限制
-
-```
-java.lang.IllegalArgumentException: Invalid row number (65536) outside allowable range (0..65535)
-	at org.apache.poi.hssf.usermodel.HSSFRow.setRowNum(HSSFRow.java:239)
-	at org.apache.poi.hssf.usermodel.HSSFRow.<init>(HSSFRow.java:85)
-	at org.apache.poi.hssf.usermodel.HSSFRow.<init>(HSSFRow.java:69)
-	at org.apache.poi.hssf.usermodel.HSSFSheet.createRow(HSSFSheet.java:256)
-
-```
-
-新版本的excel行号限制为
-
-> Excel 2003版：zhi列数dao最大256(IV，2的8次方)列，行数最大65536(2的16次方)行；
->
-> Excel 2007版：列数最大16384(XFD，2的14次方)，行数最大1048576(2的20次方)；
->
-> Excel 2013版：列数最大16384(XFD，2的14次方)，行数最大1048576(2的20次方)；
-
-可将poi升级，使用 org.apache.poi.xssf下相应的方法
-
 # tomcat url字符
 
 参考：https://blog.csdn.net/qq_41024101/article/details/106413102
@@ -900,3 +877,27 @@ final String init = Oexsder.class.getResource("/init").getFile();
 inputStream = Oexsder.class.getResourceAsStream(sourceFileName);
 ```
 
+# IDEA迁移项目显示Maven未安装
+
+idea项目位置从一个位置直接拖动到另一个位置后用idea打开，在进行maven生命周期执行时提示maven未安装，查看idea中的maven设置，发现设置的maven位置变了
+
+原因猜测：idea在索引maven位置时使用的是相对路径，项目路径变化后仍然使用相对路径计算maven路径导致项目错误
+
+解决方法：删除项目中的.idea文件夹，重新导入项目，项目模块需要重新导入，非maven、gradle、eclipse项目选择Create module from exiting sources
+
+# Invalid value'factoryBeanObjectType':String
+
+springboot启动报错Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+
+参考：[Invalid value type for attribute 'factoryBeanObjectType': java.lang.String · Issue #31247 · spring-projects/spring-framework (github.com)](https://github.com/spring-projects/spring-framework/issues/31247)
+
+原因是springboot与springcloud版本不匹配
+
+>I just ran into this issue and I found a fix (at least for my case).
+>Eventually, while trying to find the issue, I got the log message that Spring Cloud 2022.0.XX is not compatible with Spring Boot 3.2.XX.
+>
+>I upgraded Spring Cloud to 2023.0.0-RC1 (available since 02.11.2023, see https://spring.io/blog/2023/11/02/spring-cloud-2023-0-0-rc1-aka-leyton-is-now-available) and my issue was fixed.
+>
+>I hope that helps someone.
+
+解决：更换匹配版本的springboot或者springcloud

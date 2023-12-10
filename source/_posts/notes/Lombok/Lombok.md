@@ -21,6 +21,18 @@ categories:
 
 - 导入LomBok依赖
 
+    ```xml
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.30</version>
+        <scope>provided</scope>
+    </dependency>
+    ```
+
+    
+
 # 构造器相关
 
 - @AllArgsConstructor 全参数构造器

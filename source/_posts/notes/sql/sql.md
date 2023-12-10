@@ -27,34 +27,28 @@ WHERE b.value IS NULL;
 
 这里使用了虚拟/临时表的概念,虚拟表不会实际创建一张表,只在当前连接可见,当关闭当前的数据库连接后, 会清除该缓存
 
-# sql 培训笔记
+# 连接时 ON 和 WHERE 的区别
 
-## 其他笔记
+- 在使用left jion时，on和where条件的区别如下：
+  1、 on条件是在生成临时表时使用的条件，它不管on中的条件是否为真，都会返回左边表中的记录。
+  2、where条件是在临时表生成好后，再对临时表进行过滤的条件。这时已经没有left join的含义（必须返回左边表的记录）了，条件不为真的就全部过滤掉。
 
-- 连接时 ON 和 WHERE 的区别
-  - 在使用left jion时，on和where条件的区别如下：
-    1、 on条件是在生成临时表时使用的条件，它不管on中的条件是否为真，都会返回左边表中的记录。
-    2、where条件是在临时表生成好后，再对临时表进行过滤的条件。这时已经没有left join的含义（必须返回左边表的记录）了，条件不为真的就全部过滤掉。
-- 在没有group by时也可以使用having
-- 关于in/exists
-  IN是做外表和内表通过Hash连接，先查询子表，再查询主表，不管子查询是否有数据，都对子查询进行全部匹配。
-  EXISTS是外表做loop循环，先主查询，再子查询，然后去子查询中匹配，如果匹配到就退出子查询返回true，将结果放到结果集
-  所以：子查询结果集越大用EXISTS，子查询结果集越小用IN
+# 在没有group by时也可以使用having
 
-## 一些作业
+# 关于in/exists
 
-### 存储引擎对比表
+IN是做外表和内表通过Hash连接，先查询子表，再查询主表，不管子查询是否有数据，都对子查询进行全部匹配。
+EXISTS是外表做loop循环，先主查询，再子查询，然后去子查询中匹配，如果匹配到就退出子查询返回true，将结果放到结果集
+所以：子查询结果集越大用EXISTS，子查询结果集越小用IN
+
+# 存储引擎对比表
 
 |        | 特性                                                         | 使用场景                                                     |
 | ------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | MyISAM | 1. 不支持事务<br />2. 不支持外键<br />3. 非聚集索引<br />4. 维护一个变量保存行数<br />5. 支持全文索引<br />6. 可以被压缩后进行查询操作<br />7.支持表级锁<br />8.可以没有唯一索引如主键<br />9. 存储文件: frm 表定义文件,mbd 数据文件,myi索引文件 | 大多数都只是读查询<br />可以接受系统奔溃后，MyISAM恢复起来更困难 |
 | InnoDB | 1. 支持事务<br />2. 支持外键<br />3. 聚集索引<br />4. 事务原因无法维护<br />5. 5.7之前不支持全文索引<br />6. 支持表\行级锁<br />7. 必须有一个唯一索引如主键<br />8. frm 表定义文件,ibd数据文件 | 支持事务<br />需要外键                                       |
 
-### 索引对比表
-
-见<索引>
-
-### Explain
+# Explain
 
 - id select 的序列号，有几个select就有几个id，
 - select_type
@@ -95,17 +89,13 @@ WHERE b.value IS NULL;
 - extra
   - 额外信息
 
-### Show log
-
-### 排序函数/开窗函数
+# 排序函数/开窗函数
 
 ![image-20220729144350171](sql/image-20220729144350171.png)
 
 ![image-20220726185823781](sql/image-20220726185823781.png)
 
-## sql基础知识
-
-### 数据库类型
+# 数据库类型
 
 * 关系型数据库
 * 非关系型数据库
@@ -114,7 +104,7 @@ WHERE b.value IS NULL;
   * 列式数据库：如HBase
   * 图形数据库：如NEo4J
 
-### 不同数据库的特点及应用
+## 不同数据库的特点及应用
 
 * 关系型数据库
 
@@ -153,9 +143,9 @@ WHERE b.value IS NULL;
 
   ​	海量数据、多格式数据存储，对查询速度要求快的场景
 
-## DML
+# DML
 
-### SELECT
+## SELECT
 
 基本语法：
 
@@ -167,8 +157,6 @@ FROM table
 [HAVING group_condition]
 [ORDER BY column];
 ```
-
-#### 基础查询-比较简单的查询
 
 - 查询过程中可对数值,日期等进行计算
 
@@ -437,7 +425,7 @@ CASE expr
 END 字段名
 ```
 
-#### 多表查询
+### 多表查询
 
 - 基本概念
 
@@ -500,7 +488,7 @@ FROM
 ON a.MANAGER_ID = b.EMPLOYEE_ID;
 ```
 
-#### 分组/聚合函数
+### 分组/聚合函数
 
 * 聚合函数
 
@@ -585,7 +573,7 @@ FROM
         ) a;
 ```
 
-#### 子查询
+### 子查询
 
 查询出来的结果作为新表或者作为一个值在别的查询中使用
 
@@ -669,7 +657,7 @@ ORDER BY e1.EMPLOYEE_ID
 
 ```
 
-#### 两个表的交并差
+### 两个表的交并差
 
 - 测试数据
 
@@ -710,7 +698,7 @@ SELECT DISTINCT e2.* FROM employees e1 INNER JOIN employees e2 ON e2.EMPLOYEE_ID
 (SELECT EMPLOYEE_ID from employees WHERE DEPARTMENT_ID = 30);
 ```
 
-#### 查询语句执行顺序
+### 查询语句执行顺序
 
 (8) SELECT (9) DISTINCT (11) <TOP_specification> <select_list>
 (1) FROM <left_table> 
@@ -724,7 +712,7 @@ SELECT DISTINCT e2.* FROM employees e1 INNER JOIN employees e2 ON e2.EMPLOYEE_ID
 
 - 其中ORDER BY为对最后的结果进行整理
 
-### INSERT
+## INSERT
 
 - 单条记录插入
 
@@ -746,7 +734,7 @@ INSERT INTO emp_temp SELECT * FROM employees;
 INSERT INTO table1 (name, sex, age)SELECT user_name, sex, age FROM table2 WHERE ....;
 ```
 
-### DELETE
+## DELETE
 
 - 一定注意条件
 
@@ -754,9 +742,9 @@ INSERT INTO table1 (name, sex, age)SELECT user_name, sex, age FROM table2 WHERE 
 DELETE FROM table1 WHERE .....
 ```
 
+删除时不可以给表起别名
 
-
-### UPDATE
+## UPDATE
 
 - 子查询出来要当表用需要起别名 
   - Every derived table must have its own alias
@@ -787,9 +775,9 @@ UPDATE employees SET SALARY = (
 
 
 
-## DDL
+# DDL
 
-### CREATE TABLE
+## CREATE TABLE
 
 ```sql
 CREATE TABLE table_name(
@@ -803,7 +791,7 @@ CREATE TABLE table_name(
 - 表名唯一: 由table_name指定的表名在数据库中必须是唯一的。 如果创建的表的名称与已存在的表相同，则数据库系统将发出错误。
 - 类型,约束: 在CREATE TABLE语句中，指定以逗号分隔的列定义列表。每个列定义由列名，列的数据类型，默认值和一个或多个列约束组成。列的数据类型指定列可以存储的数据类型。 列的数据类型可以是数字，字符，日期等。列约束控制可以存储在列中的值的类型。 例如，NOT NULL约束确保列不包含NULL值。列可能有多个列约束。 例如，users表的username列可以同时具有NOT NULL和UNIQUE约束。如果约束包含多个列，则使用表约束。 例如，如果表的主键包含两列，则在这种情况下，必须使用PRIMARY KEY表约束。
 
-#### 约束
+## 约束
 
 - NOT NULL - 某列不能存储NULL 值
 - UNIQUE - 某列每行的值必须唯一
@@ -847,7 +835,7 @@ CONSTRAINT chk_Person CHECK (P_Id>0 AND City='Sandnes')
 
 - DEFULT - 规定没有给列赋值时的默认值
 
-#### 索引
+## 索引
 
 - 普通索引、单列索引
   - length: 每列值的前length
@@ -887,9 +875,9 @@ on table_name (column1, column2);
   - 如果列中包含大数或者 NULL 值，不宜创建索引；
   - 频繁操作的列不宜创建索引。
 
-### ALTER TABLE
+## ALTER TABLE
 
-#### 添加列
+### 添加列
 
 - ADD COLUMN
 
@@ -898,7 +886,7 @@ on table_name (column1, column2);
 ALTER TABLE emp_temp ADD COLUMN sex VARCHAR(1);
 ```
 
-#### 删除列
+### 删除列
 
 - DROP COLUMN
 
@@ -907,9 +895,7 @@ ALTER TABLE emp_temp ADD COLUMN sex VARCHAR(1);
 ALTER TABLE emp_temp DROP COLUMN sex;
 ```
 
-
-
-#### 改变数据类型
+### 改变数据类型
 
 - MODIFY COLUMN
 
@@ -918,9 +904,7 @@ ALTER TABLE emp_temp DROP COLUMN sex;
 ALTER TABLE emp_temp MODIFY COLUMN sex VARCHAR(10);
 ```
 
-
-
-#### 更改表名
+### 更改表名
 
 - RENAME TO
 
@@ -929,44 +913,36 @@ ALTER TABLE emp_temp MODIFY COLUMN sex VARCHAR(10);
 ALTER TABLE emp_temp RENAME TO emp_temp2;
 ```
 
-#### 增加约束
+### 增加约束
 
 ```sql
 # 8.加入限制条件emp_pk(Primary Key)于emp_temp2表格中empno字段上
 ALTER TABLE emp_temp2 ADD PRIMARY KEY(EMPLOYEE_ID);
 ```
 
-
-
-### DROP TABLE
+## DROP TABLE
 
 ```sql
 DROP TABLE table_name
 ```
 
-
-
-### CREATE INDEX
+## CREATE INDEX
 
 - 见<CREATE TABLE - 索引>
 
-### DROP INDEX
+## DROP INDEX
 
 ```sql
 ALTER TABLE table_name DROP INDEX index_name
 ```
 
-
-
-### DROP DATABASE
+## DROP DATABASE
 
 ```sql
 DROP DATABASE database_name
 ```
 
-
-
-### CREATE VIEW
+## CREATE VIEW
 
 - CREATE VIEW ... AS SELECT.... : SELECT后为view中数据 
 
@@ -988,56 +964,50 @@ e.EMPLOYEE_ID,e.FIRST_NAME,e.LAST_NAME,e.EMAIL,e.PHONE_NUMBER,e.HIRE_DATE,e.JOB_
  FROM employees e LEFT JOIN departments d USING(DEPARTMENT_ID);
 ```
 
+# DCL
 
-
-## DCL
-
-### GRANT
+## GRANT
 
 授予访问权限,对用户进行mysql服务器/数据库/表/表字段等的不同权限授予
 
-### REVOKE
+## REVOKE
 
 撤销访问权限
 
-### COMMIT
+## COMMIT
 
 提交事务处理
 
-### ROLLBACK
+## ROLLBACK
 
 事务处理回退
 
-### SAVEPOINT
+## SAVEPOINT
 
 设置保存点
 
-### LOCK
+## LOCK
 
 对数据库的特定部分进行锁定
 
+# 常用SQL函数及关键字
 
-
-## 常用SQL函数及关键字
-
-### 函数
+## 函数
 
 - AVG() 返回平均值
 - COUNT() 返回匹配条件的行数,null值不计入
 - MAX() 返回该列最大值
 - MIN()返回该列最小值
 
-### 关键字
+## 关键字
 
 - WITH ROLLUP 分层算总和
 - TRUNCATE 截断数字,可指定小数位数
 - DUAL 虚拟表 可以当一个表使用,mysql中可以查询多条
 
-## SQL优化基础
+# SQL优化基础
 
-### 存储引擎
-
-#### 存储引擎
+## 存储引擎
 
 可通过更改STOERGE_ENGINE配置变量来更改MySQL服务器的默认存储引擎
 
@@ -1049,7 +1019,7 @@ e.EMPLOYEE_ID,e.FIRST_NAME,e.LAST_NAME,e.EMAIL,e.PHONE_NUMBER,e.HIRE_DATE,e.JOB_
 - Archive：为大量很少引用的历史，归档或安全审计信息的存储和检索提供了完美的解决方案
 - Federated：能够将多个分离的MySQL服务器连接起来，从多个物理服务器创建一个逻辑数据库，十分适合于分布式环境或者数据集市环境
 
-#### 存储引擎相关命令
+### 存储引擎相关命令
 
 - 查看当前默认的引擎
 
@@ -1071,16 +1041,16 @@ show table status where NAME = '表名';
 show engines;
 ```
 
-### MySQL优化方式
+## MySQL优化方式
 
-#### 应用优化方式
+### 应用优化方式
 
 - 设计合理的数据表结构,适当冗余
   - 如若某表中某一字段经常要与别的表联合查询,可将该字段冗余到其他表中
 - 对数据库表建立合适有效的数据库索引
 - 数据查询编写简洁高效的SQL语句
 
-##### 表结构设计原则
+**表结构设计原则**
 
 - 选择合适的数据类型,如果能够定长尽量定长,定长的表查询检索更新速度都很快
 - 使用ENUM而不是VARCHAR,如果你有一个字段，比如“性别”，“国家”，“民族”， “状态”或“部门”，你知道这些字段的取值是有限而且固定的，那么，你应该使用 ENUM 而不是VARCHAR。ENUM类型是非常快和紧凑的，在实际 上，其保存的是 TINYINT，但其外表上显示为字符串。这样一来，用这个 字段来做一些选项列表变得相当的完美 。
@@ -1090,7 +1060,7 @@ show engines;
 - 为保证查询性能，最好每个表都建立有 auto_increment 字段， 建立合适的数据库索引
 - 最好给每个字段都设定 default 
 
-##### 索引建立规则
+**索引建立规则**
 
 - 一般针对数据分散的关键字进行建立索引，比如ID、QQ， 像性别、状态值等等建立索引没有意义
 - 字段唯一，最少，不可为null
@@ -1108,7 +1078,7 @@ show engines;
 - 只有建立索引以后，表内的行才按照特地的顺序存储，按照 需要可以是asc或desc方式。
 - 如果索引由多个字段组成将最用来查询过滤的字段放在前面 可能会有更好的性能
 
-##### 编写高效SQL
+**编写高效SQL**
 
 - 能够快速缩小结果集的 WHERE 条件写在前面，如果有恒量条件， 也尽量放在前面
 - 尽量避免使用 GROUP BY、DISTINCT 、OR、IN 等语句的使用，避免使用联表查询和子查询，因为将使执行效率大大下降
@@ -1151,9 +1121,9 @@ show engines;
 - mysql-explain-slow-log – 德国工程师使用Perl开发的把 Slow Log 输出到屏幕，功能简单
 - mysql-log-filter - Google code 上一个开源产品，报表简洁
 
-## 习题答案解析
+# 习题答案解析
 
-### lab 2
+## lab 2
 
 ```sql
 # 1.        显示员工代号、员工姓名及薪水 * 1.5倍后资料
@@ -1247,7 +1217,7 @@ ORDER BY
 
 ```
 
-### lab 3
+## lab 3
 
 ```sql
 #1.        显示工作名称字段(转换为小写格式)
@@ -1356,7 +1326,7 @@ FROM
         jobs j
 ```
 
-### lab 4
+## lab 4
 
 ```sql
 #1.        列出emp表格及dept表格，结合后所有可能排列组合
@@ -1460,7 +1430,7 @@ WHERE
         
 ```
 
-### lab 5
+## lab 5
 
 ```sql
 -- 1. 计算所有员工总数、薪水最低、薪水最高、薪水总和、平均薪水等数据
@@ -1558,7 +1528,7 @@ FROM
         ) a;
 ```
 
-### lab 6
+## lab 6
 
 ```sql
 # 1.        找出员工数据，其薪资低于部门代码为10中最低薪员工
@@ -1652,7 +1622,7 @@ minus
 select * from employees a where a.department_id = 30
 ```
 
-### lab 8
+## lab 8
 
 ```sql
 -----------Lab 8：如何操作数据-----------
@@ -1674,7 +1644,7 @@ update employees
                           and upper(b.job_title) like '%CLARK%')
 ```
 
-## SQL 思考：
+# SQL 思考：
 
 **A)  BETWEEN AND 对比 <= and >=**
 
@@ -1709,7 +1679,7 @@ update employees
 
 
 
-## 现在都有那些数据库，每种数据库的区别、应用场景、优点是什么
+# 现在都有那些数据库，每种数据库的区别、应用场景、优点是什么
 
        eg: 关系型、文档型、内存型、分布式....
            Mysql Oracle 达梦 Hbase...
@@ -1762,7 +1732,7 @@ update employees
   * 非关系型数据库
     * 海量数据、多格式数据存储，对查询速度要求快的场景
 
-## 了解Mysql SQL解析器、存储结构、索引结构相关知识
+# 了解Mysql SQL解析器、存储结构、索引结构相关知识
 
 * SQL解析器
 
@@ -1784,7 +1754,7 @@ update employees
 
   
 
-## DML/DDL/DCL：基础用法掌握。
+# DML/DDL/DCL：基础用法掌握。
 
 ​    eg: 给用户A添加数据库B中的表C的查询权限，DCL语句该怎么写？
 
@@ -1794,7 +1764,7 @@ GRANT select ON B.C TO 'A';
 
 
 
-## 基础查询部分：
+# 基础查询部分：
 
 ​    
 
@@ -1807,7 +1777,7 @@ GRANT select ON B.C TO 'A';
 
 ​	答： 在分析器阶段发现该错误 
 
-## MySQL常用函数学习
+# MySQL常用函数学习
 
 测试数据：
 
@@ -1891,19 +1861,17 @@ CASE expr
 END 字段名
 ~~~
 
-## 去重DISTINCT
+# 去重DISTINCT
 
+# LIKE/NOT LIKE
 
-
-## LIKE/NOT LIKE
-
-## IN/EXISTS
+# IN/EXISTS
 
 IN是做外表和内表通过Hash连接，先查询子表，再查询主表，不管子查询是否有数据，都对子查询进行全部匹配。
 EXISTS是外表做loop循环，先主查询，再子查询，然后去子查询中匹配，如果匹配到就退出子查询返回true，将结果放到结果集
 所以：子查询结果集越大用EXISTS，子查询结果集越小用IN
 
-## 内连接/全连接/左右连接、子查询
+# 内连接/全连接/左右连接、子查询
 
 - 基本概念
 
@@ -1966,7 +1934,7 @@ FROM
 ON a.MANAGER_ID = b.EMPLOYEE_ID;
 ```
 
-#### 子查询
+## 子查询
 
 查询出来的结果作为新表或者作为一个值在别的查询中使用
 
@@ -2050,80 +2018,26 @@ ORDER BY e1.EMPLOYEE_ID
 
 ```
 
-#### 
-
-## TRUNCATE关键字
+# TRUNCATE关键字
 
 truncate的作用是清空表或者说是截断表，只能作用于表。truncate的语法很简单，后面直接跟表名即可，例如： truncate table tbl_name 或者 truncate tbl_name 。
 
 执行truncate语句需要拥有表的drop权限，从逻辑上讲，truncate table类似于delete删除所有行的语句或drop table然后再create table语句的组合。为了实现高性能，它绕过了删除数据的DML方法，因此，它不能回滚。尽管truncate table与delete相似，但它被分类为DDL语句而不是DML语句。
 
 
-## 虚拟表DUAL
+# 虚拟表DUAL
 
  可以当一个表使用,mysql中可以查询多条
 
-## 连表查询：区别/使用场景/联表限制&技巧/全连接Where和On的区别
+# 连表查询：区别/使用场景/联表限制&技巧/全连接Where和On的区别
 
 在使用left jion时，on和where条件的区别如下：
 1、 on条件是在生成临时表时使用的条件，它不管on中的条件是否为真，都会返回左边表中的记录。
 2、where条件是在临时表生成好后，再对临时表进行过滤的条件。这时已经没有left join的含义（必须返回左边表的记录）了，条件不为真的就全部过滤掉。
 
-## WITH ROLLUP及其他关键字/新特性了解。
+# WITH ROLLUP及其他关键字/新特性了解。
 
 ROLLUP 分层计算综合，GROUP BY a1, a2 .... an:先计算以an分组的总和，最后计算a1的总和
-
-## 了解排序函数&开窗函数概念
-
-![image-20220726185641305](sql/image-20220726185641305.png)
-
-### 存储引擎对比表
-
-|        | 特性                                                         | 使用场景                                                     |
-| ------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| MyISAM | 1. 不支持事务<br />2. 不支持外键<br />3. 非聚集索引<br />4. 维护一个变量保存行数<br />5. 支持全文索引<br />6. 可以被压缩后进行查询操作<br />7.支持表级锁<br />8.可以没有唯一索引如主键<br />9. 存储文件: frm 表定义文件,mbd 数据文件,myi索引文件 | 大多数都只是读查询<br />可以接受系统奔溃后，MyISAM恢复起来更困难 |
-| InnoDB | 1. 支持事务<br />2. 支持外键<br />3. 聚集索引<br />4. 事务原因无法维护<br />5. 5.7之前不支持全文索引<br />6. 支持表\行级锁<br />7. 必须有一个唯一索引如主键<br />8. frm 表定义文件,ibd数据文件 | 支持事务<br />需要外键                                       |
-
-### Explain
-
-- id select 的序列号，有几个select就有几个id，
-- select_type
-  - simple 简单查询，查询不包含子查询和union
-  - primary：复杂查询最外面的select
-  - subquery： 包含在select中的子查询（不在from子句中）
-  - derived： 包含在from中的子查询
-  - union： 在union中的第二个或者随后出现的select
-  - union result： 从union临时表检索结果的select
-- table
-  - 表示explain的一行正在访问哪个表
-- type
-  - 表示关联类型或者访问类型，即MySQL决定如何查找表中的行。
-- possible_keys列
-  - 显示查询可能使用哪些索引来查找
-- key
-  - 显示MySQL实际采用哪个索引来优化对该表的访问
-- key_len
-  - 显示了mysql在索引里使用的字节数,通过这个值可以算出具体使用了索引中的哪些列。 
-    - key_len计算规则如下：
-      - 字符串 
-        - char(n)：n字节长度
-        - varchar(n)：2字节存储字符串长度，如果是utf-8，则长度 3n + 2
-      - 数值类型 
-        - tinyint：1字节
-        - smallint：2字节
-        - int：4字节
-        - bigint：8字节　　
-      - 时间类型　 
-        - date：3字节
-        - timestamp：4字节
-        - datetime：8字节
-      - 如果字段允许为 NULL，需要1字节记录是否为 NULL
-- ref
-  - 显示在key列记录的索引中,表查找值要用到的列或者常量
-- rows
-  - MySQL估计要读取并检测的行数
-- extra
-  - 额外信息
 
 # 一些练习sql
 
@@ -2816,3 +2730,13 @@ SELECT hs.student_no,
 
 ```
 
+# 约束条件
+
+UNSIGNED ：无符号，值从0开始，无负数
+ZEROFILL：零填充，当数据的显示长度不够的时候可以使用前补0的效果填充至指定长度,字段会自动添加UNSIGNED
+NOT NULL：非空约束，表示该字段的值不能为空
+DEFAULT：表示如果插入数据时没有给该字段赋值，那么就使用默认值
+PRIMARY KEY：主键约束，表示唯一标识，不能为空，且一个表只能有一个主键。一般都是用来约束id
+AUTO_INCREMENT：自增长，只能用于数值列，而且配合索引使用,默认起始值从1开始，每次增长1
+UNIQUE KEY：唯一值，表示该字段下的值不能重复，null除外。比如身份证号是一人一号的，一般都会用这个进行约束
+FOREIGN KEY：外键约束，目的是为了保证数据的完成性和唯一性，以及实现一对一或一对多关系
