@@ -405,3 +405,34 @@ upstream mysvr {
 }
 ```
 
+# SNI导致的握手失败问题
+
+原先配置
+
+```nginx
+location / {
+    # root   /usr/share/nginx/html;
+    # index  index.html index.htm;
+    proxy_pass https://wwwcie.ups.com/security/v1/oauth/token;
+    # proxy_ssl_server_name on;
+    # proxy_ssl_session_reuse off;
+}
+```
+
+报错：
+
+> 2023/12/11 05:49:02 [error] 23#23: *2 SSL_do_handshake() failed (SSL: error:0A000438:SSL routines::tlsv1 alert internal error:SSL alert number 80) while SSL handshaking to upstream, client: 172.17.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "https://104.109.129.184:443/security/v1/oauth/token", host: "localhost"
+> 2023/12/11 05:49:02 [warn] 23#23: *2 upstream server temporarily disabled while SSL handshaking to upstream, client: 172.17.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "https://104.109.129.184:443/security/v1/oauth/token", host: "localhost"
+
+开启SNI后解决
+
+```nginx
+location / {
+    # root   /usr/share/nginx/html;
+    # index  index.html index.htm;
+    proxy_pass https://wwwcie.ups.com/security/v1/oauth/token;
+    proxy_ssl_server_name on;
+    # proxy_ssl_session_reuse off;
+}
+```
+

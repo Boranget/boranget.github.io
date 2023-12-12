@@ -1731,9 +1731,47 @@ javac编译器是由java语言实现的
 
 泛型是参数化类型的应用，将操作的数据类型指定为方法签名的一种特殊参数，这种参数类型能用在类、接口和方法的创建中，分别构成泛型类、泛型接口和泛型方法。
 
-java泛型实现方式称为类型擦除式泛型，只存在于程序源码中，在编译后的字节码文件中，全部被替换为原来的裸类型，并且在相应的地方插入了强制转型代码
+java泛型实现方式称为类型擦除式泛型，只存在于程序源码中，在编译后的字节码文件中，全部被替换为原来的裸类型，并且在相应的地方插入强制转型代码。
 
-导致的问题是无法对基本类型做强制转型到Object，故泛型只能使用包装类而不支持基本类型
+对于运行期的Java来说，ArrayList\<Integer\>与ArrayList\<String\>其实都是同一种类型
+
+由于运行期没有泛型，以下代码在Java中是非法的
+
+```java
+public class TypeErasureGenerics<E> {
+    public void doSomething(Object item) {
+        if (item instanceof E) { // 不合法，无法对泛型进行实例判断
+
+        }
+        E newItem = new E(); // 不合法，无法使用泛型创建对象
+        E[] itemArray = new E[10]; // 不合法，无法使用泛型创建数组
+    }
+}
+```
+
+通过强制转型实现泛型：
+
+```java
+public static void main(String[] args) {
+ Map<String, String> map = new HashMap<String, String>();
+ map.put("hello", "你好");
+ map.put("how are you?", "吃了没？");
+ System.out.println(map.get("hello"));
+ System.out.println(map.get("how are you?"));
+}
+// 编译后
+public static void main(String[] args) {
+ Map map = new HashMap();
+ map.put("hello", "你好");
+ map.put("how are you?", "吃了没？");
+ System.out.println((String) map.get("hello"));
+ System.out.println((String) map.get("how are you?"));
+}
+```
+
+导致的问题是无法对基本类型做强制转型到Object，故泛型只能使用包装类而不支持基本类型，当下有个项目叫 Valhalla 项目，添加支持“值类型”（Value Type），其目标是解决基本类型非对象的问题。
+
+
 
 ## 语法糖
 
@@ -1766,24 +1804,24 @@ public static void main(String[] args) {
 
 - 关于自动拆箱装箱
 
-  java中会将128到-127中的Integer数据进行缓存，
+  java中会将128到-127中的Integer数据进行缓存，所以导致这个范围内的Integer对象如果值相同，则是同一个对象。
 
   ```java
-  	public static void main(String[] args) {
-          Integer a = 1;
-          Integer b = 2;
-          Integer c = 3;
-          Integer d = 3;
-          Integer e = 321;
-          Integer f = 321;
-          Long g = 3L;
-          System.out.println(c == d);
-          System.out.println(e == f);
-          System.out.println(c == (a + b));
-          System.out.println(c.equals(a + b));
-          System.out.println(g == (a + b));
-          System.out.println(g.equals(a + b));
-      }
+  public static void main(String[] args) {
+      Integer a = 1;
+      Integer b = 2;
+      Integer c = 3;
+      Integer d = 3;
+      Integer e = 321;
+      Integer f = 321;
+      Long g = 3L;
+      System.out.println(c == d);
+      System.out.println(e == f);
+      System.out.println(c == (a + b));
+      System.out.println(c.equals(a + b));
+      System.out.println(g == (a + b));
+      System.out.println(g.equals(a + b));
+  }
   ```
 
   这里引用文心一言的回答
@@ -2024,9 +2062,38 @@ public class NameCheckProcessor extends AbstractProcessor {
 
 # 后端编译与优化
 
+后端编译是指将字节码转为设备相关的二进制编码的过程。
+
+## 即时编译器
+
+热点代码：运行特别频繁的代码块
+
+即时编译器的作用是运行时将热点代码编译为本地机器码从而提高运行效率
+
+### 解释器和编译器
+
+解释器可以快速的启动程序，省去编译时间，随着运行，将热点代码编译为本地机器码，减少解释器的损耗，若内存限制较大，可采用解释器节省内存。
+
+HotSpot中内置了两个即时编译器，分别被称为客户端编译器和服务端编译器，简称为C1编译器和C2编译器。
+
+JDK10新加入了Graal编译器，目的是代替C2编译器。
+
+在分层编译出现之前，HotSpot虚拟机通常采用解释器与其中一个编译器直接搭配的工作方式，其取决于虚拟机运行模式，虚拟机会根据自身版本与宿主机器的硬件性能主动选择运行模式，用户也可以使用-client或者-server选择。
+
+无论选择那个编译器，编译器与解释器混合使用的方式被称为混合模式，用户也可以使用参数-Xint强制虚拟机运行于解释模式或者使用-Xcomp强制使用编译模式，但即使强制编译模式下，在编译器无法编译的情况下还是会解释执行。可以通过java -version来查看这三种模式
+
+```
+PS E:\my_file\blog> java -version
+java version "1.8.0_201"
+Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
+Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
+```
+
+
+
 # 异常栈信息丢失
 
-若某个异常在某个方法内频繁抛出，则jvm会对该方法进行重编译，在一定条件下使用预先生成的异常代替真正的异常对象，这些预先生成的异常没有堆栈，抛出速度非常快也无需额外分配内存。解决：
+若某个异常在某个方法内频繁抛出，则jvm会对该方法进行重编译，在一定条件下使用预先生成的异常代替真正的异常对象，这些预先生成的异常没有堆栈，抛出速度非常快也无需额外分配内存。如想去除该优化：
 
 ```jvm
 -XX:-OmitStackTraceInFastThrow
