@@ -901,3 +901,8 @@ springboot启动报错Invalid value type for attribute 'factoryBeanObjectType': 
 >I hope that helps someone.
 
 解决：更换匹配版本的springboot或者springcloud
+
+# 远程桌面剪贴板不生效
+
+- 检查rdp剪贴板服务，尝试重启
+- 连接时选择远程桌面资源：本地剪贴板

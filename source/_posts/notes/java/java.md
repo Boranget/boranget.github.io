@@ -306,3 +306,29 @@ final List<String> collect = l.stream().sorted(Comparator.reverseOrder()).collec
 Comparator.comparing(Student::getName); 
 ```
 
+# super与this关键字
+
+[Java中super关键字及super()的使用_java super-CSDN博客](https://blog.csdn.net/pipizhen_/article/details/107165618)
+
+this关键字可以当作一个变量，其地址指向当前对象，而super只是一个调用父类特征的入口，注意是父类特征而不是父类对象。这是因为父类的特征已经在子类中存在了，且super不像this会指向一个实例，这也就造成this可以当作一个对象输出super不可以，因为super不是一个整体。
+
+## this关键字
+
+- this可以出现在实例方法和构造方法中
+- this的语法有this.和this()
+- this不能出现在静态方法中，因为静态方法没有实例
+- this大部分情况可以省略
+- this在区分实例变量与局部变量时不可省略
+- this()只能出现在构造方法的第一行，通过当前的构造方法去调用当前类中与之对应的构造方法。
+
+## super关键字
+
+super指向直接父类的特征，比如直接父类的实例变量或者实例方法，如果直接父类没有该名称的特征则会顺着继承链向上查找。
+
+- siper能出现在实例方法和构造方法中
+- super的语法有super.和super()
+- super不能出现在静态方法中，原因同上
+- 大多数情况下可以省略
+- 当前类想访问父类的某个特征但是该特征在当前类中也有同名特征存在时，则需要使用super关键字进行指定
+- super()方法只能出现在构造方法的第一行，目的是为了在创建子类对象时先初始化父类特征，如果不手动调用也会自动隐式调用。**当子类的构造方法内第一行没有出现“super()”时，系统会默认给它加上无参数的"super()"方法构造，如果父类中没有指定无参构造则会编译不通过。且构造方法中“this()”和“super()”不能同时出现，也就是“this()”和“super()”都只能出现在构造方法的第一行。**
+

@@ -773,3 +773,59 @@ ip route delete 192.168.1.0/24 dev eth0 # 删除路由
 source /etc/profile
 ```
 
+# 一个sh文件样例
+
+```sh
+#!/bin/sh -x
+
+## Init Paramter
+ftp_home=/export/home/nbdadm
+report_name=PUECHASE
+file_name=$1
+local_folder=/export/home/nbpadm/icwftp/outbound/PO
+remote_folder=/app_data/systemsfiles/prpo/attachment/efax
+archive=/export/home/nbdadm/icwftp/archive/PO
+NOWYEAR=`data + "%Y"`
+NOWMONTH=`data + "%m"`
+NOWDAY=`data + "%d"`
+NOWTIME=${NOWDAY}${NOWMONTH}${NOWYEAR}
+tmp_ftp_script=/tmp/tmp_ftp_script_${file_name}
+file='*'
+
+## GET User/Password
+password_file=${ftp_home}/etc/smic_ftp_password.ini
+username=`cat $password_file |grep $report_name | awk {'print $2'}`
+password=`cat $password_file |grep $report_name | awk {'print $3'}`
+ftp_server=`cat $password_file |grep $report_name | awk {'print $4'}`
+
+## FTP Files
+echo "open ${ftp_server}" > ${tmp_ftp_script}
+echo "user ${username} ${password}" >> ${tmp_ftp_script}
+echo "cd ${remote_folder}" >> ${tmp_ftp_script}
+echo "mkdir ${NOWYEAR}" >> ${tmp_ftp_script}
+echo "cd ${NOWYEAR}" >> ${tmp_ftp_script}
+echo "mkdir ${NOWMONTH}" >> ${tmp_ftp_script}
+echo "cd ${NOWMONTH}" >> ${tmp_ftp_script}
+echo "mkdir ${NOWDAY}" >> ${tmp_ftp_script}
+# l前缀的cd为进入本地文件夹
+echo "lcd ${local_folder}" >> ${tmp_ftp_script}
+echo "cd ${remote_folder}/${NOWYEAR}/${NOWMONTH}/${NOWDAY}" >> ${tmp_ftp_script}
+echo "bi" >> ${tmp_ftp_script}
+echo "prom" >> ${tmp_ftp_script}
+echo "mput ${file}" >> ${tmp_ftp_script}
+echo "quit" >> ${tmp_ftp_script}
+
+#cat ${tmp_ftp_script}
+ftp -vin < ${tmp_ftp_script}
+rm -f ${tmp_ftp_script}
+mkdir ${archive}/${NOWTIME}
+mv ${local_folder}/* ${archive}/${NOWTIME}
+
+
+## smic_ftp_password.ini
+# S11-U01   user001     mypass..    10.224.6.10     s118001/outbound
+# S11-U03   user002     mypass..    10.224.6.11     s118001/outbound
+# S11-U04   user003     mypass..    10.224.6.13     s118001/outbound
+
+```
+
