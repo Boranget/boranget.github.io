@@ -73,8 +73,6 @@ The current Bean need processor is orderService
 
 # 创建一个简单的Spring
 
-## what we need
-
 - 一个容器
 
   将扫描路径存入其中可从中获取扫描路径中的Bean
@@ -1308,4 +1306,72 @@ protected void processConfigurationClass(ConfigurationClass configClass) throws 
 		}
     }
 ```
+
+# @Import注解
+
+## 引入其他的configuration 
+
+```java
+package com.test
+interface ServiceInterface {
+    void test();
+}
+
+class ServiceA implements ServiceInterface {
+
+    @Override
+    public void test() {
+        System.out.println("ServiceA");
+    }
+}
+
+class ServiceB implements ServiceInterface {
+
+    @Override
+    public void test() {
+        System.out.println("ServiceB");
+    }
+}
+```
+
+```java
+package com.test
+@Import(ConfigB.class)
+@Configuration
+class ConfigA {
+    @Bean
+    @ConditionalOnMissingBean
+    public ServiceInterface getServiceA() {
+        return new ServiceA();
+    }
+}
+
+@Configuration
+class ConfigB {
+    @Bean
+    @ConditionalOnMissingBean
+    public ServiceInterface getServiceB() {
+        return new ServiceB();
+    }
+}
+```
+
+```java
+public static void main(String[] args) {
+    // 这里使用A类来构造容器，会发现最后的输出是ServiceB，这里证明Import不止可以引入配置，并且优先级比当前类中配置更高
+    ApplicationContext ctx = new AnnotationConfigApplicationContext(ConfigA.class);
+    ServiceInterface bean = ctx.getBean(ServiceInterface.class);
+    bean.test();
+}
+```
+
+## 直接引入Bean
+
+自Spring4.2后，如果在上面的Import中改为@Import(ServiceB.class)可以直接将ServiceB作为Bean引入而无需通过Configuration引入。
+
+同样的还是会优先于当前配置（如果冲突的话）
+
+## Selector
+
+实现 ImportSelector 或者DefferredServiceImportSelector的类，需要实现selectImports方法，返回一个字符串数组，其中元素是要引入的configuration或者bean类的全限定类名
 

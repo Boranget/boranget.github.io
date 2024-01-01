@@ -7,7 +7,7 @@ categories:
   - 笔记
 ---
 
-# 个人经验
+# 配置相关
 
 ## 配置注入实体类
 
@@ -42,7 +42,7 @@ categories:
 
 6. 使用，在需要用到的类@Autowired AppConfig即可
 
-### 提示配置
+## 配置提示
 
 引入依赖
 
@@ -57,82 +57,23 @@ categories:
 
 如果无效果，检查maven插件版本是否吻合，尝试install查看是否会报错
 
-## 配置文件优先级
-
-### 覆盖关系：
-
-  对于key不同，则直接生效；
-
-  对于key相同的同名配置项，后加载会覆盖掉前加载，故而最终为后加载的配置项生效
-
-### 本地配置
-
-- 同文件名配置 *.yaml **加载先于** *.properties
-- bootstrap配置 **加载先于** application配置
-- 不带profile的配置 **加载先于** 带profile的配置
-
-**故**
-
-1. bootstrap.yaml
-2. bootstrap.properties
-3. bootstrap-{profile}.yaml
-4. bootstrap-{profile}.properties
-5. application.yaml
-6. application.properties
-7. application-{profile}.yaml
-8. application-{profile}.properties
-
-### nacos配置
-
-- 本地配置 **加载先于** nacos配置中心
--  nacos配置中心上共享配置(见下说明) **加载先于** nacos配置中心该服务配置（见下说明）
-- 不带profile的配置 **加载先于** 带profile的配置
-- nacos配置中心因需要通过data ID指定（或者通过spring.cloud.nacos.config.file-extension指定后缀），所以对于Nacos配置中心上的某个Data ID而言，不会存在既加载其*.yaml又加载其*.properties的情形。
-
-**故**
-
-1. 本地配置
-2. nacos配置中心共享配置（通过spring.cloud.nacos.config.shared-configs指定）
-3. Nacos配置中心该服务配置（通过spring.cloud.nacos.config.prefix和spring.cloud.nacos.config.file-extension指定）
-4. Nacos配置中心该服务-{profile}配置（通过spring.cloud.nacos.config.prefix和spring.cloud.nacos.config.file-extension、以及spring.profiles.active指定）
-
-## controller 请求参数注入命名转换
-
-**参考资料** [springboot项目配置参数请求及返回均为下划线方式_springboot responsebody 指定返回的格式 为下划线分割_偶系渣渣灰的博客-CSDN博客](https://blog.csdn.net/breakaway_01/article/details/119033959)
-
-在配置文件中添加配置
-
-```yaml
-spring:
-  jackson:
-    property-naming-strategy: SNAKE_CASE #下划线参数
-```
-
-CamelCase策略，Java对象属性：personId，序列化后属性：persionId
-
-PascalCase策略，Java对象属性：personId，序列化后属性：PersonId
-
-SnakeCase策略，Java对象属性：personId，序列化后属性：person_id
-
-KebabCase策略，Java对象属性：personId，序列化后属性：person-id
-
 ## 多配置切换
 
 可同时定义多个配置文件，命名方式为“application-*.yml”，如
 
 ![image-20230919085531459](springboot/image-20230919085531459.png)
 
-- 切换方法一：修改springboot配置文件
+- 切换方法一：手动修改springboot配置文件
 
   在application.yml中配置
 
   ```properties
   spring.profiles.active=dev
-  spring.profiles.active=local
-  spring.profiles.active=prod
+  # spring.profiles.active=local
+  # spring.profiles.active=prod
   ```
 
-- 切换方法二：maven配置
+- 切换方法二：maven配置（maven变量注入）
 
   maven在编译时可以动态决定当前编译环境
 
@@ -212,24 +153,89 @@ KebabCase策略，Java对象属性：personId，序列化后属性：person-id
     </build>
   ```
 
-  
 
-# 别的一些
+## 配置文件优先级
 
-**SpringBoot与Spring的关系、SpringAOP/IOC了解**
+### 覆盖
+
+  对于key不同，则直接生效；
+
+  对于key相同的同名配置项，后加载会覆盖掉前加载，故而最终为后加载的配置项生效
+
+### 本地配置
+
+- 同文件名配置 *.yaml **加载先于** *.properties
+- bootstrap配置 **加载先于** application配置
+- 不带profile的配置 **加载先于** 带profile的配置
+
+**故**
+
+1. bootstrap.yaml
+2. bootstrap.properties
+3. bootstrap-{profile}.yaml
+4. bootstrap-{profile}.properties
+5. application.yaml
+6. application.properties
+7. application-{profile}.yaml
+8. application-{profile}.properties
+
+### nacos配置
+
+- 本地配置 **加载先于** nacos配置中心
+-  nacos配置中心上共享配置(见下说明) **加载先于** nacos配置中心该服务配置（见下说明）
+- 不带profile的配置 **加载先于** 带profile的配置
+- nacos配置中心因需要通过data ID指定（或者通过spring.cloud.nacos.config.file-extension指定后缀），所以对于Nacos配置中心上的某个Data ID而言，不会存在既加载其*.yaml又加载其*.properties的情形。
+
+**故**
+
+1. 本地配置
+2. nacos配置中心共享配置（通过spring.cloud.nacos.config.shared-configs指定）
+3. Nacos配置中心该服务配置（通过spring.cloud.nacos.config.prefix和spring.cloud.nacos.config.file-extension指定）
+4. Nacos配置中心该服务-{profile}配置（通过spring.cloud.nacos.config.prefix和spring.cloud.nacos.config.file-extension、以及spring.profiles.active指定）
+
+# controller 请求参数注入命名转换
+
+**参考资料** [springboot项目配置参数请求及返回均为下划线方式_springboot responsebody 指定返回的格式 为下划线分割_偶系渣渣灰的博客-CSDN博客](https://blog.csdn.net/breakaway_01/article/details/119033959)
+
+在配置文件中添加配置
+
+```yaml
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE #下划线参数
+```
+
+CamelCase策略，Java对象属性：personId，序列化后属性：persionId
+
+PascalCase策略，Java对象属性：personId，序列化后属性：PersonId
+
+SnakeCase策略，Java对象属性：personId，序列化后属性：person_id
+
+KebabCase策略，Java对象属性：personId，序列化后属性：person-id
+
+# SpringBoot与Spring的关系
+
 Spring Boot 为Spring的扩展封装，免去了很多配置，使得使用spring更加便捷
 
-**SpringAOP：面向切面编程**
+# SpringAOP
+
 AOP 要达到的效果是，保证开发者不修改源代码的前提下，去为系统中的业务组件添加某种通用功能。比如添加日志等。AOP 的本质是由 AOP 框架修改业务组件的多个方法的源代码，AOP是代理模式的典型应用。
-**SpringIOC：控制反转**
+
+# SpringIOC
+
 Spring来控制对象的生命周期
 DI：依赖注入，spring依赖注入，不用关心具体的实现，比如日志有多个框架，我们只需要知道spring会给我们提供，不需要了解底层用的哪个框架
 
-spring boo提供了很多stater，官方配置，可以直接用；组件需要依赖的其他jar包，也会自动导入。
-
 # SpringBoot自动装配原理
 
-Spring Boot启动的时候会通过@EnableAutoConfiguration注解找到META-INF/spring.factories配置文件中的所有自动配置类，并对其进行加载，这些自动配置类都是以AutoConfiguration结尾来命名的，它实际上就是一个JavaConfig形式的Spring容器配置类，通过@Bean导入到Spring容器中，以Properties结尾命名的类是和配置文件进行绑定的。它能通过这些以Properties结尾命名的类中取得在全局配置文件中配置的属性，我们可以通过修改配置文件对应的属性来修改自动配置的默认值，来完成自定义配置
+- @SpringBootApplication注解中引入了@EnableAutoConfiguration注解
+- @EnableAutoConfiguration注解中引入了@Import注解
+- @Import注解引入了一个deferredImportSelector对象，其功能为在springboot启动完成之后再引入，方便覆盖时判断如conditionOnBean
+- 找到META-INF/spring.factories配置文件
+- 过滤出所有的AutoConfiguration类
+- 通过@Condition排除无效自动配置类
+
+这些自动配置类都是以AutoConfiguration结尾来命名的，它实际上就是一个JavaConfig形式的Spring容器配置类，通过@Bean导入到Spring容器中，以Properties结尾命名的类是和配置文件进行绑定的。它能通过这些以Properties结尾命名的类中取得在全局配置文件中配置的属性，我们可以通过修改配置文件对应的属性来修改自动配置的默认值，来完成自定义配置
 
 # SpringBoot版本
 
@@ -974,4 +980,145 @@ mail:
           #开启debug模式，这样邮件发送过程的日志会在控制台打印出来，方便排查错误
         debug: true
 ```
+
+# SpringBoot直接运行原理
+
+- 打包的时候执行插件：spring-boot-maven-plugin
+
+- 打包后会生成一个Far Jar，其中包含了应用依赖的jar包和SpringBootLoader相关的类
+
+- java -jar时查看jar包中的manifest.mf文件，其中指定了java运行主类MainClass与Spring运行主类StartClass
+- jar包中指定的主类是JarLauncher，其会创建一个ClassLoader来动态加载jar包中boot-lib下的jar包，并新开一个线程执行指定的StarClass中的main函数
+
+这里其实想到了shade插件，shade插件的原理是将依赖的jar包解包之后直接包入成品jar包中，而不像springboot动态的去加载jar包。
+
+# SpringBoot连接数配置
+
+```yaml
+server:
+	tomcat:
+		threads:
+			# 最少（常驻）线程数
+			min-spare: 10
+			# 最多线程数
+			max: 20
+        # 最大连接数
+        max-connections: 30
+        # 最大等待数
+        accept-count: 10
+```
+
+默认值可以在这里看
+
+![image-20240101195734890](springboot/image-20240101195734890.png)
+
+## Q&A
+
+- 并发量指的是连接数还是线程数
+  连接数
+
+- 最大的200个线程如何处理10000条连接
+  Tomcat的两种处理连接的模式，一种是BIO，一个线程只处理一个Socket连接，另一种是NIO，一个线程处理多个Socket连接，由于HTTP请求不会太耗时且多个连接一般不会同时来消息，所以一个线程处理多个连接没有太大问题
+
+- 多开线程与增加连接数
+  增加线程一个影响就是会增加线程切换时的上下文的切换时间，且线程增多，在核数不变的请宽心，每个线程分配到的时间片会变小，所以多开线程并不一定会提高处理效率
+  如果增加连接数，支持的并发量会提高，但是如果硬件条件没有提升，则并发量的提升只能是以牺牲响应时间为代价
+
+  
+
+# SpringBoot启动速度优化
+
+- 设置Bean为懒加载
+  启动是快了，但是初次执行慢了
+
+  ```yaml
+  spring:
+  	main:
+  		lazy-initialization: true
+  ```
+
+- spring5支持的创建扫描索引
+  引入需要的依赖，启动类上添加@Indexed注解，在打包时会创建扫描索引spring.components到META-INF文件夹中，索引中保存Bean的全类名，执行时直接从索引中读取，不再需要挨个查看类注解
+
+- 使用JDK17，其中提供了更优秀的垃圾回收器
+- 使用SpringBoot3，其中提供了一个本地化的解决，执行更快
+
+# SpringBoot解决跨域
+
+- jsonp+callback
+  只支持get请求，前后端需要共同编码
+- CORS（接口粒度）
+  CrossOrigin（源）注解标注在Mapping方法上
+- WebMvcConfigurer（批量）
+  重写该接口的addCorsMappings方法，添加跨域配置
+
+- CorsFilter（全局）
+  在容器中添加一个CorsFilter的Bean，需要浏览器支持
+- NGINX（推荐）
+  在前端使用NGINX部署的情况下，将访问后端的请求改为访问前端服务器，但通过路径（比如添加一个前缀）区分，接着在NGINX中添加配置进行代理转发。因为NGINX是不会有跨域限制的，且浏览器发现你访问的还是前端服务器，也不会告警
+
+# 配置读取
+
+- Value
+  在当前类是一个Bean的前提下，可以通过在成员变量（非static或者final）上面添加@Value注解，参数为${yaml中的坐标}，若配置文件中没有这个坐标，则启动时会报错。
+  可以给个默认值提高容错性：
+
+  ```java
+  @Value("${a.name:}")
+  ```
+
+  冒号后可添加默认值或者不加（赋空值“”）
+
+- ConfigurationProperties
+  指定一个前缀，会将前缀下的所有配置注入到当前Bean的成员变量中
+
+- Environment
+  容器中会有一个Spring暴露出来的Bean叫做Enviroment，可通过自动注入将其注入到当前环境，通过该Bean的getProperty（配置坐标）方法获取配置
+  或者可以通过实现EnvironmentAware接口去获取容器中的env对象
+
+- PropertySource注解
+  可以指定其他的properties配置文件来进行读取，可通过一些配置读取自定义的yaml文件
+- 通过输入流的方式手动读取
+  使用getResourceAsStream获取jar包中输入流
+
+# SpringBoot默认AOP
+
+spring默认行为是代理类有接口使用jdk代理，没有实现接口使用cglib，但springboot是强制所有都使用cglib来作为aop的实现，cglib进行代理时会动态生成字节码，这样可以获得接口实现类的信息比如方法注解，否则只能获取接口上的信息。其次使用CGlib可以使用接口或者实现类类型的变量来接受，但如果使用java原生AOP，则只能使用接口来接受，若该实现类没有接口，则会生成一个该类的子类对象为Bean
+
+# SpringBoot核心注解
+
+- SpringBootApplication
+- SpringBootConfiguration
+- EnableAutoConfiguration
+- ConditionalOn...
+  自动配置相关的注解，自动配置就是boot的特性，所以conditional也是
+
+# 内置Tomcat
+
+- 引入web依赖后，会引入服务器的自动配置，其中默认支持tomcat（通过conditionalOnClass：Tomcat.class），激活Tomcat的Factory配置
+- SpringBoot启动时创建一个容器，同时加载Bean
+- 此时会获取Tomcat的工厂Bean
+- 通过工厂的getwebserver获取tomcat，启动并挂起
+
+# 外部Tomcat
+
+1. 将项目打包方式设为war
+2. 从web依赖中将tomcat依赖排除
+3. 实现接口SpringBootServletInitializer并重写configure方法，在其中返回 builder.sources(启动类)
+
+# SPI
+
+java中通过配置文件的方式，将一些实现类注册到配置文件中，在运行时使用ServiceLoader.load方法，获取配置文件中的对应类的对象？
+
+# 读取配置文件原理
+
+通过事件监听器的方式读取
+
+# 默认日志实现框架
+
+默认门面slf4j，默认实现logback
+
+若要切换为log4j：排除logback，添加slf4j-log4j12调节器
+
+若要切换为log4j2：排除掉logback，添加log4j2的starter
 
