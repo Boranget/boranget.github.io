@@ -22,7 +22,7 @@ categories:
 
 # Hello Vue 
 
-```js
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,6 +63,26 @@ categories:
 </html>
 ```
 
+# vue2
+
+vue2为选项式api，又叫配置式（option），单个功能的各个模块分散在不同的配置领域中，不利于维护，vue3中使用组合式api
+
+# setup
+
+setup是vue3中新增的配置项
+
+## this
+
+注意setup函数中的this为undefind
+
+## setup的返回值
+
+在setup函数中将需要暴露到渲染中的对象返回
+
+## 与data、method关系
+
+data，method还可以写但不建议，由于setup中没有this、且其为最早的生命阶段，所以读不到data、method中的内容，但是反过来，data、method中可以通过this读取setup中的内容
+
 # vite+vue3工程目录
 
 ```
@@ -74,6 +94,10 @@ E:\MY_FILE\PROJECTS\VUE\VITE-DEMO
     ├─assets		项目中静态资源
     └─components	组件
 ```
+
+- 在vite项目中，index.html是项目的入口文件，在项目的最外层
+- 加载index.html后，Vite解析`<script type="module" src="xxx">`指向的JS文件
+- Vue3中通过createApp函数创建一个应用实例
 
 # SFC
 
@@ -153,7 +177,7 @@ import HelloWorld from './components/HelloWorld.vue'
 
 # CSS样式的导入
 
-共享css样式写入一个css文件中
+共享css样式写入一个css文件中，通过以下三种方法引入
 
 ```vue
 // 1.
@@ -175,13 +199,13 @@ import ‘.../*.css’
 
 在vue2中，数据默认就是响应式的，但在vue3中，数据需要经过ref/reactive函数的处理.
 
-ref函数更适合单个字面量
+ref函数更适合单个字面量（基本类型数据），但也可以定义对象类型的数据，碰到对象数据时底层会使用reactive
 
-reactive更适合对象
+reactive只能定义对象类型的响应式数据
 
 ## ref
 
-在script标签中，ref响应数据需要通过.value的方式操作数据，但在template标签中使用ref数据不需要。
+在script标签中，ref响应数据需要通过.value的方式操作数据（包括对象和数组，也会被转为value），但在template标签中使用ref数据不需要。
 
 ```vue
 
@@ -219,6 +243,12 @@ reactive更适合对象
 
 在script标签中和在template标签中使用reactive数据都不需要.value。
 
+reactive同时可以修改深层的属性（多层）
+
+reavtive声明的对象会变为Proxy对象
+
+reactive声明的对象重新指向后会失去响应式：原理也好理解，本来该对象变为Proxy对象了，结果重新指向另一个对象，就变成普通对象了，这是其一，其二，就算在替换时重新使用reactive包装，但由于页面渲染时使用的那个对象是之前的，与现在这个新声明的对象并无联系，所以也体现不到页面上。但是可以通过Object.assign去整体替换对象中的属性。**但是使用ref声明的对象可以通过value整体替换**
+
 ```vue
 <script setup>
 import { reactive, ref } from "vue";
@@ -239,13 +269,15 @@ let person = reactive({
 </style>
 ```
 
-- toRef/toRefs 将reactive种的某个属性或者多个属性转为ref响应数据
+- toRef/toRefs 将reactive中的某个属性或者多个属性转为ref响应数据
 
-    ```vue
+    ```js
     let age = toRef(person, "age")
     let {age, name} = toRefs(person)
+    age.value=10
+name.value="123"
     ```
-
+    
     
 
 # setup语法糖
@@ -278,7 +310,7 @@ function diff() {
 
 ```
 
-
+使用这种语法糖有个问题是无法设置组件名，组件名与vue文件名匹配，一种解决办法是写两个script，在另一个script中声明组件名，或者使用插件：vite-plugin-vue-setup-extend
 
 # 插值表达式
 
@@ -299,7 +331,7 @@ function diff() {
 
 v-text、v-html
 
-- 命令必须以来标签且必须在开始标签中使用
+- 命令必须依赖标签且必须在开始标签中使用
 
 - 命令支持使用模板字符串，注意在双引号中还有反单引号
 
@@ -341,7 +373,7 @@ v-on:事件名="函数名()"，这里的事件名不是原生的事件名，而�
 
 ## 内联事件
 
-直接将方法事件写到时间渲染命令种
+直接将方法事件写到事件渲染命令中
 
 非内联：
 
@@ -394,7 +426,7 @@ let num = ref(0);
 
 ## 事件修饰符
 
-- .once 只绑定一次
+- .once 只绑定一次，触发一次后失效
 
     ```vue
     <button @click.once = "submit()">按钮</button>
@@ -451,7 +483,7 @@ v-show 将数据隐藏（display方式），总会被渲染，只是会被隐藏
 
 # 列表渲染
 
-v-for 需要注意要定义key，建议使用属性id
+v-for 需要注意要定义key，建议使用属性id，key前要加冒号（其实是v-bind）
 
 ```vue
   <tr v-for="item,index in data.list" :key = item.id>
@@ -495,9 +527,9 @@ computed，其值为其他属性计算而来
 与直接调用计算方法的区别：
 
 - 方法每调用一次都会执行一次方法
-- 计算属性会判断计算属性依赖的数据有无发生变化，如果没变化则使用上一次计算的结果
+- 计算属性会判断计算属性依赖的数据有无发生变化，如果没变化则使用上一次计算的结果缓存
 
-```vue
+```js
 import { computed } from "vue";
 let count = computed(()=>{
 	return carts.length;
@@ -510,14 +542,17 @@ let count = computed(()=>{
 
 ## watch
 
-监听ref值
+监听ref值，注意这里不需要.value，watch函数的返回值是一个函数，调用该返回值函数可以停止该watch的监视（但在方法的一个参数里居然可以调方法的返回值？嗯，因为该参数方法是在监视到改变时才会调用，到时已经可以获取到外部方法的返回值了）
 
  ```vue
 <script setup>
   import { reactive, ref, watch } from "vue";
   let count = ref("");
-  watch(count, (newValue,oldValue)=>{
+  let stopwatch = watch(count, (newValue,oldValue)=>{
     console.log(oldValue,"->",newValue);
+      if(...){
+         stopwatch()
+      }
   });
 </script>
 <template>
@@ -528,6 +563,32 @@ let count = computed(()=>{
 <style scoped>
 </style>
  ```
+
+监听ref定义的对象，注意这里需要开启深度监听才能监听其中的属性是否改变（获取的对象还是整个对象），否则只有在修改整个value指向的对象时才会触发
+
+注意如果是改变其中的某个属性，则获取到的newvalue和oldvalue都是最新的值，多数情况下一般不用oldvalue
+
+```vue
+<script setup>
+  import { reactive, ref, watch } from "vue";
+  let person = ref({name:"",age:10});
+  let stopwatch = watch(person, (newValue,oldValue)=>{
+    console.log(oldValue,"->",newValue);
+      if(...){
+         stopwatch()
+      }
+  },{deep:true});
+</script>
+<template>
+  <div>
+    <input type="text" v-model="count" />
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+
 
 监听reactive中的一个值
 
@@ -569,7 +630,7 @@ let count = computed(()=>{
 </style>
 ```
 
-除了{deep:true}之外，其中还可添加{immediate:true}：在页面加载完成后立即执行（使用初始值）
+除了{deep:true}之外，其中还可添加{immediate:true}：在页面加载完成后立即执行（使用初始值也算一次变化，也会触发）
 
 ## watchEffect
 
@@ -819,7 +880,7 @@ defineProps({ msg: String });
 
 # Router
 
-通过当前地址栏的路径切换vue组件
+通过当前地址栏的路径切换vue组件，达到不刷新当前页面便可大面积替换内容的效果，但感觉地址栏使用锚点的效果不太好看（来自后端开发的吐槽）
 
 ```bash
 npm install vue-router
@@ -833,9 +894,9 @@ App.vue，定义何处使用路由替换
 <template> 
   <div>
     内容在下面
-    <!-- 该标签会被替换为具体的vue -->
+    <!-- 通过路由，该标签会被替换为具体的vue -->
    	<router-view></router-view>
-   内容在上面
+    内容在上面
   </div>
 </template>
 <style scoped>
@@ -1288,11 +1349,11 @@ import { useRouter } from 'vue-router';
 
 **回调函数**
 
-回调函数是基于事件的自动调用函数，其他的代码不会等待回调函数执行完毕，异步的
+回调函数是基于事件的自动调用函数，其他的代码不会等待回调函数执行完毕才向下走，所以回调函数的执行是异步的。
 
 回调函数是一种未来会执行的函数，回调函数以外的其他代码不会等这个函数的执行结果就会执行下去
 
-回调函数相当于一种承诺，有三种状态
+回调函数相当于一种”承诺“，其从提出后有三种状态
 
 - 进行中
 - 兑现（成功）
@@ -1319,16 +1380,15 @@ promise是异步编程的一种解决方案，比传统的解决方案（回调�
 ```js
 // 里面的函数便是回调函数
 let promise = new Promise(function(){});
-// 回调函数可接收两个参数
-// resolve 和 reject 参数是函数，再回调函数中调用可改变当前promise的状态
+// 回调函数可接收两个参数：resolve 和 reject 
+// 这两个参数其实是函数，在回调函数中调用可改变当前promise的状态
 let promise = new Promise(function(resolve,reject){});
 // then方法会在promise对象的状态发生改变后执行
-// then中传入两个参数，分别为两个方法
+// then中可以传入两个参数，分别为两个方法
 // 第一个方法为状态转为resolved时会执行的函数
 // 第二个方法为状态转为reject时会执行的代码
-promise.then()
-// promise中的函数会在promise声明时执行
-// then方法会等待promise中的方法执行结束执行，then下方的方法不会等待then执行完成，但会等待promise代码执行完成
+// promise中的函数会在promise被声明的时候便开始执行
+// 而then方法会等待promise中的方法执行结束执行，then下方的方法不会等待then执行完成，但会等待promise代码执行完成（也就是说then是异步的，但promise中的方法不是？）
 promise.then(
     function(){
         console.log(resolve);
@@ -1337,7 +1397,7 @@ promise.then(
         console.log(reject);
     }
 )
-// resolve与reject函数可以传入参数，then中的回调函数中接收
+// resolve与reject函数可以传入参数作为消息，可以在then中的回调函数中接收
 let promise = new Promise(function(resolve,reject){
     resolve("success");
     reject("fail");
@@ -1352,7 +1412,7 @@ promise.then(
 )
 // then方法会返回另一个Promise，可调用该对象的catch函数
 // catch函数当promise中的回调函数报错或promise状态为reject的时候执行
-// 可接参数，其值为回调函数中reject填入的值或者异常信息
+// 可接收一个参数，其值为回调函数中reject填入的值或者异常信息
 // 所以如果有catch处理的话，then中的第二个方法可以去掉
 let promise2 = promise.then(
     function(value){
@@ -1360,7 +1420,8 @@ let promise2 = promise.then(
     }
 )
 promise2.catch(function(){})
-// 可连写
+
+// 以上这些操作可以连写
 promise.then(
     function(value){
         console.log(value);
@@ -1376,11 +1437,11 @@ promise.then(
 async function a(){
     
 }
-// 箭头
+// 箭头方式
 let a = async ()=>{}
 ```
 
-async 所标识的函数会被封装为一个返回结果是一个pomise对象的函数，方法体则是Promise对象声明时所接收的回调函数
+async 所标识的函数会被封装为返回结果是一个pomise对象的函数，async标识函数的方法体则是Promise对象声明时所接收的那个回调函数。
 
 如果在a函数中返回结果，则该promise的状态会变为Resolved，返回的结果会放入resolve的参数中，
 
@@ -1395,9 +1456,9 @@ promise.then().catch()
 
 ## await
 
-用于快速获取promise成功状态下的返回值，只能在async修饰的方法中使用
+用于快速获取promise对象在成功状态下的返回值，只能在async修饰的方法中使用
 
-如果await操作的promise返回异常，则，await操作会抛出异常
+如果await操作的promise返回的是异常，则await操作会抛出异常
 
 与await在同一个方法体中且在await后的代码会等待await执行结束
 
@@ -1418,6 +1479,8 @@ fun()
 ```
 
 # Axios
+
+用于发送请求
 
 ```bash
 npm install axios
@@ -1700,7 +1763,7 @@ import { defineStore } from "pinia";
 export const defindPerson = defineStore({
   id: "defindPerson", //当前数据id，要求全局唯一
   state: () => {
-    // 这里return的值为共享的数据
+    // 这里return的值才是共享的数据
     return {
       uname: "张三",
       pword: "123456",
