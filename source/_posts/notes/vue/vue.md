@@ -193,6 +193,17 @@ import HelloWorld from './components/HelloWorld.vue'
 import ‘.../*.css’
 ```
 
+## 局部样式
+
+在某个vue文件中的scoped属性，可以限制其中内容只在当前vue文件中生效
+
+```vue
+<style scoped>
+</style>
+```
+
+
+
 # 响应式数据
 
 响应式数据是指在变量的数据变化之后，页面渲染的数据会随着变量改变
@@ -538,9 +549,18 @@ let count = computed(()=>{
 
 # 数据监听器
 
-监听数据发生改变
+监听数据发生改变，watch为懒监听，即在监听到源发生变化时才会执行回调函数
 
-## watch
+watch可监听的源包括如下内容
+
+- 一个函数，返回一个值
+- 一个ref
+- 一个响应式对象
+- 由以上类型的值组成的数组
+
+
+
+## ref指向的一个值
 
 监听ref值，注意这里不需要.value，watch函数的返回值是一个函数，调用该返回值函数可以停止该watch的监视（但在方法的一个参数里居然可以调方法的返回值？嗯，因为该参数方法是在监视到改变时才会调用，到时已经可以获取到外部方法的返回值了）
 
@@ -564,9 +584,13 @@ let count = computed(()=>{
 </style>
  ```
 
+
+
+## ref指向的对象
+
 监听ref定义的对象，注意这里需要开启深度监听才能监听其中的属性是否改变（获取的对象还是整个对象），否则只有在修改整个value指向的对象时才会触发
 
-注意如果是改变其中的某个属性，则获取到的newvalue和oldvalue都是最新的值，多数情况下一般不用oldvalue
+注意如果是改变其中的某个属性，则获取到的newvalue和oldvalue都是最新的对象，因为地址值是没变的，所以对象一直没变。多数情况下一般不用oldvalue
 
 ```vue
 <script setup>
@@ -590,14 +614,30 @@ let count = computed(()=>{
 
 
 
-监听reactive中的一个值
+## reactive指向的对象
+
+监视reactive定义的对象类型数据，默认是开启深度监视的，且无法关闭 
+
+```js
+let person = reactive({
+    name:"jeck",
+    age: 18
+})
+watch(person, (newValue,oldValue)=>{
+    console.log(oldValue,"->",newValue);
+});
+```
+
+
+
+## reactive指向对象中的某个属性
+
+监听reactive中的一个属性，则不能直接监视，可以通过将其作为返回值放入一个方法，则可以进行监听
 
 ```vue
 <script setup>
   import { reactive, ref, watch } from "vue";
-  let count = reactive({});
-  // 需要将会变化的值以返回值的形式作为第一个参数
-  watch(()=>count.value, (newValue,oldValue)=>{
+    watch(()=>count.value, (newValue,oldValue)=>{
     console.log(oldValue,"->",newValue);
   });
 </script>
@@ -610,14 +650,23 @@ let count = computed(()=>{
 </style>
 ```
 
-监听某个对象中的所有值是否变化，deep设为true进行深度监听
+
+
+## reavtive指向对象中的属性对象
+
+监听某个对象中的某个属性对象变化，deep设为true进行深度监听
 
 ```vue
 <script setup>
   import { reactive, ref, watch } from "vue";
-  let count = reactive({});
-  // 需要将会变化的值以返回值的形式作为第一个参数
-  watch(()=>count, ()=>{
+  let count = reactive({
+      name:"",
+      car:{
+          price:100
+      }
+  });
+  // 当price发生变化时也会触发，不进行深度监听只有在car整个被替换才会触发
+  watch(()=>count.car, ()=>{
     console.log(count)
   },{deep:true});
 </script>
@@ -632,9 +681,26 @@ let count = computed(()=>{
 
 除了{deep:true}之外，其中还可添加{immediate:true}：在页面加载完成后立即执行（使用初始值也算一次变化，也会触发）
 
+
+
+## 一个数组
+
+新旧value是数组
+
+```js
+import { reactive, ref, watch } from "vue";
+watch([()=>count.value,person], (newValue,oldValue)=>{
+    console.log(oldValue,"->",newValue);
+});
+```
+
+
+
 ## watchEffect
 
-任何响应式数据变化都会触发，但前提是该数据在watchEffect方法中有用到
+立即运行一个函数，同时响应式的追踪其依赖，并在依赖更改时重新执行该函数
+
+任何响应式数据变化都会触发，但前提是该数据在watchEffect方法中有用到，适用于同时要监视大量数据，避免一个个监视
 
 ```vue
 <script setup>
@@ -786,7 +852,7 @@ App
 
 可以父组件传参给子组件，也可以子组件传给父组件，两者结合便可实现兄弟传参
 
-navigator
+navigator（子）
 
 ```vue
 <script setup>
@@ -803,6 +869,7 @@ navigator
 <template>
   <div>
     <ul>
+      <!-- 这里在指定方法时可以 -->
       <li @click="send('各种管理1')">各种管理1</li>
       <li @click="send('各种管理2')">各种管理2</li>
       <li @click="send('各种管理3')">各种管理3</li>
@@ -815,7 +882,7 @@ navigator
 <style scoped>
 </style>
 ```
-App
+App（父）
 
 ```vue
 <script setup>
@@ -836,7 +903,7 @@ function handler(data) {
     <Header class="header"></Header>
     <!-- 定义接收器并绑定处理事件的方法 -->
     <Navigator @sendMenu="handler" class="navigator"></Navigator>
-    <!-- msg为自定义名称的传递给子组件的信息 -->
+    <!-- msg为自定义名称的传递给子组件的信息，这里加了冒号则会将navigatorMsg作为表达式，这里会当作变量名去寻找对应的对象 -->
     <Content class="content" :msg="navigatorMsg"></Content>
   </div>
 </template>
@@ -861,13 +928,16 @@ function handler(data) {
 }
 </style>
 ```
-Content
+Content（子）
 
 ```vue
 <script setup>
 import { defineProps } from "vue";
 // msg 为父组件给子组件加上的属性名，String为属性值的类型
-defineProps({ msg: String });
+// x中包含所有父组件传递的消息
+let x = defineProps({ msg: String });
+    // or
+let x = defineProps(['msg']);
 </script>
 <template>
   <div>
@@ -1889,7 +1959,7 @@ let data = defindPerson();
 .$patch
 
 ```vue
-<script setup>
+<script setup> 
 import { reactive } from 'vue';
 import {defindPerson} from '../store/store.js'
 let data = defindPerson();
@@ -1926,4 +1996,67 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 app.use(ElementPlus)
 ```
+
+# TS
+
+## 接口
+
+在src下面的types文件夹中创建index.ts文件，在其中定义接口，用于约束
+
+```typescript
+export interface PersonInter{
+    id:string,
+    name:string,
+    age:number,
+    // x是可有可无的
+    x?:string
+}
+```
+
+使用接口
+
+@符号表示src根目录
+
+```typescript
+import {type:PersonInter} from '@/types'
+let person:PersonInter = {id:'001', name:'jeck', age:10}
+let personList:Array<PersonInter> = [
+    {id:'001', name:'jeck', age:10},
+    {id:'001', name:'jeck', age:10},
+    {id:'001', name:'jeck', age:10}
+]
+```
+
+## 自定义类型
+
+```typescript
+export type Persons = Array<PersonInter>
+or
+export type Persons = PersonInter[]
+```
+
+```typescript
+import {type:Persons} from '@/types'
+let personList:Persons = [
+    {id:'001', name:'jeck', age:10},
+    {id:'001', name:'jeck', age:10},
+    {id:'001', name:'jeck', age:10}
+]
+```
+
+## 限制类型的reactive
+
+```typescript
+import {type:Persons} from '@/types'
+import {reactive} from 'vue '
+let personList = reactive<Persons>([
+    {id:'001', name:'jeck', age:10},
+    {id:'001', name:'jeck', age:10},
+    {id:'001', name:'jeck', age:10}
+])
+```
+
+
+
+
 

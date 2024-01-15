@@ -190,7 +190,39 @@ public class StudentService {
     }
 ```
 
+# 保护模式
 
+redis默认开启保护模式。要是配置里没有指定bind和密码，开启该参数后，redis只能本地访问，拒绝外部访问。
 
+redis.conf安全设置： # 打开保护模式 protected-mode yes
 
+Redis 的保护模式是一种安全特性，它限制了 Redis 服务器的访问权限。当保护模式被启用时，如果没有设置 `bind` 参数和密码，Redis 服务器将只接受来自本地主机的连接。这意味着，外部客户端将无法连接到 Redis 服务器，除非它们在同一个局域网内或具有相应的权限。
+
+具体来说：
+
+1. **bind 参数**：`bind` 参数用于指定 Redis 服务器应该绑定的 IP 地址。如果未设置此参数，Redis 将绑定到所有可用的网络接口。但当保护模式被启用时，如果未设置 `bind` 参数，Redis 将只接受来自 localhost（127.0.0.1）的连接。
+2. **密码**：为了从外部访问 Redis，你可以设置密码。当保护模式被启用时，如果你没有设置密码，外部客户端将无法连接到 Redis 服务器，除非它们具有适当的权限或位于相同的局域网内。
+
+因此，当 Redis 的保护模式被启用且没有设置 `bind` 和密码时，Redis 服务器的访问将被限制在本地机器上。这有助于增强服务器的安全性，防止未经授权的访问。
+
+# 禁用或者重命名危险命令
+
+Redis中线上使用keys *命令是非常危险的，应该禁用或者限制使用这些危险的命令，可降低Redis写入文件漏洞的入侵风险。
+
+- `KEYS *` 命令在 Redis 中用于列出所有的键。当 Redis 服务器正在处理这个命令时，它会遍历整个键空间，这可能会导致长时间的阻塞，尤其是在有大量数据的情况下。
+- 更糟糕的是，如果有外部攻击者恶意地使用 `KEYS *` 命令，它可能会导致 Redis 服务器资源耗尽，从而拒绝服务。
+
+修改 redis.conf 文件，添加
+```
+rename-command FLUSHALL ""
+rename-command FLUSHDB  ""
+rename-command CONFIG   ""
+rename-command KEYS     ""
+rename-command SHUTDOWN ""
+rename-command DEL ""
+rename-command EVAL ""
+```
+然后重启redis。
+重命名为"" 代表禁用命令，如想保留命令，可以重命名为不可猜测的字符串，如：
+`rename-command FLUSHALL  joYAPNXRPmcarcR4ZDgC`
 
