@@ -938,8 +938,10 @@ ALTER TABLE table_name DROP INDEX index_name
 
 ## DROP DATABASE
 
+databasename用反引号圈住
+
 ```sql
-DROP DATABASE database_name
+DROP DATABASE `database_name`
 ```
 
 ## CREATE VIEW

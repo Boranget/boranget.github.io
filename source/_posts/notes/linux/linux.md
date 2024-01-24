@@ -829,3 +829,23 @@ mv ${local_folder}/* ${archive}/${NOWTIME}
 
 ```
 
+# 安装openjdk
+
+```shell
+apt install openjdk-17-jdk
+```
+
+# 字体安装
+
+需要先安装字体管理工具 apt install xfonts-utils
+
+将ttf字体文件拷贝到Linux下的 /usr/share/fonts目录。然后依次执行mkfontscale 、mkfontdir 、fc-cache使字体生效
+
+# 端口占用进程查询以及kill
+
+查看是否有进程占用
+
+netstat -tunlp|grep {port}
+
+kill -9 {pid}
+

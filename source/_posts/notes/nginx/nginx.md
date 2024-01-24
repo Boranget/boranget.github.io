@@ -436,3 +436,87 @@ location / {
 }
 ```
 
+**SNI：Server Name Indication**是 TLS 的扩展，允许在握手过程开始时通过客户端告诉它正在连接的服务器的主机名称。作用：用来解决一个服务器拥有多个域名的情况。
+
+# 后端已处理跨域后nginx再处理跨域出错
+
+背景：后端设置了croswebfilter，nginx反向代理了后端，使得前端在访问后端时使用同源的域，同时也设置了跨域头的添加
+
+情况：浏览器前端请求nginx代理的后端的时候报错，postman请求nginx代理的后端不报错
+
+原因：后端通过header中是否有origin头来判断当前请求是否为跨域请求，如果当前请求为跨域请求，则会在响应头中添加允许跨域的头。而nginx的配置会在所有请求的响应头中添加跨域头，这样会造成冲突
+
+解决：去掉后端的跨域处理
+
+postman不报错的原因：postman没有同源限制，所以不会在请求中添加origin，故后端不会对该请求的响应头做处理
+
+# proxy_set_header和add_header的区别
+
+![img](nginx/20190709170853778.png)
+
+proxy_set_header是nginx设置请求头给上游服务器，add_header是nginx设置响应头信息给浏览器。
+
+ 假如nginx请求上游服务器时，添加额外的请求头，就需要使用proxy_set_header。在java中使用HttpServletRequest.getHeader(String name)来获取请求头的值，name是请求头的名称。
+
+```yaml
+语法格式：
+proxy_set_header field value;
+value值可以是包含文本、变量或者它们的组合。
+常见的设置如：
+proxy_set_header Host $proxy_host;
+proxy_set_header version 1.0;
+```
+
+nginx响应数据时，要告诉浏览器一些头信息，就要使用add_header。例如跨域访问
+
+```yaml
+add_header 'Access-Control-Allow-Origin' '*';
+add_header 'Access-Control-Allow-Headers' 'X-Requested-With';
+add_header 'Access-Control-Allow-Methods' 'GET,POST,OPTIONS'
+# 由于跨域请求，浏览器会先发送一个OPTIONS的预检请求，我们可以缓存第一次的预检请求的失效时间
+if ($request_method = 'OPTIONS') {
+	add_header 'Access-Control-Max-Age' 2592000;
+	add_header 'Content-Type' 'text/plain; charset=utf-8';
+	add_header 'Content-Length' 0;
+	return 204;
+}
+```
+
+# nginx代理后端
+
+conf.d下文件：
+
+```nginx
+error_log  /etc/nginx/log/error_log debug;
+server {
+        listen       80;
+        server_name  39.100.77.92;
+    	# 保温大小
+        client_max_body_size 100M;
+        location / {
+        		# 处理当前类型请求时寻找文件的根目录
+                root   /etc/nginx/html/dist;
+        		# 直接请求当前路径时寻找的页面
+                index  sign-in.html;
+        		# 若无法直接找到当前请求路径时，按顺序查找如下页面，如果都找不到则404
+                try_files $uri $uri.html $uri/ =404;
+        }
+        # 反向代理后端，将后端变为与前端同个域，将无同源问题
+        location /ci/ {
+                proxy_pass http://127.0.0.1:9000/;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+
+}
+```
+
+# try_files
+
+参数`$uri`为当前请求的路径，try_files后跟的参数为从前向后匹配，若都匹配不到则直接请求最后一个参数，最后一个参数可以是真实存在的文件，也可以是等号+状态码，比如=404
+
+```nginx
+try_files $uri $uri.html $uri/ =404;
+try_files $uri $uri.html $uri/ 404.html;
+```
+

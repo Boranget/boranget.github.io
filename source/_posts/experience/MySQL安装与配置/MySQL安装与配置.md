@@ -7,7 +7,9 @@ categories:
   - 经验
 ---
 
-# 卸载
+# windows
+
+## 卸载
 
 打开安装器，点击右侧的remove
 
@@ -17,11 +19,11 @@ categories:
 
 若卸载失败， 可以打开Windows 应用管理卸载
 
-# 下载
+## 下载
 
 在mysql官网下载安装器[MySQL :: Download MySQL Installer](https://dev.mysql.com/downloads/windows/installer/)：msi结尾文件
 
-# 安装
+## 安装
 
 1. choosing a setup type 
 
@@ -57,7 +59,7 @@ categories:
 
    点击execute，会显示正在安装，当状态为complete即安装结束
 
-# 配置
+## 配置
 
 安装完成后，安装器会自动跳到配置界面
 
@@ -81,9 +83,50 @@ finish
 
 最后将 D:\tools\mysql\mysql8\server\bin 目录配置到环境变量的path中
 
-# 测试连接
+## 测试连接
 
 打开一个新的cmd窗口， 输入mysql -uroot -p 回车，输入密码，连接成功即可
 
+# ubuntu
 
+```bash
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl status mysql
+```
 
+MySQL 8.0上，对root用户使用`auth_socket`插件进行身份验证。`auth_socket`插件仅对从`localhost`连接到Unix socket文件用户进行身份验证。这意味着无法通过提供密码来以root用户连接到MySQL服务器。但可以通过命令`sudo mysql`连接到MySQL服务器。
+
+开启root用户的密码登录，并允许从其他ip登录
+
+```bash
+# 修改host为%，
+use mysql
+select user,host from user;
+update user set host='%' where user='root' and host='localhost';
+# 开启root用户的密码登录
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '你的密码';
+# 刷新权限
+FLUSH PRIVILEGES;
+```
+
+修改配置文件开启远程登录`/etc/mysql/mysql.conf.d/mysqld.cnf`
+
+```properties
+# 注释改行
+#bind-address = 127.0.0.1
+```
+
+重启mysql
+
+```bash
+systemctl status mysql
+systemctl stop mysql
+systemctl start mysql
+```
+
+# navicat
+
+## 10061错误
+
+查看是否没开放远程登录的权限

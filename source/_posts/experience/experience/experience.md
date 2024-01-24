@@ -402,7 +402,7 @@ drinker milker is drinking
 微信小程序需要根据下载文件接口返回的ContenType请求头来解析文件
 
 ```java
-// 根据下载的文件名获取文件类型
+// 根据下载的文件名后缀获取文件类型
         Optional<MediaType> mediaType = MediaTypeFactory.getMediaType(objectName);
         String contentType = mediaType.orElse(MediaType.APPLICATION_OCTET_STREAM).toString();
         response.setContentType(contentType);

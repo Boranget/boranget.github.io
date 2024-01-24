@@ -226,3 +226,91 @@ rename-command EVAL ""
 重命名为"" 代表禁用命令，如想保留命令，可以重命名为不可猜测的字符串，如：
 `rename-command FLUSHALL  joYAPNXRPmcarcR4ZDgC`
 
+# 启用远程连接
+
+修改redis.conf文件，linux在/etc/redis下
+
+- 修改protcted-mode为false
+- 将bind一行注释
+- requirepass 后面设置密码
+
+# 启用密码后的cli连接
+
+redis-cli之后，需要使用 auth password 进行认证，否则无权限操作
+
+远程：redis-cli -h host -p port -a password
+
+# Hash过期
+
+hash类型数据无法为单独的每条数据设置过期时间，只能为整个hash结构设置过期时间，如果有需求，建议在单个字段中存储过期时间手动判断
+
+# 日志记录
+
+linux下`redisc.onf`文件在etc的redis下面，编辑该文件，找到logfile一行，改行为日志文件所在地址
+
+# redis被攻击记录
+
+redis关掉了保护模式与bind，密码设为了123456
+
+现象，redis在备份rdb文件时出错，显示日志如下：
+
+```log
+ * 1 changes in 900 seconds. Saving...
+ * Background saving started by pid 2127220
+ * DB saved on disk
+ * RDB: 0 MB of memory used by copy-on-write
+ * Background saving terminated with success
+ // 备份文件夹只读
+ # Failed opening the RDB file root (in server root dir /var/spool/cron) for saving: Read-only file system
+ # Failed opening the RDB file redis (in server root dir /var/spool/cron) for saving: Read-only file system
+ // 不知道哪里来的MASTERR
+ * Connecting to MASTER 108.181.122.221:60101
+ * MASTER <-> REPLICA sync started
+ * Non blocking connect for SYNC fired the event.
+ * Master replied to PING, replication can continue...
+ * Trying a partial resynchronization (request ccc31f7f854cd2e74e324a89c50f5e9d244d31e5:1).
+ * Full resync from master: ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ:0
+ * Discarding previously cached master state.
+ * MASTER <-> REPLICA sync: receiving 21816 bytes from master
+```
+
+其中奇怪的地方，一个是出现了一个主机，另一个是备份文件夹变成了只读
+
+首先没有配置过主从复制，其次查看配置文件中，备份文件夹的地址为 `/var/lib/redis`，可见配置被动态修改了
+
+参考攻击方法：[Redis攻防(未授权访问、利用redis写入webshell、任务计划反弹、Shellssh-keygen 公钥登录服务器、利用主从复制RCE)_redis未授权访问写入webshell的步骤不包括?(1.00分) 设置数据缓存文件 设置数据缓-CSDN博客](https://blog.csdn.net/q20010619/article/details/121912003)
+
+建议配置方式
+
+1. 单独为redis设置一个普通账号启动 redis
+2. 设置本地 localhost 不允许外部访问
+3. 保护模式开启 protected-mode 开启 （默认开启）
+4. 把端口最好更改
+5. requirepass 设置redis密码
+
+好在使用apt安装的redis，且使用systemctl启动redis，这样redis的所属用户为redis，没有系统文件夹比如进程等的操作权限
+
+# systemctl启动redis的配置
+
+使用`systemctl start redis`命令启动Redis服务时，默认情况下会以`redis`用户的身份运行。这是通过`systemd`的单元文件来配置的，该文件定义了服务的运行方式。
+
+要查看Redis服务的用户配置，可以执行以下步骤：
+
+1. 打开Redis服务的单元文件。在大多数Linux发行版上，Redis服务的单元文件位于`/etc/systemd/system/redis.service`或`/lib/systemd/system/redis.service`。
+2. 使用文本编辑器打开该文件。
+3. 在文件中查找`User`行。该行指定了运行Redis服务的用户。它应该类似于以下内容：
+
+
+```bash
+User=redis
+```
+4. 如果你想更改运行Redis服务的用户，只需将`User`行中的值修改为你想要的用户名，并保存文件。
+5. 重新加载`systemd`配置并重新启动Redis服务，以使更改生效。可以使用以下命令：
+
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart redis
+```
+
+请注意，更改运行Redis服务的用户需要具有适当的系统权限，并且确保新的用户具有访问Redis所需的文件和目录的权限。此外，确保在更改用户配置之前备份原始的单元文件，以便在需要时可以还原。
