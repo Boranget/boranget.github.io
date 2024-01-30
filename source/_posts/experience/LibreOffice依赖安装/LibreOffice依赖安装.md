@@ -1,13 +1,19 @@
 ---
 title: LibreOffice依赖安装
-date: 2024-04-22 10:35:19
+date: 2024-01-23 10:35:19
 tags:
   - LibreOffice依赖安装
 categories:
   - 经验
 ---
 
-# 脚本
+# 项目
+
+一个文件转换项目
+
+[GitHub - jodconverter/jodconverter: JODConverter automates document conversions using LibreOffice or Apache OpenOffice.](https://github.com/jodconverter/jodconverter)
+
+# LibreOffice安装脚本
 
 ```sh
 #!/bin/bash

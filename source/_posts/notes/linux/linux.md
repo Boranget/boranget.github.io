@@ -849,3 +849,41 @@ netstat -tunlp|grep {port}
 
 kill -9 {pid}
 
+# systemctl
+
+## 服务注册
+
+```
+[Unit]
+Description=A high performance web server and a reverse proxy server
+Documentation=man:nginx(8)
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t -q -g 'daemon on; master_process on;'
+ExecStart=/usr/sbin/nginx -g 'daemon on; master_process on;'
+ExecReload=/usr/sbin/nginx -g 'daemon on; master_process on;' -s reload
+ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid
+TimeoutStopSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+## 命令
+
+```bash
+# 启动
+systemctl start servername
+# 停止
+systemctl stop servername
+# 重启
+systemctl restart servername
+# 刷新服务
+systemctl daemon-reload
+```
+

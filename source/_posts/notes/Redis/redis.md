@@ -7,6 +7,68 @@ categories:
   - 笔记
 ---
 
+# SDS
+
+**simple dynamic string**
+
+SDS是redis底层使用的字符串结构
+
+```c
+struct sdshdr {
+    //记录buf数组中已使用字节的数量
+    //等于SDS所保存字符串的长度
+    int len;
+    //记录buf数组中未使用字节的数量
+    int free;
+    //字节数组，用于保存字符串
+    char buf[];
+};
+```
+
+保留了`\0`字符，目的是为了复用c语言中的字符串方法
+
+buf.length = len + 1 + free
+
+其中free为每次分配空间进行的预分配内存，避免每次扩展字符串时都需要重新申请空间。以1M为限，1M下会分配即将用到的内存的两倍，1M以上只多分配1M，避免指数爆炸。当然如果free本身就能够支持本次操作，则不会进行内存重分配。
+
+free空间为惰性释放，当对字符串进行缩短操作时，会将回收的内存放在free中而不是会立即释放，便于后续使用，同时SDS提供了对应的释放api避免造成内存浪费。
+
+此外，SDS为二进制安全的，由于不会通过终止符判断是否到信息结尾，故可以存储二进制数据即使其中包含`\0`，保证数据在存储与读取时的一致性
+
+# 链表
+
+```c
+typedef struct listNode {
+    // 前置节点
+    struct listNode * prev;
+    // 后置节点
+    struct listNode * next;
+    //节点的值
+    void * value;
+}listNode;
+
+typedef struct list {
+    // 表头节点
+    listNode * head;
+    // 表尾节点
+    listNode * tail;
+    // 链表所包含的节点数量
+    unsigned long len;
+    // 节点值复制函数
+    void *(*dup)(void *ptr);
+    // 节点值释放函数
+    void (*free)(void *ptr);
+    // 节点值对比函数
+    int (*match)(void *ptr,void *key);
+} list;
+```
+
+双向无环链表，带头指针和尾指针，且带链表长度，同时结点的值为void指针类型，故具有多态性。
+
+# 字典
+
+
+
 # RedisTemplate
 
 ## 使用
