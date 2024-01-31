@@ -487,7 +487,7 @@ mirrorOf意思就是当前镜像是为那个仓库做镜像？配置为*意思�
 
 效果相同，都是不传递依赖，optional表示可选，provided表示已有
 
-# maven引入非maven依赖
+# maven引入本地非maven依赖
 
 将依赖的jar包放入项目根目录的lib目录下
 

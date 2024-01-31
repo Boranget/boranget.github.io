@@ -101,6 +101,7 @@ import java.lang.instrument.Instrumentation;
 
 public class PreMainAgent {
     // 这里的方法名是固定的
+    // 另一种允许的定义：public static void premain(String agentArgs)
     public static void premain(String agentArgs, Instrumentation inst) {
         System.out.println("*********我是PreMainAgent");
         System.out.println("*********agentArgs = " + agentArgs);
@@ -210,6 +211,7 @@ attach的主要流程是启动主应用后，获取该应用的pid
 
 ```java
 public class AgentMain {
+    // 方法名固定，另一种允许的定义：public static void agentmain(String agentArgs)
     public static void agentmain(String agentArgs, Instrumentation inst) {
         System.out.println("----------哈哈，我是agentmain");
         System.out.println("----------agentArgs = " + agentArgs);
