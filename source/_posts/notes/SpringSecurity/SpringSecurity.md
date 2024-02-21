@@ -9,7 +9,7 @@ categories:
 
 #  HTTP Basic 登陆模式
 
-SS实现登录认证最简单的一种方式，防君子不防小人
+SS实现登录认证最简单的一种方式，密码相当于明文传输，防君子不防小人
 
 适合守护不是很重要的数据。
 
@@ -39,7 +39,7 @@ matches(comparePassword, encodePassword) 用于比较
 
 ## BCryptPasswordEncoder
 
-同一个原始密码,每一次加密结果不同
+同一个原始密码,每一次加密结果不同，但仍然可用match，添加随机盐值的原因应该是防止单向加密的撞库
 
 60位字符串 组成:
 
@@ -48,6 +48,7 @@ $2a // 算法版本
 $10 // 算法强度
 $............前22位 // 随机盐
 .................. // hash值
+$2a $10 $1u8dKM3NSo8DnnJuVjhTYe VvHrlw.uXUS8k/hmsR8OXkf2mO5oi6q
 ```
 
 # FormLogin登录认证模式
@@ -56,7 +57,7 @@ $............前22位 // 随机盐
 
 - formLogin登录认证不写Controller方法
 - 使用UsernamePasswordAuthenticationFilter过滤器来进行登录认证
-- 该过滤器默认集成，只需要配置
+- 该过滤器默认集成，但需要配置
 
 ## 配置
 
@@ -133,7 +134,7 @@ hasAnyRole("user")
     }
 ```
 
-## 静态资源配置
+##  静态资源配置
 
 静态资源不经过过滤器
 
@@ -874,9 +875,9 @@ public interface ConfigAttribute extends Serializable {
 
 # 实现原理
 
-filter
+底层使用了filter，但由于原生的filter需要手动注册到tomcat中，springsecurity提供了DelegatingFilterProxy，可以让开发者通过spring的bean注册的方式注册securityfilter的Bean
 
-DelegatingFilterProxy管理一个chain, 其中包含各种SecurityFilter的实现类, 通过FIlterProxy相当于间接放入了Java web filter中
+DelegatingFilterProxy 管理了一个chain, 其中包含各种SecurityFilter的实现类, 通过FIlterProxy相当于间接放入了Java web filter中
 
 # 默认配置
 
@@ -3110,3 +3111,6 @@ public class JWTResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 ```
 
+# @EnableWebSecurity
+
+需要将其加到配置类上，才能启用Security的自定义配置，SpringBoot项目可以省略，单纯的Spring项目需要添加

@@ -80,3 +80,49 @@ mybatis plus不能使用yml文件中mybatis的mapperlocation配置，但是mybat
 ```
 
 > org.apache.ibatis.binding.BindingException: Invalid bound statement (not found): com.example.springweb.mapper.RoleMapper.selectList
+
+# Table注解
+
+使用@TableName("dir_table")注解，将实体类绑定到数据库中的具体表上，不指定默认使用实体类名称去寻找表
+
+```java
+@Data
+@Builder
+@TableName("dir_table")
+public class Directory {
+    String id;
+    String dirName;
+    String dirType;
+    String montID;
+}
+```
+
+# mapper xml文件格式错误引起的报错
+
+```
+Caused by: org.xml.sax.SAXParseException; lineNumber: 2; columnNumber: 59; 文档根元素 "mapper" 必须匹配 DOCTYPE 根 "null"。
+```
+
+原因是xml中没有加约束
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+```
+
+# 绑定异常
+
+org.apache.ibatis.binding.BindingException: Invalid bound statement (not found):
+
+检查是否在yaml文件中配置了mapper xml文件的位置，默认为resources下面的mapper文件夹，若不同则需手动指定
+
+```yaml
+# 配置mybatis规则
+mybatis-plus:
+  mapper-locations:  classpath:/mybatis/mapper/*.xml
+```
+
+同时检查是否配置了mapperscan或者在mapper类上加了@mapper注解
+

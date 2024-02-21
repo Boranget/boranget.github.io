@@ -1122,3 +1122,41 @@ java中通过配置文件的方式，将一些实现类注册到配置文件中�
 
 若要切换为log4j2：排除掉logback，添加log4j2的starter
 
+# 读取request请求体不完整
+
+原本使用inputstream的available来获取报文大小，但使用inputStream.available()并不总是返回整个流的大小。它只返回可以无阻塞地从此输入流读取（或跳过）的字节数的估计值。在实际应用中，这可能导致只读取了部分数据。
+获取不到完整的请求体内容是因为HTTP请求的正文（body）长度是动态的，而inputStream.available()方法返回的是在不阻塞的情况下可以从输入流中读取的字节数。当输入流中的数据量少于或等于输入流内部的缓冲区大小时，available()方法可能返回的是小于实际数据量的值，这就会导致您只读取了部分数据。为了完整地读取HTTP请求的正文内容，需要使用一个循环来不断读取输入流直到没有更多数据可读。
+
+```java
+byte[] buffer = new byte[1024];
+StringBuilder resBuilder= new StringBuilder();
+int flag = -1;
+try {
+    while ((flag = inputStream.read(buffer))!=-1){
+        resBuilder.append(new String(buffer,0,flag));
+    }
+} catch (IOException e) {
+    throw new RuntimeException(e);
+}
+```
+
+注意这里的buffer大小会决定在转字符串时是否完整
+
+# 启动后初始化
+
+## 使用PostConstruct注解
+
+在一个被spring代理的组件中使用该注解标记一个方法，方法名不固定，该方法会在当前bean中所有属性注入后调用
+
+```java
+@Component
+public class SystemInit {
+    @Autowired
+    DirService dirService;
+    @PostConstruct
+    public void initd(){
+        System.out.println("123");
+    }
+}
+```
+

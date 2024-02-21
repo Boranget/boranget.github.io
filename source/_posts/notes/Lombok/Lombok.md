@@ -51,6 +51,25 @@ categories:
 
 - @ToString
 
-## @Data
+## Data
 
 相当于标记了Getter与Setter、equals以及toString
+
+# Builder
+
+Builder会生成一个内部类用于使用Builder模式，此时若当前类没有构造器，会自动生成一个全参数构造器，若已经指定了无参构造器，则需要手动通过编码或者lombok注解的方式添加一个全参构造器，建议同时添加全参和无参构造器
+
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName("dir_table")
+public class Directory {
+    String id;
+    String dirName;
+    String dirType;
+    String montID;
+}
+```
+

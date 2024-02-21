@@ -44,8 +44,12 @@ public class Person {
 
 ```java
 public static void main(String[] args) throws IOException {
+    // 将json字符串转为对象
     String json ="{\"username\":\"zhangsan\",\"age\":15}";
     Person person = new ObjectMapper().readValue(json, Person.class);
+    // 将对象转为字符串
+    String s = new ObjectMapper().writeValueAsString(person);
+    // 将对象转为字符串并输出
     new ObjectMapper().writeValue(System.out,person);
 }
 ```
