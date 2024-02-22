@@ -636,3 +636,23 @@ set关键字会在行首拼接set关键字，并且在行尾删除额外逗号�
 # sql
 
 可以将重用sql抽取出来
+
+# jdbc执行多条语句
+
+在mybatis中如果想要在一个动态sql中执行多条语句，需要在jdbc的连接驱动中开启“允许多条语句执行”，否则会报语法错误异常
+
+```xml
+<update id="move">
+    INSERT INTO dir_dir_table (parent_dir_id, child_dir_id)
+    SELECT #{parentId}, #{dirId}
+    WHERE NOT EXISTS (
+    SELECT 1 FROM dir_dir_table WHERE child_dir_id = #{dirId}
+    )
+    ;
+    UPDATE dir_dir_table SET parent_dir_id = #{parentId} WHERE child_dir_id = #{dirId};
+</update>
+```
+
+开启：
+
+jdbc:mysql://localhost:3306/file_sys?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai**&allowMultiQueries=true**

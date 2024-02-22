@@ -61,7 +61,9 @@ public UserEntity getUserByName(String username) {
 }
 ```
 
-# MapperScan注解非必须
+# MapperScan
+
+可在启动类或者其他配置类上添加mapperscan注解标明mapper扫描范围，或者直接在mapper接口上标注mapper注解
 
 # mapper-location不能与mabytis共用
 

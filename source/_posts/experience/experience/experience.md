@@ -219,6 +219,8 @@ categories:
 
 the request was rejected because no multipart boundary was found
 
+在feign中，发送 multipartfile文件，应该使用【@RequestPart】而不是【@RequestParam】，且需要设置请求content-type为【multipart/form-data】
+
 解决:
 
 ```java
@@ -231,6 +233,8 @@ public CommonResult fileupload(@RequestPart MultipartFile uploadfile, @RequestPa
 其中 consumes = MediaType.MULTIPART_FORM_DATA_VALUE 解决"Current request is not a multipart request"
 
 @RequestPart MultipartFile uploadfile 解决"the request was rejected because no multipart boundary was found"
+
+
 
 ### 下载文件
 

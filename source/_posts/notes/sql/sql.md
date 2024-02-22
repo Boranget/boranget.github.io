@@ -1,11 +1,9 @@
----
-title: SQL
+## title: SQL
 date: 2023-03-31 16:50:30
 tags:
   - sql
 categories:
   - 笔记
----
 
 
 
@@ -2742,3 +2740,28 @@ PRIMARY KEY：主键约束，表示唯一标识，不能为空，且一个表只
 AUTO_INCREMENT：自增长，只能用于数值列，而且配合索引使用,默认起始值从1开始，每次增长1
 UNIQUE KEY：唯一值，表示该字段下的值不能重复，null除外。比如身份证号是一人一号的，一般都会用这个进行约束
 FOREIGN KEY：外键约束，目的是为了保证数据的完成性和唯一性，以及实现一对一或一对多关系
+
+# 一种修改或插入的办法
+
+场景为：若存在child为2的关系，则将该关系中的parent修改为5，若不存在child等于2的关系，则直接新增5，2的关系对
+
+1. 不存在则插入否则不插入
+
+    ```sql
+    INSERT INTO dir_dir_table (parent_dir_id, child_dir_id)  
+    SELECT '5', '2'  
+    WHERE NOT EXISTS (  
+        SELECT 1 FROM dir_dir_table WHERE child_dir_id = 2  
+    );
+    ```
+
+    这里使用了将子查询作为插入源的方式，若子查询没有查到内容，则不会插入任何内容，相反，若子查询的条件满足，则可插入内容
+
+2. 修改（此时肯定已经有了可修改的内容）
+
+    ```sql
+    UPDATE dir_dir_table SET parent_dir_id = 1 WHERE child_dir_id = 2;
+    ```
+
+    
+
