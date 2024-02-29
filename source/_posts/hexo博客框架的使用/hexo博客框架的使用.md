@@ -203,4 +203,23 @@ git clone -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes
     CDN:
   ```
 
-  
+# 永久链接配置
+
+[永久链接（Permalinks） | Hexo](https://hexo.io/zh-cn/docs/permalinks)
+
+| 变量          | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| `:year`       | 文章的发表年份（4 位数）                                     |
+| `:month`      | 文章的发表月份（2 位数）                                     |
+| `:i_month`    | 文章的发表月份（不含前导零）                                 |
+| `:day`        | 文章的发表日期 (2 位数)                                      |
+| `:i_day`      | 文章的发表日期（不含前导零）                                 |
+| `:hour`       | 文章发表时的小时 (2 位数)                                    |
+| `:minute`     | 文章发表时的分钟 (2 位数)                                    |
+| `:second`     | 文章发表时的秒钟 (2 位数)                                    |
+| `:title`      | 文件名称 (相对于 “source/_posts/“ 文件夹)                    |
+| `:name`       | 文件名称                                                     |
+| `:post_title` | 文章标题                                                     |
+| `:id`         | 文章 ID (*[清除缓存](https://hexo.io/zh-cn/docs/commands#clean)时不具有持久性*) |
+| `:category`   | 分类。如果文章没有分类，则是 `default_category` 配置信息。   |
+| `:hash`       | 文件名（与 `:title` 相同）和日期的 SHA1 哈希值（12位16进制数） |
