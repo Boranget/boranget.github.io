@@ -8,7 +8,7 @@ tags:
   - jsDelivr
   - PicGo
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料

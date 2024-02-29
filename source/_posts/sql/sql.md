@@ -5,7 +5,7 @@ updated: 2024-02-21 16:40:19
 tags:
   - sql
 categories:
-  - 笔记
+  - notes
 ---
 
 

@@ -6,7 +6,7 @@ tags:
   - office
   - 办公
 categories:
-  - 笔记
+  - notes
 ---
 
 # excel

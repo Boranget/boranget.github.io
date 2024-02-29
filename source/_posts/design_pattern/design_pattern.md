@@ -5,7 +5,7 @@ updated: 2023-06-27 10:35:19
 tags:
   - 设计模式
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料

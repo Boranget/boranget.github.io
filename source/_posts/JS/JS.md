@@ -5,7 +5,7 @@ updated: 2023-11-06 10:35:19
 tags:
   - web基础
 categories:
-  - 笔记
+  - notes
 ---
 
 也叫ES ECMAScript

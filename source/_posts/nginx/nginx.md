@@ -5,7 +5,7 @@ updated: 2024-01-23 10:35:19
 tags:
   - nginx
 categories:
-  - 笔记
+  - notes
 ---
 
 # 基本概念

@@ -5,7 +5,7 @@ updated: 2024-02-21 10:35:19
 tags:
   - mybatis
 categories:
-  - 笔记
+  - notes
 ---
 
 # 基本思路

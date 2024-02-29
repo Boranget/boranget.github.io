@@ -5,7 +5,7 @@ updated: 2024-02-08 16:40:19
 tags:
   - oauth2
 categories:
-  - 笔记
+  - notes
 ---
 
 # 基本概念

@@ -6,7 +6,7 @@ tags:
   - 刷机
   - 服务器
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

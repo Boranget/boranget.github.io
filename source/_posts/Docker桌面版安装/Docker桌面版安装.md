@@ -5,7 +5,7 @@ updated: 2023-10-25 16:50:30
 tags:
   - docker
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

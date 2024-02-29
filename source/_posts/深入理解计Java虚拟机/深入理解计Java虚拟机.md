@@ -5,7 +5,7 @@ updated: 2023-12-29 16:40:19
 tags:
   - jvm
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料

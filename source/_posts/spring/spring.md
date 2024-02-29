@@ -5,7 +5,7 @@ updated: 2024-01-02 16:40:19
 tags:
   - spring
 categories:
-  - 笔记
+  - notes
 ---
 
 # 一些经验

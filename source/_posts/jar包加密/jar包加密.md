@@ -5,7 +5,7 @@ updated: 2023-08-24 16:50:30
 tags:
   - java
 categories:
-  - 经验
+  - experience
 ---
 
 # 工具

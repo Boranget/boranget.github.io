@@ -5,7 +5,7 @@ updated: 2023-05-31 10:35:19
 tags:
   - 算法
 categories:
-  - 笔记
+  - notes
 ---
 
 # 动态规划

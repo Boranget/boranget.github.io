@@ -6,7 +6,7 @@ tags:
   - qq机器人
   - 服务器
 categories:
-  - 经验
+  - experience
 ---
 
 # aidlux上部署mirai

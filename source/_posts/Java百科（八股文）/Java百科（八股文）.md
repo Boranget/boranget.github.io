@@ -5,7 +5,7 @@ updated: 2023-06-12 10:35:19
 tags:
   - Java
 categories:
-  - 笔记
+  - notes
 ---
 
 # 说点什么

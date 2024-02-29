@@ -5,7 +5,7 @@ updated: 2024-01-12 16:40:19
 tags:
   - vue
 categories:
-  - 笔记
+  - notes
 ---
 # 核心功能
 

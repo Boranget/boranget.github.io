@@ -5,7 +5,7 @@ updated: 2024-02-22 10:35:19
 tags:
   - MybatisPlus
 categories:
-  - 笔记
+  - notes
 ---
 
 # 通用mapper

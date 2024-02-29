@@ -5,7 +5,7 @@ updated: 2023-07-25 16:50:30
 tags:
   - 虚拟机
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

@@ -5,7 +5,7 @@ updated: 2024-02-02 16:40:19
 tags:
   - spring security
 categories:
-  - 笔记
+  - notes
 ---
 
 #  HTTP Basic 登陆模式

@@ -5,7 +5,7 @@ updated: 2024-02-26 16:50:30
 tags:
   - vps
 categories:
-  - 经验
+  - experience
 ---
 
 # 当前VPSFREE已停止申请

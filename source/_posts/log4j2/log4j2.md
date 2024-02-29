@@ -5,7 +5,7 @@ updated: 2023-12-03 10:35:19
 tags:
   - log4j2
 categories:
-  - 笔记
+  - notes
 ---
 
 # 单独使用

@@ -5,7 +5,7 @@ updated: 2023-05-31 10:35:19
 tags:
   - electron
 categories:
-  - 笔记
+  - notes
 ---
 
 # 入门

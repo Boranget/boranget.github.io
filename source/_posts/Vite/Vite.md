@@ -5,7 +5,7 @@ updated: 2023-11-11 16:40:19
 tags:
   - Vite
 categories:
-  - 笔记
+  - notes
 ---
 
 # Vite

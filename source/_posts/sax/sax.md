@@ -6,7 +6,7 @@ tags:
   - xml
   - sax
 categories:
-  - 笔记
+  - notes
 ---
 
 # sax介绍

@@ -5,7 +5,7 @@ updated: 2024-01-05 10:35:19
 tags:
   - 实验
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料

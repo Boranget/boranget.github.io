@@ -5,7 +5,7 @@ updated: 2024-01-25 16:50:30
 tags:
   - LibreOffice依赖安装
 categories:
-  - 经验
+  - experience
 ---
 
 # 项目

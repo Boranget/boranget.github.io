@@ -5,7 +5,7 @@ updated: 2023-11-25 10:35:19
 tags:
   - Junit
 categories:
-  - 笔记
+  - notes
 ---
 
 # 注解

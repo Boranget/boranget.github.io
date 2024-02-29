@@ -5,7 +5,7 @@ updated: 2023-05-31 10:35:19
 tags:
   - camel
 categories:
-  - 笔记
+  - notes
 ---
 
 # 一些专业名词

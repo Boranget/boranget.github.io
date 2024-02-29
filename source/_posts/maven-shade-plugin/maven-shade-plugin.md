@@ -5,7 +5,7 @@ updated: 2023-12-03 10:35:19
 tags:
   - maven插件
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料

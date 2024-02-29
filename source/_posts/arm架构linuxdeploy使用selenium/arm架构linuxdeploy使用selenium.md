@@ -5,7 +5,7 @@ updated: 2023-05-31 16:50:30
 tags:
   - 服务器
 categories:
-  - 经验
+  - experience
 ---
 
 # linuxdeploy使用selenium

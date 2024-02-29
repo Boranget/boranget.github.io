@@ -5,7 +5,7 @@ updated: 2023-11-29 16:50:30
 tags:
   - SpringAOP
 categories:
-  - 经验
+  - experience
 ---
 
 # SpringAOP的原理

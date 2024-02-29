@@ -6,7 +6,7 @@ tags:
   - 托管
   - vercel
 categories:
-  - 经验
+  - experience
 ---
 
 # vercel

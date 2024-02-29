@@ -5,7 +5,7 @@ updated: 2024-01-05 10:35:19
 tags:
   - wsl2
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

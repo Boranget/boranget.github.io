@@ -5,7 +5,7 @@ updated: 2023-11-10 17:40:19
 tags:
   - spring cloud
 categories:
-  - 笔记
+  - notes
 ---
 
 # 发现的一些问题

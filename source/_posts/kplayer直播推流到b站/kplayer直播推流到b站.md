@@ -6,7 +6,7 @@ tags:
   - kplayer
   - 直播推流
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

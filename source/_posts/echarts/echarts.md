@@ -5,7 +5,7 @@ updated: 2023-11-06 10:35:19
 tags:
   - echarts
 categories:
-  - 笔记
+  - notes
 ---
 
 # 系统图遍历各关系突出显示

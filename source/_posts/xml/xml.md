@@ -5,7 +5,7 @@ updated: 2023-11-04 16:14:19
 tags:
   - xml
 categories:
-  - 笔记
+  - notes
 ---
 
 # XML

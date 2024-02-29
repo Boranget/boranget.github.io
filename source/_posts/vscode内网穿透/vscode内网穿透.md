@@ -5,7 +5,7 @@ updated: 2023-12-12 10:35:19
 tags:
   - 内网穿透
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

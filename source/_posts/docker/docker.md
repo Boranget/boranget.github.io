@@ -5,7 +5,7 @@ updated: 2023-12-06 10:35:19
 tags:
   - docker
 categories:
-  - 笔记
+  - notes
 ---
 
 # 概念

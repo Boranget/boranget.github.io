@@ -5,7 +5,7 @@ updated: 2023-11-10 16:40:19
 tags:
   - NodeJS&NPM
 categories:
-  - 笔记
+  - notes
 ---
 
 # NodeJS

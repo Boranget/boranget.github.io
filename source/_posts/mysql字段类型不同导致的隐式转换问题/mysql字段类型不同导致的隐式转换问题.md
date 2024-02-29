@@ -6,7 +6,7 @@ tags:
   - mysql
   - 隐式转换
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料

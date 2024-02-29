@@ -6,7 +6,7 @@ tags:
   - github
   - action
 categories:
-  - 经验
+  - experience
 ---
 
 # 参考资料

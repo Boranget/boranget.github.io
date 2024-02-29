@@ -5,7 +5,7 @@ updated: 2023-06-01 16:50:30
 tags:
   - maven
 categories:
-  - 经验
+  - experience
 ---
 
 # 下载

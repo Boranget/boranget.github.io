@@ -5,7 +5,7 @@ updated: 2023-05-31 16:40:19
 tags:
   - swagger
 categories:
-  - 笔记
+  - notes
 ---
 
 # 在网页中展示接口信息

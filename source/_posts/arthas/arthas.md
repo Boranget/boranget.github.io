@@ -5,7 +5,7 @@ updated: 2024-01-31 10:35:19
 tags:
   - arthas
 categories:
-  - 笔记
+  - notes
 ---
 
 # 介绍
