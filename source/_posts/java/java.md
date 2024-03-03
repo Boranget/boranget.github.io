@@ -375,3 +375,12 @@ default T selectOne(@Param("ew") Wrapper<T> queryWrapper) {
 }
 ```
 
+# IO
+
+## ByteArrayOutputStream
+
+可以用该输出流来写入内容，且该流最后可转为byte数组
+
+## 无法同时打开一个文件的输入流和输出流
+
+否则该文件会损坏，建议使用copy方式
