@@ -951,7 +951,16 @@ let x = defineProps(['msg']);
 
 # Router
 
-通过当前地址栏的路径切换vue组件，达到不刷新当前页面便可大面积替换内容的效果，但感觉地址栏使用锚点的效果不太好看（来自后端开发的吐槽）
+## 两种方案
+
+一种为使用锚点跳转，另一种为使用日常地址跳转，分别对应不同组件 createWebHistory和createWebHashHistory
+
+- `createWebHistory`：使用 HTML5 的 `history.pushState` 和 `history.replaceState` 方法来实现路由跳转。URL 的结构更为直观，例如 `/home`、`/about` 等，不会包含任何特殊字符。然而，由于它使用了 HTML5 的 history API，如果直接在浏览器中刷新或直接访问某个路由，服务器需要能够识别并处理该路由，否则可能会返回 404 错误。
+- `createWebHashHistory`：在 URL 中使用 `#` 符号（例如 `http://www.example.com/#/page`）。`#` 之后的内容不会被发送到服务器，所以不需要在服务器层面上进行任何特殊处理。这种模式对后端更为友好，即使后端没有实现完整的路由覆盖，也不会导致 404 错误。
+
+## 锚点方式
+
+锚点方式：通过当前地址栏的路径切换vue组件，达到不刷新当前页面便可大面积替换内容的效果，但感觉地址栏使用锚点的效果不太好看（来自后端开发的吐槽）
 
 ```bash
 npm install vue-router
@@ -2057,7 +2066,176 @@ let personList = reactive<Persons>([
 ])
 ```
 
+# sass
+
+在 Vue.js 项目中，`sass-loader` 和 `sass`（或 `node-sass`）通常用于处理和编译 Sass 文件。Sass 是一种 CSS 预处理器，它允许使用变量、嵌套规则、混合（mixins）、函数等高级功能来编写更干净、更可维护的 CSS 代码。然后，这些 Sass 文件需要被编译成浏览器可以理解的普通 CSS。
+
+* **sass** (或 **node-sass**): 这是一个库，它将 Sass/SCSS 代码编译成 CSS。`node-sass` 是 `sass` 的一个基于 Node.js 的实现，而纯 `sass` 是一个 Dart 语言的实现，也可以用在 Node.js 环境中，但通常 `node-sass` 更为常用。
+
+* **sass-loader**: 这是一个 webpack 加载器，用于在 webpack 构建过程中处理 Sass 文件。它实际上并不会直接编译 Sass，而是会调用 `sass` 或 `node-sass` 来完成编译工作。`sass-loader` 会在 webpack 的模块系统中找到所有的 `.scss` 或 `.sass` 文件，并将它们编译成 CSS，然后这些 CSS 可以被进一步处理（例如，通过 `css-loader` 和 `style-loader` 将其内嵌到 JavaScript 包中，或直接输出为单独的 CSS 文件）。
+
+在 Vue.js 项目中，可能会这样使用它们：
+
+1. 首先，安装必要的依赖：
 
 
+```bash
+npm install --save-dev sass-loader sass
+# 或者使用 node-sass
+npm install --save-dev sass-loader node-sass
+```
+2. 在你的 webpack 配置文件中（通常是 `vue.config.js` 或 webpack 的配置文件），配置 `sass-loader`：
 
+
+```javascript
+module.exports = {
+  // ...
+  module: {
+    rules: [
+      // ...
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      }
+    ]
+  }
+};
+```
+3. 在你的 Vue 组件中，你可以这样使用 Sass：
+
+
+```vue
+<style lang="scss">
+$primary-color: #333;
+
+.my-class {
+  color: $primary-color;
+  background-color: lighten($primary-color, 10%);
+}
+</style>
+```
+在这个例子中，`$primary-color` 是一个 Sass 变量，`lighten` 是一个 Sass 内置函数。这些都被 `sass-loader` 和 `sass`/`node-sass` 编译成普通的 CSS。
+
+# 插槽
+
+在 Vue 中，`<template>` 标签是一个特殊的元素，它不会被渲染为真实的 DOM 元素，而是用于作为内容的逻辑容器。它可以用于包装多个元素或组件，并提供逻辑分组和结构，特别是在你需要使用插槽（slot）或条件渲染时。
+
+在代码片段：
+
+```html
+<el-input placeholder="请输入账号" v-model="formData.account" size="large">
+  <template #prefix>
+    <span class="iconfont icon-account"></span>
+  </template>
+</el-input>
+```
+
+`<template #prefix>` 是一个具名插槽（named slot）的示例。`#prefix` 表示这个插槽的名称是 `prefix`。在 Element UI 的 `el-input` 组件中，`prefix` 插槽通常用于在输入框的左侧插入一些自定义的内容，比如图标。
+
+- `<template #prefix>`：定义了一个名为 `prefix` 的插槽。
+- `<span class="iconfont icon-account"></span>`：在 `prefix` 插槽中插入了一个带有图标字体的 `span` 元素，用于显示账号图标。
+
+这样，`span` 元素作为 `prefix` 插槽的内容，会被渲染到 `el-input` 组件内部的相应位置，通常是输入框的左侧，从而实现了在输入框前显示图标的效果。
+
+在 Vue 3 中，还可以使用 `v-slot` 指令来定义插槽，这种写法在 Vue 2.6+ 中也是支持的，作为对具名插槽的另一种语法糖：
+
+```html
+<el-input placeholder="请输入账号" v-model="formData.account" size="large">
+  <template v-slot:prefix>
+    <span class="iconfont icon-account"></span>
+  </template>
+</el-input>
+```
+
+这里 `v-slot:prefix` 和 `#prefix` 是等价的，都表示定义了一个名为 `prefix` 的插槽。
+
+element-ui官方给出的模板是这样的，但是无效果，这是因为在 Vue 3 中，应该继续使用 `<template #prefix>` 的语法，因为 `slot` 属性在 Vue 3 中已经被废弃，而 `<template>` 标签的 `v-slot` 指令或 `#插槽名` 语法是推荐的方式。
+
+```vue
+<el-input
+    placeholder="请输入内容"
+    v-model="input4">
+    <i slot="prefix" class="el-input__icon el-icon-search"></i>
+</el-input>
+```
+
+# rules
+
+使用element-ui时，可以使用`:rules`属性对表单内元素内容进行校验
+
+```vue
+<el-form :model="formData" :rules="rules" ref="formDataRef">
+  <el-form-item prop="account">
+    <el-input placeholder="请输入账号" v-model="formData.account" size="large">
+      <template #prefix>
+        <span class="iconfont icon-account"></span>
+      </template>
+    </el-input>
+  </el-form-item>
+  <el-form-item prop="password">
+    <el-input placeholder="请输入密码" v-model="formData.password" size="large">
+      <template #prefix>
+        <span class="iconfont icon-password"></span>
+      </template>
+    </el-input>
+  </el-form-item>
+  <el-form-item prop="checkCode">
+    <div class="check-code-panel">
+      <el-input class="input" placeholder="请输入验证码" v-model="formData.checkCode" size="large" />
+      <img :src="checkUrl" alt="网络异常" @click="changeCode">
+    </div>
+
+  </el-form-item>
+  <el-form-item label="">
+    <el-checkbox v-model="formData.rememberMe" :label="true">记住我</el-checkbox>
+  </el-form-item>
+  <el-form-item label="">
+    <el-button type="primary" :style="{ width: '100%' }" size="large" @click="login">登录</el-button>
+  </el-form-item>
+</el-form>
+```
+
+```js
+// 输入框公共属性
+const rules ={
+  account:[{
+    required:true,
+    message:"请输入账号"
+  }],
+  password:[{
+    required:true,
+    message:"请输入密码"
+  }],
+  checkCode:[{
+    required:true,
+    message:"请输入验证码"
+  }],
+}
+```
+
+# 标签ref
+
+标签的ref属性可以将标签对象赋给一个ref对象，在js中可以调用，下面的例子是使用了上个知识点中element-ui中的校验功能
+
+```html
+<el-form :model="formData" :rules="rules" ref="formDataRef">
+...
+</el-form>
+```
+
+```js
+// 表单相关
+const formDataRef = ref()
+const login = ()=>{
+  formDataRef.value.validate((v)=>{
+    if(!v){
+      return;
+    }
+  })
+}
+```
 

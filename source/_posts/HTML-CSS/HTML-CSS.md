@@ -2187,30 +2187,51 @@ c: 元素、伪元素选择器个数
 
 背景默认贴到padding的角上 
 
-- background-origin  修改参考点
+- `background-origin`属性决定了背景图片的定位起点。它有三个值：
 
-    - padding-box
-    - content-box
-    - border-box
+    - `padding-box`：背景图片从内边距（padding）区域的边缘开始绘制。
+    - `content-box`：背景图片从内容区域（content）的边缘开始绘制。
+    - `border-box`：背景图片从边框（border）区域的边缘开始绘制。
 
-- background-clip  盒子什么部分以外的背景图/颜色不显示
+- `background-clip`属性决定了背景图片或背景颜色应该显示在哪个部分。它也有三个值，以及一个额外的值：
 
-    - content-box
-    - 。。。
-    - text（文字需要透明，需要加内核前缀）
+    - `border-box`：背景显示在边框内部，包括边框。
+    - `padding-box`：背景显示在内边距内部，不包括边框。
+    - `content-box`：背景仅显示在内容区域内部，不包括内边距和边框。
+    - `text`：背景显示在文本字符之下，只有透明文本字符才会显示背景。这通常用于创建带有背景的镂空文字效果。
 
-- background-size
+- `background-size`属性定义了背景图片的大小。它有几个可能的值：
 
-    - 大小
-    - 百分比
-    - cover 
+    - `auto`：背景图片保持其原始大小。
+    - `<length>`：背景图片的大小设置为具体的长度值，如`px`、`em`等。
+    - `<percentage>`：背景图片的大小相对于其容器的大小。
+- `cover`：背景图片会被缩放以完全覆盖背景区域，可能有一部分背景图片会看不见。
+    - `contain`：背景图片会被缩放以完全适应背景区域，可能背景区域的一部分会没有背景图片。
+    
+- CSS的`background`属性是一个复合属性，它允许你一次性设置多个背景相关的属性。例如：
 
-    - auto
-    - contain
+    ```css
+    css复制代码
+    
+    background: url('image.jpg') no-repeat center center / cover;
+    ```
 
-- 复合属性 
+    这条规则实际上设置了以下属性：
 
-- 多背景 
+    - `background-image`: `url('image.jpg')`
+    - `background-repeat`: `no-repeat`
+    - `background-position`: `center center`
+    - `background-size`: `cover`
+
+- CSS3 允许你为同一个元素指定多个背景图像。每个背景图像都可以有自己的位置、大小、重复方式等。例如：
+
+    ```css
+    background-image: url('image1.jpg'), url('image2.png');  
+    background-position: top left, bottom right;  
+    background-repeat: no-repeat, repeat-x;
+    ```
+
+    在这个例子中，`image1.jpg`会出现在元素的左上角，而`image2.png`会出现在元素的右下角。`image1.jpg`不会重复，而`image2.png`会在水平方向上重复。
 
 ## 边框
 

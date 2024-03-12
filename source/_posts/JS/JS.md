@@ -212,6 +212,18 @@ var arr = ["a","b","c"]
 - slice 截取，两个index，包左不包右
 - splice 添加且删除元素
 
+# 数据结构
+
+## map
+
+```js
+const myMap = new Map([
+  [1, "one"],
+  [2, "two"],
+  [3, "three"],
+]);
+```
+
 # 运算符
 
 ## 算术运算符
