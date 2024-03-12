@@ -491,7 +491,7 @@ conf.d下文件：
 error_log  /etc/nginx/log/error_log debug;
 server {
         listen       80;
-        server_name  39.100.77.92;
+        server_name  39.*.*.92;
     	# 保温大小
         client_max_body_size 100M;
         location / {

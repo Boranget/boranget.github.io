@@ -98,15 +98,15 @@ hasAnyRole("user")
 其中 ROLE 为固定前缀
 
 ```java
-.authorizeRequests()
-                    .antMatchers("/login.html","/login")
-                        .permitAll()
-                    .antMatchers("/","biz1","biz2")
-                        .hasAnyAuthority("ROLE_user","ROLE_admin")
-                    .antMatchers("/syslog","/sysuser")
-                        .hasAnyRole("admin")
-//                    .antMatchers("syslog").hasAuthority("sys:log")
-//                    .antMatchers("sysuser").hasAuthority("sys:user")
+	.authorizeRequests()
+    .antMatchers("/login.html","/login")
+    .permitAll()
+    .antMatchers("/","biz1","biz2")
+    .hasAnyAuthority("ROLE_user","ROLE_admin")
+    .antMatchers("/syslog","/sysuser")
+    .hasAnyRole("admin")
+    //                    .antMatchers("syslog").hasAuthority("sys:log")
+    //                    .antMatchers("sysuser").hasAuthority("sys:user")
 ```
 
 
