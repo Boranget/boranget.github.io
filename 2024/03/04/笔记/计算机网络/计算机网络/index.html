@@ -1,0 +1,446 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>计算机网络 | Boranget.博客</title><meta name="author" content="Boranget"><meta name="copyright" content="Boranget"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="概论构成：节点与边，节点包括主机节点与数据交换节点，边包括接入链路和骨干链路，还有协议 互联网是网络的网络，是分布式的应用以及为分布式应用提供服务的基础设施组成 基础设置提供两种服务，一种是面向连接的，一种是不面向连接的 网络边缘主机与应用，构成了边缘系统，通过access接入核心。 网络边缘、接入网以及网络核心为互联网的三个子系统。  tcp面向连接 需要建立连接 可靠，不丢失，不乱序，流量控制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络">
+<meta property="og:url" content="https://boranget.github.io/2024/03/04/%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="Boranget.博客">
+<meta property="og:description" content="概论构成：节点与边，节点包括主机节点与数据交换节点，边包括接入链路和骨干链路，还有协议 互联网是网络的网络，是分布式的应用以及为分布式应用提供服务的基础设施组成 基础设置提供两种服务，一种是面向连接的，一种是不面向连接的 网络边缘主机与应用，构成了边缘系统，通过access接入核心。 网络边缘、接入网以及网络核心为互联网的三个子系统。  tcp面向连接 需要建立连接 可靠，不丢失，不乱序，流量控制">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://boranget.github.io/assets/img/tx.png">
+<meta property="article:published_time" content="2024-03-04T02:35:19.000Z">
+<meta property="article:modified_time" content="2024-03-04T02:35:19.000Z">
+<meta property="article:author" content="Boranget">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://boranget.github.io/assets/img/tx.png"><link rel="shortcut icon" href="/assets/img/tx.png"><link rel="canonical" href="https://boranget.github.io/2024/03/04/%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":true,"top_n_per_article":1,"unescape":true,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '计算机网络',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-04 10:35:19'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/assets/img/tx.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">140</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">150</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Boranget.博客"><img class="site-icon" src="/assets/img/tx.png"/><span class="site-name">Boranget.博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">计算机网络</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-04T02:35:19.000Z" title="发表于 2024-03-04 10:35:19">2024-03-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-03-04T02:35:19.000Z" title="更新于 2024-03-04 10:35:19">2024-03-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="计算机网络"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h1><p>构成：节点与边，节点包括主机节点与数据交换节点，边包括接入链路和骨干链路，还有协议</p>
+<p>互联网是网络的网络，是分布式的应用以及为分布式应用提供服务的基础设施组成</p>
+<p>基础设置提供两种服务，一种是面向连接的，一种是不面向连接的</p>
+<h2 id="网络边缘"><a href="#网络边缘" class="headerlink" title="网络边缘"></a>网络边缘</h2><p>主机与应用，构成了边缘系统，通过access接入核心。</p>
+<p>网络边缘、接入网以及网络核心为互联网的三个子系统。</p>
+<ul>
+<li>tcp面向连接<ul>
+<li>需要建立连接</li>
+<li>可靠，不丢失，不乱序，流量控制与拥塞控制</li>
+<li>http、ftp、telnet、smtp</li>
+</ul>
+</li>
+<li>udp无连接<ul>
+<li>无需建立连接</li>
+<li>不可靠，无流量控制，无拥塞控制</li>
+<li>流媒体、远程会议、dns、网络电话</li>
+</ul>
+</li>
+</ul>
+<h2 id="网络核心"><a href="#网络核心" class="headerlink" title="网络核心"></a>网络核心</h2><p>全球范围内的数据交换</p>
+<ul>
+<li><p>电路交换</p>
+<ul>
+<li>不共享，分配后若无数据交换会被浪费</li>
+<li>性能有保障</li>
+<li>被传统电话网络使用</li>
+<li>分片大小固定</li>
+<li>频分、时分</li>
+</ul>
+</li>
+<li><p>分组交换</p>
+<ul>
+<li><p>存储转发</p>
+</li>
+<li><p>线路可以共享，不会占用整个链路</p>
+</li>
+<li><p>使用存储排队换取共享性</p>
+</li>
+<li><p>如果路由器缓存用完了会被丢弃</p>
+</li>
+<li><p>分片大小按需分配</p>
+</li>
+<li><p>转发方式：数据报（无连接）、虚电路（有连接）</p>
+<p>  这里的有连接与tcp的面向连接不同，tcp的连接仅体现在tcp层，中间的设施不维护他们的连接状态</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="接入网"><a href="#接入网" class="headerlink" title="接入网"></a>接入网</h2><p>接入方式</p>
+<ul>
+<li>调制解调器：电信运营商的电话线，可通过频分进行上下行带宽的区分</li>
+<li>调制解调器：有线电视公司的同轴电缆</li>
+<li>调制解调器：电力公司的电线</li>
+</ul>
+<p>物理媒体</p>
+<ul>
+<li><p>导引型媒体</p>
+<p>  看得见摸得着的</p>
+<ul>
+<li>双绞线</li>
+<li>同轴电缆</li>
+<li>光缆，全反射</li>
+</ul>
+</li>
+<li><p>非导引型</p>
+<ul>
+<li>地面微波</li>
+<li>wifi</li>
+<li>蜂窝</li>
+<li>卫星</li>
+</ul>
+</li>
+</ul>
+<h2 id="ISP"><a href="#ISP" class="headerlink" title="ISP"></a>ISP</h2><p>端系统通过接入isp接入到互联网</p>
+<p>isp之间相互合作，达到可以互相访问的目的，同时避免耗时对接对方的端系统 </p>
+<p>中心：第一层ISP，直接与其他ISP项链，与大量的第二层ISP相连，连接点相对少，但是带宽极高</p>
+<p>第二层：区域性ISP</p>
+<p>第三层：本地ISP</p>
+<h2 id="分组延时与丢失"><a href="#分组延时与丢失" class="headerlink" title="分组延时与丢失"></a>分组延时与丢失</h2><h3 id="延时"><a href="#延时" class="headerlink" title="延时"></a>延时</h3><ul>
+<li><p>处理延时</p>
+<p>  存储转发延时</p>
+</li>
+<li><p>排队延时</p>
+<p>  路由器会有队列，排队会有延迟，超出队列容量会被丢失</p>
+<p>  取决于流量强度，流量强度为1时延时无穷大 </p>
+</li>
+<li><p>传输延时</p>
+<p>  将分组发送到链路上的时间</p>
+</li>
+<li><p>传播延时</p>
+<p>  在媒介上传播的时间</p>
+</li>
+</ul>
+<h3 id="traceroute-x2F-tracert"><a href="#traceroute-x2F-tracert" class="headerlink" title="traceroute&#x2F;tracert"></a>traceroute&#x2F;tracert</h3><p>原理：使用ICMP控制报文头中的ttl字段（生存时间）</p>
+<p>ttl字段过一个路由器的时候减一，ttl为0时会被丢弃，然后返回控制报文</p>
+<h3 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h3><p>单位时间内，单位时间从源主机向目标主机放出的有效数据量</p>
+<h2 id="协议层次与服务模型"><a href="#协议层次与服务模型" class="headerlink" title="协议层次与服务模型"></a>协议层次与服务模型</h2><p>分层，每层实现更简单，可以拆分为功能明确的层次</p>
+<p>每一层次通过接口向上层提供服务</p>
+<p>服务访问点：下层服务如何判断是哪个上层用户的报文</p>
+<p>上层使用下层提供的服务的形式：原语 </p>
+<p>面向连接：请求前先握手，为接下来的请求做好准备</p>
+<p>无连接：不握手，不准备，直接请求</p>
+<p>服务是垂直的，在一个系统内部相邻两层之间的关系</p>
+<p>协议是在不同系统直接，同一层中的关系</p>
+<h3 id="数据单元"><a href="#数据单元" class="headerlink" title="数据单元"></a>数据单元</h3><p>上层来的sdu加上本层的头变成本层的pdu</p>
+<p>或者将多个sdu合道一个pdu中</p>
+<p>或者将一个pdu拆到多个pdu中</p>
+<h3 id="internet协议栈"><a href="#internet协议栈" class="headerlink" title="internet协议栈"></a>internet协议栈</h3><p>五层：</p>
+<ul>
+<li>应用层</li>
+<li>传输层<br>  进程到进程，tcp服务中将不可靠的转为可靠的</li>
+<li>网络层<br>  传输以分组为单位的数据，端到端</li>
+<li>链路层<br>  将比特分成一个个帧，相邻两点之间传输以帧为单位的数据，比如端到交换机</li>
+<li>物理层<br>  将上层交下来的比特转为物理信号并传输，或者反过来交给链路层</li>
+</ul>
+<p>OSI七层</p>
+<p>应用下多了表示层与会话层，这两层在五层中是在应用层里的</p>
+<ul>
+<li>表示层<br>  加密压缩</li>
+<li>会话层<br>  会话管理</li>
+</ul>
+<p>各层的数据单元：</p>
+<ul>
+<li>应用层：报文message</li>
+<li>传输层：报文段segment-TCP段orUDP数据报</li>
+<li>网络层：分组packet or 无连接数据报datagram</li>
+<li>数据链路层：帧 frame</li>
+<li>物理层：位 bit</li>
+</ul>
+<h1 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h1><h2 id="应用架构"><a href="#应用架构" class="headerlink" title="应用架构"></a>应用架构</h2><ul>
+<li>CS模式</li>
+<li>P2P模式</li>
+<li>混合模式</li>
+</ul>
+<h2 id="进程标识与寻址"><a href="#进程标识与寻址" class="headerlink" title="进程标识与寻址"></a>进程标识与寻址</h2><p>进程：端口号</p>
+<p>主机：ip</p>
+<h2 id="穿过层间的信息"><a href="#穿过层间的信息" class="headerlink" title="穿过层间的信息"></a>穿过层间的信息</h2><p>发送方、接收方、信息体</p>
+<p>为了避免每次都传输全部信息，减少信息传输量，增加了socket机制</p>
+<p>socket：socket其实就是一个整数，这个整数对应着传输信息（tcp：【发送方ip、端口号、接收方ip、端口号】udp：【发送方ip、端口号】），之后直接通过socket来发送信息。socket是应用层与传输层之间的约定，与其他层无关。</p>
+<p>tcp中的socket是一种会话关系，而不是标识。在同一个端口上可以建立多个socket，也就是多个会话。</p>
+<p>在udp中是无连接的，故在udp中，socket不代表会话，只代表本地ip和本地端口，所以在udp中，应用层每次要向传输层传三样东西：传输内容、socket、对方地址（ip和端口号）</p>
+<h2 id="Web与HTTP"><a href="#Web与HTTP" class="headerlink" title="Web与HTTP"></a>Web与HTTP</h2><p>URL 通用资源定位符</p>
+<p><code>协议://用户:口令@主机名/路径:端口</code></p>
+<p>http 超文本传输协议，基于TCP，http无状态，服务器不维护客户的信息</p>
+<p>服务器启动时会创建一个守护socket，每当来一个请求都会新建一个socket，守护socket继续守护在端口上</p>
+<p>HTTP 1.0 非持久HTTP 一次请求与响应之后关闭连接</p>
+<p>HTTP 2.0 持久HTTP 一次请求与响应后先不关闭连接 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">GET  /a/a.html HTTP/1.1</span><br><span class="line">Host: ...</span><br><span class="line">User-agent: Mozilla/4.0</span><br><span class="line">body</span><br><span class="line">(一个额外的回车代表报文结束)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">HTTP/1.1 200 OK\r\n</span><br><span class="line">Connection close\r\n</span><br><span class="line">头\r\n</span><br><span class="line">\r\n</span><br><span class="line">\r\n</span><br><span class="line">data</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>cookie：保存状态的一种策略</p>
+<p>cache：访问代理服务器中的缓存，没有则访问原始服务器</p>
+<p>检查缓存是否更新：增加一个头部<code>if-modified-since</code>，询问服务器是否更新，服务器响应304则为没有修改</p>
+<h2 id="FTP"><a href="#FTP" class="headerlink" title="FTP"></a>FTP</h2><p>服务端守护在21端口，上传下载文件，CS模式，基于TCP协议，有状态协议</p>
+<p>客户端向服务端发起tcp连接建立，叫做控制连接，用于发送命令，命令以ASCII编码</p>
+<ul>
+<li>USER username</li>
+<li>PASS password</li>
+<li>LIST 要求服务器返回文件列表</li>
+<li>RETR filename 下载</li>
+<li>STOR filename 上传</li>
+</ul>
+<p>返回状态码：</p>
+<p>331 Username OK,password required</p>
+<p>125 data connection already open transfer staring</p>
+<p>425 can’t opendata connection</p>
+<p>452 error writing file</p>
+<p>服务端向客户端发起tcp连接接案例，叫做数据连接，用于传输文件，指定客户端端口号为20</p>
+<h2 id="EMAIL"><a href="#EMAIL" class="headerlink" title="EMAIL"></a>EMAIL</h2><p>角色</p>
+<ul>
+<li><p>用户代理<br>  撰写邮件的软件，比如outlook，网易邮箱大师，用户代理配置好邮件服务器的ip与端口号，将邮件发送到邮件服务器的队列中。客户代理从邮件服务器中将邮箱中的邮件拉取回来。</p>
+</li>
+<li><p>邮件服务器<br>  守护在25号端口，收到用户代理发过来的邮件后，将其使用smtp发送到对应的邮件服务器，邮件服务器收到其他邮件服务器发来的邮件后，将其保存到对应用户的邮件列表中，也就是收件箱</p>
+</li>
+</ul>
+<p>smtp，基于tcp</p>
+<ul>
+<li>阶段：握手、传报文（多个邮件会一起发，而不会等连接关闭后重新连接）、关闭</li>
+<li>命令和响应报文都是ascii形式，报文必须是7位ascii形式</li>
+<li>使用持久连接，报文使用CRLF</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">首部：</span><br><span class="line">To:</span><br><span class="line">From:</span><br><span class="line">Subject:</span><br><span class="line">主体：</span><br><span class="line">报文：只能是ASCII字符</span><br></pre></td></tr></table></figure>
+
+<p>mime multimedia mail extension 多媒体邮件扩展</p>
+<p>在报文首部额外声明MIME内容类型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">首部：</span><br><span class="line">To:</span><br><span class="line">From:</span><br><span class="line">Subject:</span><br><span class="line">MIME_Version:1.0</span><br><span class="line">Content_Transfer_Encoding: base64</span><br><span class="line">Content-Type: image/jpeg</span><br><span class="line">主体：</span><br><span class="line">报文：只能是ASCII字符,base64编码后的图片</span><br></pre></td></tr></table></figure>
+
+<p>邮件接收协议</p>
+<ul>
+<li>pop&#x2F;pop3 邮局访问协议 post office protocol<br>  用户身份确认并下载，只能区分收发件箱，无状态<ul>
+<li>命令：<ul>
+<li>user</li>
+<li>pass</li>
+<li>list 报文号列表</li>
+<li>retr 根据报文号检索报文</li>
+<li>dele 删除</li>
+<li>quit</li>
+</ul>
+</li>
+<li>响应<ul>
+<li>+OK</li>
+<li>-ERR</li>
+</ul>
+</li>
+<li>模式<ul>
+<li>下载并删除：邮件服务器不会保留已被拉取的邮件，省空间</li>
+<li>下载并保留：会保留，其他客户端也可以看到</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>imap internet 邮件访问协议<br>  更多特性，运行邮件目录的创建与维护，邮件的移动等，会维护用户状态</li>
+<li>http</li>
+</ul>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>域名到ip的转换</p>
+<p>域名是应用层使用的，传输层需要ip地址，所以dns只是获取ip，而不是代理发送请求</p>
+<p>分层命名，分布式数据库，运行在udp 53端口</p>
+<p>设备名翻译、负载均衡</p>
+<p><strong>根名字服务器</strong></p>
+<p>互联网有13个根服务器，中国大陆没有</p>
+<p>根服务器并不是对应的一个顶级域名，而是维护各种顶级域名的域名解析服务器的地址</p>
+<p>顶级域（TLD）服务器，负责顶级域名</p>
+<p>从树根开始找顶级域，顶级域中找二级域……</p>
+<p>域的域名，主机的域名，域域名下面可以继续分配给主机</p>
+<p>区域（zone）：将名称空间分为一个个区域，区域之前相互不交织，每个区域中有一个命名服务器</p>
+<p>区域域名服务器维护资源记录</p>
+<ul>
+<li><p>维护域名和ip或者其他信息的映射关系</p>
+</li>
+<li><p>存储在name server的分布式数据库中</p>
+</li>
+<li><p>RR格式：域名，ttl（生存时间，缓存的记录存活时间少，权威域名存活时间长），class（对与Internet，值为IN，说明还有非网络的服务），value，type</p>
+<ul>
+<li>type：<ul>
+<li>A name为主机，value为IP地址</li>
+<li>CNAME name为规范名字的别名，value为规范名字</li>
+<li>NS name为域名，value为该域名的权威服务器的域名</li>
+<li>MX value为name对应的邮件服务器的名字</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>本地名字服务器 local name server </p>
+<p> dns查询与响应报文（相同）结构：</p>
+<ul>
+<li>id，用于标识响应与哪个记录对应</li>
+<li>flags<ul>
+<li>查询&#x2F;应答</li>
+<li>希望递归</li>
+<li>递归可用</li>
+<li>应答为权威</li>
+</ul>
+</li>
+<li>……</li>
+</ul>
+<p>当一个name server 学到了一条记录会将其缓存，默认2天</p>
+<h2 id="P2P"><a href="#P2P" class="headerlink" title="P2P"></a>P2P</h2><p> 不会随着节点的增加而导致网络拥塞</p>
+<ul>
+<li><p>非结构化p2p<br>  网络中节点的关系是任意建立起来的，没有特定结构</p>
+<ul>
+<li>集中化目录<br>  拥有一台集中化目录服务器，用于资源注册和查询</li>
+<li>完全分布式<br>  向所有邻居发送查询，邻居收到后再泛红，剪枝方式可以如设置生存时间或者记录查询，但泛洪的前提是网络已经建立好，每个节点已经得知自己有哪些邻居，但泛洪网络如何建立呢？在安装软件时，会有一个配置文件，其中包含了大概率会在线的几个节点，以此些节点作为初始节点开始建立网络。</li>
+<li>混合体<br>  分为多个组，组中有组长与组员，组长相当于组中的集中化目录，组长与组长之间是完全分布式的关系</li>
+</ul>
+<p>  BT下载</p>
+<p>  ​	p加入一个洪流中，洪流指一个节点列表与互助的协议，每个p节点在自身维护一个bitmap，记录自身有某个资源的哪些部分，洪流中所有节点定期互相交换bitmap，从而得知其他节点拥有资源的情况。当一个节点新加入时，其资源拥有情况为0，该节点随机选择其他节点，拥有四块资源后，请求当前洪流中最稀缺的块，在这个洪流中稀缺资源就不再稀缺，这是集体利益优先。接着对服务最好的节点提供服务。同时稀缺资源也会被别人所请求。整体上 为他人提供的服务越大，被别人提供的服务也越好。若某个节点拥有一个文件的全部部分，他就是<strong>种子</strong>，贡献度会更高，后续下载文件时也会更快。</p>
+<p>  ​	在向他人提供服务时，前两轮向贡献度大的节点提供服务，第三轮随机挑选，三轮一个周期</p>
+<p>  ​	那如何加入洪流？答案是通过第三方途径，用户在制作完种子后上传到种子分享网站，种子中包含元数据，用户根据文件描述找到种子，通过种子加入洪流从而下载目标文件</p>
+</li>
+<li><p>dht结构化p2p<br>  网络中节点构成了环或者树的结构<br>  以环状为例，将一个设备组的设备按照ip进行hash，按照hash值从小到大的关系将设备组构成一个环，接着将设备组中的所有资源也进行hash，按照hash后的范围存到对应的设备上，设备ip与资源列表相当于key和value的关系，这样在寻找某一文件的时候就可以通过其hash值得知其存储在哪个设备上</p>
+</li>
+</ul>
+<h2 id="CDN"><a href="#CDN" class="headerlink" title="CDN"></a>CDN</h2><p>以视频cdn为例：视频流化服务DASH，并非将视频下载完才播放。一边下载一边播放。</p>
+<p>将一个视频文件预生成不同的清晰度版本，每个版本中的视频都切割成块，上传到流媒体服务器。接着提供一个“告示文件”，其中提供了某种清晰度的某个块的信息包括文件大小等内容以及其下载地址</p>
+<p>客户端按照用户清晰度需求下载 块，播放已下载的块以及下载接下来的块存入缓冲区</p>
+<p>请求频率高，占用宽带大</p>
+<p>在全球网络中部署很多缓存节点，将内容预先部署到缓存中，客户端找离自己最近的节点获取资源，从而加速资源访问速度</p>
+<ul>
+<li>在localisp中部署节点，部署节点多，跳数少</li>
+<li>在关键isp旁边，部署节点少，跳数多</li>
+</ul>
+<p>在告示文件中包含了cdn的信息，客户端判断哪个资源服务器最近去请求。或者通过域名解析的重定向。</p>
+<h1 id="TCP-Socket编程"><a href="#TCP-Socket编程" class="headerlink" title="TCP Socket编程"></a>TCP Socket编程</h1></article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></div><div class="post_share"><div class="social-share" data-image="/assets/img/tx.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/03/06/%E7%AC%94%E8%AE%B0/cas%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/cas%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/" title="cas单点登录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">cas单点登录</div></div></a></div><div class="next-post pull-right"><a href="/2024/03/03/%E7%AC%94%E8%AE%B0/%E5%B0%86%E6%96%87%E4%BB%B6%E5%8A%A0%E5%AF%86%E5%88%B0%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%E4%B8%AD/%E5%B0%86%E6%96%87%E4%BB%B6%E5%8A%A0%E5%AF%86%E5%88%B0%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%E4%B8%AD/" title="将文件加密到图片文件中"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">将文件加密到图片文件中</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/assets/img/tx.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Boranget</div><div class="author-info__description">整理的一些笔记和平时的一些经验</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">140</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">150</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Boranget"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">笔记分类是一些看书或者网课做的笔记，经验分类一般是平时碰到的问题或者折腾的一些小东西。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%AE%BA"><span class="toc-number">1.</span> <span class="toc-text">概论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E8%BE%B9%E7%BC%98"><span class="toc-number">1.1.</span> <span class="toc-text">网络边缘</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%A0%B8%E5%BF%83"><span class="toc-number">1.2.</span> <span class="toc-text">网络核心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5%E7%BD%91"><span class="toc-number">1.3.</span> <span class="toc-text">接入网</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ISP"><span class="toc-number">1.4.</span> <span class="toc-text">ISP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%BB%84%E5%BB%B6%E6%97%B6%E4%B8%8E%E4%B8%A2%E5%A4%B1"><span class="toc-number">1.5.</span> <span class="toc-text">分组延时与丢失</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%B6%E6%97%B6"><span class="toc-number">1.5.1.</span> <span class="toc-text">延时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#traceroute-x2F-tracert"><span class="toc-number">1.5.2.</span> <span class="toc-text">traceroute&#x2F;tracert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%9E%E5%90%90%E9%87%8F"><span class="toc-number">1.5.3.</span> <span class="toc-text">吞吐量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E5%B1%82%E6%AC%A1%E4%B8%8E%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text">协议层次与服务模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%8D%95%E5%85%83"><span class="toc-number">1.6.1.</span> <span class="toc-text">数据单元</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#internet%E5%8D%8F%E8%AE%AE%E6%A0%88"><span class="toc-number">1.6.2.</span> <span class="toc-text">internet协议栈</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%B1%82"><span class="toc-number">2.</span> <span class="toc-text">应用层</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E6%9E%B6%E6%9E%84"><span class="toc-number">2.1.</span> <span class="toc-text">应用架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E6%A0%87%E8%AF%86%E4%B8%8E%E5%AF%BB%E5%9D%80"><span class="toc-number">2.2.</span> <span class="toc-text">进程标识与寻址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A9%BF%E8%BF%87%E5%B1%82%E9%97%B4%E7%9A%84%E4%BF%A1%E6%81%AF"><span class="toc-number">2.3.</span> <span class="toc-text">穿过层间的信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web%E4%B8%8EHTTP"><span class="toc-number">2.4.</span> <span class="toc-text">Web与HTTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FTP"><span class="toc-number">2.5.</span> <span class="toc-text">FTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EMAIL"><span class="toc-number">2.6.</span> <span class="toc-text">EMAIL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DNS"><span class="toc-number">2.7.</span> <span class="toc-text">DNS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#P2P"><span class="toc-number">2.8.</span> <span class="toc-text">P2P</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CDN"><span class="toc-number">2.9.</span> <span class="toc-text">CDN</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP-Socket%E7%BC%96%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">TCP Socket编程</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/12/%E7%AC%94%E8%AE%B0/%E9%98%B2%E7%81%AB%E5%A2%99%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/%E9%98%B2%E7%81%AB%E5%A2%99%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/" title="防火墙开放端口">防火墙开放端口</a><time datetime="2024-03-12T01:35:19.000Z" title="发表于 2024-03-12 09:35:19">2024-03-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/06/%E7%AC%94%E8%AE%B0/cas%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/cas%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/" title="cas单点登录">cas单点登录</a><time datetime="2024-03-06T06:35:19.000Z" title="发表于 2024-03-06 14:35:19">2024-03-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/04/%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" title="计算机网络">计算机网络</a><time datetime="2024-03-04T02:35:19.000Z" title="发表于 2024-03-04 10:35:19">2024-03-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/03/%E7%AC%94%E8%AE%B0/%E5%B0%86%E6%96%87%E4%BB%B6%E5%8A%A0%E5%AF%86%E5%88%B0%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%E4%B8%AD/%E5%B0%86%E6%96%87%E4%BB%B6%E5%8A%A0%E5%AF%86%E5%88%B0%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%E4%B8%AD/" title="将文件加密到图片文件中">将文件加密到图片文件中</a><time datetime="2024-03-03T06:35:19.000Z" title="发表于 2024-03-03 14:35:19">2024-03-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/%E7%AC%94%E8%AE%B0/bmp%E5%9B%BE%E5%83%8F%E7%BB%93%E6%9E%84%E4%BA%86%E8%A7%A3%E4%B8%8E%E7%BC%96%E8%BE%91/bmp%E5%9B%BE%E5%83%8F%E7%BB%93%E6%9E%84%E4%BA%86%E8%A7%A3%E4%B8%8E%E7%BC%96%E8%BE%91/" title="bmp图像结构了解与编辑">bmp图像结构了解与编辑</a><time datetime="2024-03-02T02:35:19.000Z" title="发表于 2024-03-02 10:35:19">2024-03-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Boranget</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
