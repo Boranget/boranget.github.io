@@ -663,7 +663,7 @@ pom中
 </project>
 ```
 
-# Maven 设置主类同时添加用到的依赖到jar包
+# Maven 将非springboot项目打包为可执行jar
 
 ```xml
 <build>
@@ -724,3 +724,20 @@ pom中
 一种，右侧maven插件中可以看到maven项目，但是java文件显示异常也无法对pom文件进行刷新操作：
 
 查看是否在maven插件中对应的模块右键Ignore Projects，取消勾选
+
+# maven编译src中的非Java文件
+
+```xml
+<resources>
+    <resource>
+        <directory>src/main/java</directory>
+        <includes>
+            <include>**/**</include>
+        </includes>
+    </resource>
+    <resource>
+        <directory>src/main/resources</directory>
+    </resource>
+</resources>
+```
+

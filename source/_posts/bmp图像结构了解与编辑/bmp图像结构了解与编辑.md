@@ -6,7 +6,7 @@ tags:
   - bmp
   - 图像
 categories:
-  - 笔记
+  - notes
 ---
 
 # 参考资料
