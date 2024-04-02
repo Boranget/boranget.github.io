@@ -134,3 +134,86 @@ spring:
   jackson:
      property-naming-strategy: SNAKE_CASE #下划线参数
 ```
+
+# 序列化后字段变多
+
+```java
+实体类
+@Data
+@AllArgsConstructor //全参构造
+@NoArgsConstructor //无参构造
+//@Component
+@TableName("staff")
+public class Staff {
+    @TableId(value = "User",type=IdType.NONE)
+    public String user;//用户账号
+    @TableField(value = "Password")
+    public String password;//用户密码
+    @TableField(value = "IDstate")
+    public Integer idState;//账号状态 0停用 1启用
+    @TableField(value = "SName")
+    public String sName;//用户姓名
+    @TableField(value = "SID")
+    public String sID;//用户id 身份证号
+    @TableField(value = "SPhone")
+    public String sPhone;//用户手机
+    @TableField(value = "SSex")
+    public String sSex;//用户性别
+    @TableField(value = "SJob")
+    public String sJob;//职员岗位
+    @TableField(value = "SDepartment")
+    public String sDepartment;//所属部门
+}
+Controller
+@RequestMapping(value = "/findstaffs",method = RequestMethod.GET)
+    public Result selectStaffByCondition(@RequestBody Staff staff){
+    System.out.println("0000");
+    List<Staff> staffs=staffService.selectStaffByCondition(staff);
+    return Result.success(staffs);
+}
+
+```
+
+```json
+postman调用的结果，为什么序列化后的json有多出来的字段
+{
+    "code": "200",
+    "message": "请求成功",
+    "res": [
+        {
+            "user": "fgyonghu3",
+            "password": "staff03",
+            "idState": 1,
+            "sName": "用户3",
+            "sID": "440105111100000003",
+            "sPhone": "12345678903",
+            "sSex": "女",
+            "sJob": "职员",
+            "sDepartment": "房屋管理二所",
+            "sjob": "职员",
+            "ssex": "女",
+            "sdepartment": "房屋管理二所",
+            "sphone": "12345678903",
+            "sid": "440105111100000003",
+            "sname": "用户3"
+        }
+    ]
+}
+```
+
+因为使用小辣椒生成的get方法会将首字母大写，而序列化后的key会将开头的所有大写转为小写，导致出现“sid”，但为什么还会有sID呢？待解决。
+
+![image-20240321190909445](jackson/image-20240321190909445.png)
+
+解决办法
+
+**使用`@JsonProperty`注解**：
+在`Staff`类的每个字段上，使用`@JsonProperty`注解来明确指定JSON中的属性名称。这样，序列化库就会只序列化这些明确指定的属性。
+
+```java
+@JsonProperty("sName")  
+public String sName;  
+// 其他字段也加上@JsonProperty注解
+```
+
+**或者使用规范的小驼峰**
