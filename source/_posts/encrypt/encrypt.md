@@ -73,3 +73,117 @@ AES加密会把明文拆成一个一个的明文块，每个明文块128bit，�
 - OFB
 
   输出反馈模式 Output FeedBack
+
+# Base64
+
+## base64URL编码
+
+[URL安全的Base64编码 - 张善友 - 博客园 (cnblogs.com)](https://www.cnblogs.com/shanyou/p/5474647.html#:~:text=URL安全的Base64编码适用于以URL方式传递Base64编码结果的场景。 该编码方式的基本过程是先将内容以Base64格式编码为字符串，然后检查该结果字符串，将字符串中的加号 %2B 换成中划线 -,，并且将斜杠 %2F 换成下划线 _ 。)
+
+标准的base64不适合在url中携带，因为存在+号和/号
+
+解决方式可以将字符串中的加号`+`换成中划线`-`，并且将斜杠`/`换成下划线`_`
+
+某项目中工具类：
+
+```java
+public final class Base64 {
+    public Base64() {
+    }
+
+    public static byte[] decodeBase64(String str) {
+        return org.apache.commons.codec.binary.Base64.decodeBase64(str);
+    }
+
+    public static String encodeBase64String(byte[] bs) {
+        return org.apache.commons.codec.binary.Base64.encodeBase64String(bs);
+    }
+
+    public static boolean isArrayByteBase64(byte[] arrayOctect) {
+        return org.apache.commons.codec.binary.Base64.isBase64(arrayOctect);
+    }
+
+    public static byte[] encode(byte[] binaryData) {
+        return org.apache.commons.codec.binary.Base64.encodeBase64(binaryData);
+    }
+
+    public static byte[] encodeURL(byte[] binaryData) {
+        return org.apache.commons.codec.binary.Base64.encodeBase64URLSafe(binaryData);
+    }
+
+    public static byte[] decode(byte[] base64Data) {
+        return org.apache.commons.codec.binary.Base64.decodeBase64(base64Data);
+    }
+}
+```
+
+## jdk8之前commons-codec1.3
+
+### 编码
+
+```java
+	static String base64Encode(String needEncodeStr){
+        String base64encodedString = null;
+        try {
+            Base64 base64 = new Base64();
+            byte[] encode = base64.encode(needEncodeStr.getBytes("utf-8"));
+            base64encodedString = new String(encode);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return  base64encodedString;
+    }
+```
+
+### 解码
+
+```java
+    static String base64Decode(String needDecodeStr){
+        Base64 base64 = new Base64();
+        byte[] base64decodedBytes;
+        String res = null;
+        try {
+            base64decodedBytes = base64.decode(needDecodeStr.getBytes("utf-8"));
+            res = new String(base64decodedBytes, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return  res;
+    }
+```
+
+## jdk8开始自带工具
+
+### 编码
+
+```java
+    static String base64Encode(String needEncodeStr){
+            String base64encodedString = null;
+            try {
+                base64encodedString = Base64.getEncoder().encodeToString(needEncodeStr.getBytes("utf-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return  base64encodedString;
+    }
+```
+
+
+
+### 解码
+
+```java
+    static String base64Decode(String needDecodeStr){
+        byte[] base64decodedBytes = Base64.getDecoder().decode(needDecodeStr);
+        String res = null;
+        try {
+            res = new String(base64decodedBytes, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return  res;
+    }
+
+```
+
+# 
