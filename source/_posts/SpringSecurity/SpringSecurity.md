@@ -8,499 +8,9 @@ categories:
   - notes
 ---
 
-#  HTTP Basic 登陆模式
+# 基本概念
 
-SS实现登录认证最简单的一种方式，密码相当于明文传输，防君子不防小人
-
-适合守护不是很重要的数据。
-
-用户名密码经过组合并Base64加密后存入请求的Header中的Authorization中：
-
-格式如: admin:password
-
- ```java
- http.httpBasic()//开启httpbasic
-                 .and()
-                 .authorizeRequests()
-                 .anyRequest()
-                 .authenticated();// 所有请求都需要登录认证才能访问
- ```
-
-
-
-![image-20221202143656863](SpringSecurity/image-20221202143656863.png)
-
-# PasswordEncoder
-
-密码单向加密, 不比较原文, 而是比较加密后密文是否相等
-
-encode(rawPassword) 用于加密
-
-matches(comparePassword, encodePassword) 用于比较
-
-## BCryptPasswordEncoder
-
-同一个原始密码,每一次加密结果不同，但仍然可用match，添加随机盐值的原因应该是防止单向加密的撞库
-
-60位字符串 组成:
-
-```
-$2a // 算法版本
-$10 // 算法强度
-$............前22位 // 随机盐
-.................. // hash值
-$2a $10 $1u8dKM3NSo8DnnJuVjhTYe VvHrlw.uXUS8k/hmsR8OXkf2mO5oi6q
-```
-
-# FormLogin登录认证模式
-
-## 关键概念
-
-- formLogin登录认证不写Controller方法
-- 使用UsernamePasswordAuthenticationFilter过滤器来进行登录认证
-- 该过滤器默认集成，但需要配置
-
-## 配置
-
-- 登录认证逻辑
-  - 登录URL
-  - 如何接收登陆参数
-  - 登陆成功后逻辑
-- 资源访问控制
-  - 什么角色访问什么资源
-- 用户角色权限
-  - 用户拥有什么角色
-
-### 登录认证逻辑
-
-```java
- http.csrf().disable()
-                .formLogin()
-                    .loginPage("/login.html")
-                    .loginProcessingUrl("/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .defaultSuccessUrl("/")
-```
-
-
-
-### 资源访问控制
-
-角色是一种特殊的权限
-
-hasAnyAuthority("ROLE_user")
-
-等价于
-
-hasAnyRole("user")
-
-其中 ROLE 为固定前缀
-
-```java
-	.authorizeRequests()
-    .antMatchers("/login.html","/login")
-    .permitAll()
-    .antMatchers("/","biz1","biz2")
-    .hasAnyAuthority("ROLE_user","ROLE_admin")
-    .antMatchers("/syslog","/sysuser")
-    .hasAnyRole("admin")
-    //                    .antMatchers("syslog").hasAuthority("sys:log")
-    //                    .antMatchers("sysuser").hasAuthority("sys:user")
-```
-
-
-
-### 用户角色权限
-
-```java
- @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        super.configure(auth);
-        auth.inMemoryAuthentication()
-                .withUser("user")
-                .password(getPasswordEncoder().encode("123456"))
-                .roles("user")
-            .and()
-                .withUser("admin")
-                .password(getPasswordEncoder().encode("123456"))
-                .roles("admin")
-//                .authorities("sys:log","sys:user")
-            .and()
-                .passwordEncoder(getPasswordEncoder());
-    }
-    @Bean
-    public PasswordEncoder getPasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-```
-
-##  静态资源配置
-
-静态资源不经过过滤器
-
-```java
-@Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        super.configure(auth);
-        auth.inMemoryAuthentication()
-                .withUser("user")
-                .password(getPasswordEncoder().encode("123456"))
-                .roles("user")
-            .and()
-                .withUser("admin")
-                .password(getPasswordEncoder().encode("123456"))
-                .roles("admin")
-//                .authorities("sys:log","sys:user")
-            .and()
-                .passwordEncoder(getPasswordEncoder());
-    }
-    @Bean
-    public PasswordEncoder getPasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-```
-
-
-
-## 总览
-
-```java
-@Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    /**
-     * 进行安全认证及授权规则配置
-     *
-     * @param http
-     * @throws Exception
-     */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-//        super.configure(http);
-//        http.httpBasic()//开启httpbasic
-//                .and()
-//                .authorizeRequests()
-//                .anyRequest()
-//                .authenticated();// 所有请求都需要登录认证才能访问
-        http.csrf().disable()
-                .formLogin()
-                    .loginPage("/login.html")
-                    .loginProcessingUrl("/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .defaultSuccessUrl("/")
-                .and()
-                .authorizeRequests()
-                    .antMatchers("/login.html","/login")
-                        .permitAll()
-                    .antMatchers("/","biz1","biz2")
-                        .hasAnyAuthority("ROLE_user","ROLE_admin")
-                    .antMatchers("/syslog","/sysuser")
-                        .hasAnyRole("admin")
-//                    .antMatchers("syslog").hasAuthority("sys:log")
-//                    .antMatchers("sysuser").hasAuthority("sys:user")
-        ;
-
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        super.configure(auth);
-        auth.inMemoryAuthentication()
-                .withUser("user")
-                .password(getPasswordEncoder().encode("123456"))
-                .roles("user")
-            .and()
-                .withUser("admin")
-                .password(getPasswordEncoder().encode("123456"))
-                .roles("admin")
-//                .authorities("sys:log","sys:user")
-            .and()
-                .passwordEncoder(getPasswordEncoder());
-    }
-    @Bean
-    public PasswordEncoder getPasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-//        super.configure(web);
-        web.ignoring().antMatchers("/css/**","/fonts/**","/img/**","/js/**");
-    }
-}
-
-```
-
-# 登录认证流程
-
-Authentication 登录认证主体对象
-
-![image-20221202173134811](SpringSecurity/image-20221202173134811.png)
-
-![image-20221202184017978](SpringSecurity/image-20221202184017978.png)
-
-# 自定义登陆验证结果的处理
-
-SavedRequestAwareAuthenticationSuccessHandler
-
-可记住企图访问的地址，登陆成功后重定向
-
-## 自定义验证结果处理器
-
-yml配置文件中
-
-```yml
-spring:
- security:
-    logintype: JSON
-```
-
-
-
-**成功处理器**
-
-```java
-/**
- * SavedRequestAwareAuthenticationSuccessHandler
- * 可记住企图访问的地址，登陆成功后重定向
- */
-@Component
-public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-    @Value("${spring.security.logintype}")
-    private String loginType;
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-    @Override
-    public void onAuthenticationSuccess(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication
-    ) throws ServletException, IOException {
-//        super.onAuthenticationSuccess(request, response, authentication);
-        if(loginType.equalsIgnoreCase("JSON")){
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(AjaxResponse.success()));
-        }else{
-            super.onAuthenticationSuccess(request,response,authentication);
-        }
-    }
-}
-```
-
-**失败处理器**
-
-```java
-@Component
-public class MyAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-    @Value("${spring.security.logintype}")
-    private String loginType;
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-
-        if(loginType.equalsIgnoreCase("JSON")){
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(AjaxResponse.useInputError("请检查输入是否正确")));
-        }else{
-            super.onAuthenticationFailure(request, response, exception);
-        }
-    }
-}
-```
-
-## config中表单登陆配置
-
-```java
- @Resource
-    private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
-    @Resource
-    private MyAuthenticationFailureHandler myAuthenticationFailureHandler;
-
- http.csrf().disable()
-                .formLogin()
-                    .loginPage("/login.html")
-                    .loginProcessingUrl("/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-     // 不使用默认成功页面而是使用处理器
-//                    .defaultSuccessUrl("/")
-                    .successHandler(myAuthenticationSuccessHandler)
-                    .failureHandler(myAuthenticationFailureHandler)
-```
-
-**html中返回json处理**
-
-```html
-<script type="text/javascript">
-    function loginhandle(){
-
-        const username = $("#username").val();
-        const password = $("#password").val();
-        if(username == ""||password==""){
-            alert("用户名或密码不能为空");
-            return;
-        }
-        $.ajax({
-            type:"POST",
-            url:"/login",
-            data:{
-                "username":username,
-                "password":password
-            },
-            success:function(json){
-                if(json.isok){
-                    location.href = '/';
-                }else {
-                    alert(json.message);
-                    location.href='login.html';
-                }
-            },
-            error:function (e){
-                alert(e);
-            }
-        })
-        return;
-    }
-</script>
-<form>
-    <span>用户名称</span><input type="text" name="username" id = "username"/> <br>
-    <span>用户密码</span><input type="password" name="password"  id = "password"/> <br>
-    <input type="button" value="登陆" onclick="loginhandle()">
-</form>
-```
-
-# Session会话的安全管理
-
-## Spring Security 中的session创建策略
-
-- always 如果当前请求没有对应的session,则出样建一个session
-- ifRequired(默认),在需要使用到session的时候chuangjiansession
-- never 不会主动创建session,但会使用session
-- statless 不创建也不使用
-
-```java
-.and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-```
-
-## 会话超时
-
-spring boot中
-
-server.servlet.session
-
-.timeout=15m
-
-spring.session.timeout = 15m(需要引入 session包,优先级高,超时时间最短一分钟, 设置小于一分钟也是一分钟)
-
-  ```java
-  .and()
-                  .sessionManagement()
-                  .invalidSessionUrl("/")
-  ```
-
-## session保护
-
-对同一个session用户,每次登录会创建一个新的session, 此时sessionID会改变,将旧的session内容复制到新的session中
-
-- migrationSession(默认) 以上保护机制
-- none 原始会话不失效
-- newSession 创建新session,但不会复制
-
-```java
-                .and()
-                .sessionManagement()
-                .sessionFixation()
-                .migrateSession()
-//                .newSession()
-//                .none()
-```
-
-## Cookie安全
-
-httpOnly:true 浏览器脚本无法获取cookie
-
-secure:true: 仅能通过HTTPS发送coolkie
-
-# 被顶下线
-
-```java
-public class CustomExpiredSessionStrategy implements SessionInformationExpiredStrategy {
-    // 页面跳转
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-    private ObjectMapper objectMapper = new ObjectMapper();
-    @Override
-    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
-        Map<String,Object> map = new HashMap<>();
-        map.put("code",403);
-        map.put("msg","被迫下线"+event.getSessionInformation().getLastRequest());
-        event.getResponse().setContentType("application/json;charset=utf-8");
-        event.getResponse().getWriter().write(objectMapper.writeValueAsString(map));
-//         页面重定向
-//        redirectStrategy.sendRedirect(event.getRequest(),event.getResponse(),"/");
-    }
-}
-```
-
-```java
-                .and()
-                .sessionManagement()
-                // 允许同时只有几个用户登录
-                .maximumSessions(1)
-                // 已经登陆的用户是否允许在其他客户端登录
-                .maxSessionsPreventsLogin(false)
-                .expiredSessionStrategy(new CustomExpiredSessionStrategy())
-```
-
-# Remember me
-
-## RememberMeToken
-
-RememberMeToken = Base64（username + expiryTime + sinatureValue）
-
-signatureValue = userName，expirationTime 和 password 和 一个预定义的key组合起来进行MD5签名得到
-
-![image-20221207135722118](SpringSecurity/image-20221207135722118.png)
-
-## http配置
-
-```java
-.and()
-.rememberMe()
-.rememberMeParameter("remember-me-ao")
-.rememberMeCookieName("token-cookie")
-.tokenValiditySeconds(60*60*24*2)
-.tokenRepository(getPersistentTokenRepository())
-    
-```
-
-```java
- @Resource
-    private DataSource dataSource;
-    @Bean
-    public PersistentTokenRepository getPersistentTokenRepository(){
-        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-        tokenRepository.setDataSource(dataSource);
-        return  tokenRepository;
-    }
-```
-
-## 数据表固定配置
-
-![image-20221204171706523](SpringSecurity/image-20221204171706523.png)
-
-## 前端配置
-
-```http
-<form>
-	<input type = "checkbox" name = "remember-me"/>记住密码
-</form>
-```
-
-# RBAC
+## RBAC
 
 - 用户(User)
   - userRole 多2多
@@ -510,185 +20,7 @@ signatureValue = userName，expirationTime 和 password 和 一个预定义的ke
 
 ![image-20221204184016878](SpringSecurity/image-20221204184016878.png)
 
-# Spring动态加载用户角色权限
 
-## 重写UserDetails
-
-相当于一个实体类
-
-## 重写UserDetailsService
-
-重写**loadUserByUserName**方法，返回一个UserDeatils对象。
-
-这里注意一下，传入的参数username就是config中配置的usernamePara配置的接收到的值
-
-针对于RBAC模型中的角色，在spring中是一种特殊的权限，可以在值之前加“ROLE_”前缀放入权限集合
-
-```java
-List<String> roleCodes;
-List<String> authorities;
-// 批量处理
-roleCodes = roleCodes.stream()
-    		.map(
-				rc -> "ROLE_" + rc
-			)
-    		.collect(Collectors.toList())
-```
-
-userDetails 列表中存储的并不是字符串格式,可做如下处理:
-
-```java
-authorities.addAll(roleCodes);
-userDetails.setAuthorities(
-    AuthorityUtils.commaSeparatedStringToAuthorityList(
-	String.join(","authorities)
-))
-```
-
-
-
-## configure配置
-
-```java
-// 注入userdetailservice
-@Resource
-MyUserDetailService mds;
-auth.userDetailsService(mds).passwordEncoder(passwordEncoder())
-```
-
-# 动态加载鉴权规则
-
-## 鉴权失败
-
-```java
-.and().exceptionHandling().accessDeniedHandler()
-```
-
-## 自定义鉴权规则
-
- ```java
-@Component
-public class MyRBACService{
-	public boolean suibianqv(HttpServletRequest request, Authentication authentication){
-        Object pricipal = authentication.getPrincipal();
-        if(principal instanceof UserDetails){
-            UserDetails userDestils = ((UserDetails)principal);
-            SimpleGrantedAuthority  simpleGrantedAuthority = new SimpleGrantedAuthority(request.getRequestURI());
-            return userDetails.getAuthorities().contains(simpleGantedAuthority);
-        }
-        return false;
-    }
-}
- ```
-
-```java
-and()
-                .authorizeRequests()
-                    .antMatchers("/login.html","/login")
-                        .permitAll()
-//                    .antMatchers("/","biz1","biz2")
-//                        .hasAnyAuthority("ROLE_user","ROLE_admin")
-//                    .antMatchers("/syslog","/sysuser")
-//                        .hasAnyRole("admin")
-                // 这里使用spel表达式
-                .anyRequest().access("@myRBACService.suibianqv(request,authentication)")
-```
-
-# SpEL
-
-## 表示或者
-
-```spel
-hasRole('admin') or hasAuthority('ROLE_admin') 
-```
-
-## 自定义验证逻辑和参数
-
-```java
-config.andMatch("/person/{id}")
-    .access("r bacService.checkUserId(authentication,#id)")
-    .anyRequest()
-    .access("@rbacService.hasPermission(request,authentication)")
-```
-
-## 在方法上使用
-
-需要开启配置
-
-```java
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-```
-
-
-
-@PreAuthorize("SPEL")
-
-@PreFilter("SPEL")
-
-@PostAuthorize("SPEL")
-
-@PostFilter("SPEL")
-
-post类型的注解用于判断返回值
-
-pre类型的注解用于判断传入的参数
-
-filter可以操作list中的值,不满足会剔除
-
-# 退出
-
-config中
-
-```java
-http.logout();
-```
-
-前端
-
-```html
-<a href="/logout">退出</a>
-```
-
-## 默认行为
-
-- 核心需求:当前的session失效,回收访问权限
-- 删除当前用户的remember-me 的 cookie信息
-- clear 清除当前的SecurityContext认证的上下文信息
-- 重定向到登陆页面,loginPage配置项指定的页面
-
-```java
- logout()
-                .logoutUrl("/tuichu")
-                .logoutSuccessUrl("http://www.baidu.com")
-                .deleteCookies("JSESSIONID","token-cookie")
-```
-
-## loginOutHandler
-
-```java
-@Component
-public class MyLogOutHandler implements LogoutSuccessHandler {
-    @Override
-    public void onLogoutSuccess(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
-        response.sendRedirect("/login");
-    }   
-}
-```
-
-
-
-```java
-  logout()
-//                .logoutUrl("/tuichu")
-                .logoutSuccessUrl("http://www.baidu.com")
-                .deleteCookies("JSESSIONID","token-cookie")
-                .logoutSuccessHandler(myLogOutHandler)
-```
-
-# 概念
 
 ## 认证 
 
@@ -701,184 +33,6 @@ Authentication
 Authorization
 
 分配权限，判断该合法用户的权限
-
-## 曾用名
-
-acegi security
-
-# 整体架构
-
-## 认证
-
-authentication
-
-### AuthenticationManager
-
-```java
-public interface AuthenticationManager {
-    Authentication authenticate(Authentication var1) throws AuthenticationException;
-}
-
-```
-
-
-
-- 返回Authentication 代表认证成功
-- 抛出AuthenticationException异常，表示认证失败
-
-主要实现类为ProviderManager
-
-```java
-public class ProviderManager implements AuthenticationManager, MessageSourceAware, InitializingBean {
-    private static final Log logger = LogFactory.getLog(ProviderManager.class);
-    private AuthenticationEventPublisher eventPublisher;
-    private List<AuthenticationProvider> providers;
-```
-
-其中含有很多AuthenticationProvider的实现类,用于提供多种认证
-
-```java
-public interface AuthenticationProvider {
-    Authentication authenticate(Authentication var1) throws AuthenticationException;
-
-    boolean supports(Class<?> var1);
-}
-```
-
-### Authentication
-
-```java
-public interface Authentication extends Principal, Serializable {
-    // 权限信息
-    Collection<? extends GrantedAuthority> getAuthorities();
-	
-    // 密码
-    Object getCredentials();
-
-    // 用户身份详细信息
-    Object getDetails();
-
-    // 用户名
-    Object getPrincipal();
-
-    // 是否认证
-    boolean isAuthenticated();
-
-    void setAuthenticated(boolean var1) throws IllegalArgumentException;
-}
- 
-```
-
-### SecurityContextHolder
-
-获取Authentication
-
-实现了线程绑定,只能被当前线程访问  
-
-:
-
-认证成功后返回Authentication对象,其中保存用户信息,同时将该对象放入ThreadLocal中的SecurityContextHolder中. 等登陆成功后响应时,会将Authentication拿出存入session
-
-此后每次有请求, 都会将Authentication取出并存入SecurityContextHolder,待请求处理结束, 再次存入session
-
-## 授权
-
-authorization
-
-### AccessDecisionManager
-
-```java
-public interface AccessDecisionManager {
-    void decide(Authentication var1, Object var2, Collection<ConfigAttribute> var3) throws AccessDeniedException, InsufficientAuthenticationException;
-
-    boolean supports(ConfigAttribute var1);
-
-    boolean supports(Class<?> var1);
-}
-
-```
-
- 访问决策管理器，用来决定此次访问是否被允许，基于投票者的投票
-
-### AccessDecisionVoter\<T\>
-
-```java
-public interface AccessDecisionVoter<S> {
-
-	int ACCESS_GRANTED = 1;
-	int ACCESS_ABSTAIN = 0;
-	int ACCESS_DENIED = -1;
-
-
-	boolean supports(ConfigAttribute attribute);
-
-	boolean supports(Class<?> clazz);
-
-	
-	int vote(Authentication authentication, S object,
-			Collection<ConfigAttribute> attributes);
-}
-```
-
-投票器，检查当前用户是否具备访问某资源的条件，投出赞成反对或弃权，比较用户所带权限与当前请求资源的configAttribute中的权限是否吻合
-
-### ConfigAttribute
-
-```java
-public interface ConfigAttribute extends Serializable {
-	
-	String getAttribute();
-}
-```
-
-保存请求一个接口需要的授权的角色信息
-
-# 环境搭建
-
-```xml
-<parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.11</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    <groupId>com.example</groupId>
-    <artifactId>spring-security-bl</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>spring-security-bl</name>
-    <description>spring-security-bl</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-    </dependencies>
-
-```
-
- 
-
-# 实现原理
-
-底层使用了filter，但由于原生的filter需要手动注册到tomcat中，springsecurity提供了DelegatingFilterProxy，可以让开发者通过spring的bean注册的方式注册securityfilter的Bean
-
-DelegatingFilterProxy 管理了一个chain, 其中包含各种SecurityFilter的实现类, 通过FIlterProxy相当于间接放入了Java web filter中
 
 # 默认配置
 
@@ -1018,19 +172,13 @@ public class UserDetailsServiceAutoConfiguration {
 		private String password = UUID.randomUUID().toString();
 ```
 
-# 登录流程
+## 登录流程
 
-1. 请求/hello接口, 在引入spring security之后会引入一系列的过滤器
+1. 请求/hello接口, 在引入springSecurity之后会引入一系列的过滤器
 2. 在请求到达FilterSecurityInterceptor时, 请求未认证,将其拦截,抛出AccessDeniedException异常
-3. 抛出的Access Denied异常被ExceptionTranslationFilter捕获,该fiter会返回302要求重庆顶下到/login
+3. 抛出的AccessDenied异常被ExceptionTranslationFilter捕获,该fiter会返回302要求重定向到/login
 4. 客户端发送login请求
 5. /login请求呗DefaultLoginPageGeneratingFilter拦截,并在其中返回登录界面
-
-# 认证逻辑
-
-AuthenticationManager有一个实现类：ProviderManger，ProviderManager中有许多的AuthenticationProvider实现，分别提供不同的认证逻辑	
-
-只要有一个认证成功，就会返回一个完整的Authentication
 
 # 自定义认证
 
@@ -1107,7 +255,7 @@ public class MyAuthenticationSuccessFailureHandler implements AuthenticationSucc
 }
 ```
 
-# 注销登录
+# 注销
 
 默认只需访问/logout 
 
@@ -1131,7 +279,7 @@ public class MyAuthenticationSuccessFailureHandler implements AuthenticationSucc
                 .logoutSuccessUrl("/login.html")
 ```
 
-# 前后端分离
+## 前后端分离
 
 ```java
 // 前后端分离
@@ -1152,7 +300,7 @@ public class MyLogoutSuccessHandler implements LogoutSuccessHandler {
 
 # 获取认证信息
 
-会将Authentication放入本线程中的  securityContextHolder中, 本次会话结束会取出放入session,下次会话开始会从session中取出,再次放入线程中的securityContextHolder中
+SpringSecurity会将Authentication放入本线程中的  securityContextHolder中, 本次会话结束会取出放入session,下次会话开始会从session中取出,再次放入线程中的securityContextHolder中
 
 在securityContextHolder中有四种存储策略
 
@@ -1319,60 +467,7 @@ springboot对security进行自动配置时自动在工厂中创建一个全局�
       }
   ```
 
-# 数据库数据源认证
-
-## 数据库表
-
-```sql
-CREATE TABLE `user`(
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(32) DEFAULT NULL,
-		`password` VARCHAR(255) DEFAULT NULL,
-		`enabled`	TINYINT(1) DEFAULT NULL,
-		`accountNonExpired` TINYINT(1) DEFAULT NULL,
-		`accountNonLocked` TINYINT(1) DEFAULT NULL,
-		`credentialsNonExpired` TINYINT(1) DEFAULT NULL,
-		PRIMARY KEY (`id`)
-)ENGINE=INNODB auto_increment=4 DEFAULT CHARSET = utf8;
-CREATE TABLE `role`(
-	`id`	INT(11) NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(32) DEFAULT NULL,
-	`name_zh` VARCHAR(32) DEFAULT NULL,
-	PRIMARY KEY (`id`)
-)ENGINE=INNODB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
-CREATE TABLE `user_role`(
-	`id`	INT(11) NOT NULL AUTO_INCREMENT,
-	`uid` INT(11) DEFAULT NULL,
-	`rid` INT(11) DEFAULT NULL,
-	PRIMARY KEY (`id`)
-)ENGINE=INNODB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
-```
-
-## 依赖配置
-
-```xml
-<!--druid-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>1.2.8</version>
-        </dependency>
-        <!--mysql-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <!--mybatis-->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-```
-
-# 阶段总结
+# 基础Demo
 
 ## 传统web开发
 
@@ -2004,15 +1099,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 ## PasswordEncoder
 
-接口,制定了密码加密器所要实现的功能
+encode(rawPassword) 用于加密
+
+matches(comparePassword, encodePassword) 用于比较
+
+### BCryptPasswordEncoder
+
+同一个原始密码,每一次加密结果不同，但仍然可用match，添加随机盐值的原因应该是防止单向加密的撞库
+
+60位字符串 组成:
+
+```
+$2a // 算法版本
+$10 // 算法强度
+$............前22位 // 随机盐
+.................. // hash值
+$2a $10 $1u8dKM3NSo8DnnJuVjhTYe VvHrlw.uXUS8k/hmsR8OXkf2mO5oi6q
+```
 
 ## DelegatingPasswordEncoder
 
 用于根据数据库中存储的密码前缀{id}寻找指定的加密器
 
 这种方式适用于加密方式的更新
-
-
 
 ## 使用指定(固定)的密码加密器(不推荐)
 
@@ -2099,7 +1208,7 @@ public class MyUserDetailService implements UserDetailsService, UserDetailsPassw
 
 ## 过程总结
 
-当洪湖通过用户名,密码形式登陆成功后, 系统会根据用户名,密码以及令牌的过期时间计算出一个签名, 这个签名使用MD5进行加密,不可逆,然后将用户名, 过期时间, 以及签名拼接成一个字符串, 中间用":"隔开,最后通过Base64进行编码, 然后见编码后的结果返回到前端,也就是我们在浏览器中看到的令牌,当会话过期,浏览器访问资源时会携带Cookie中的令牌, 服务端拿到后,进行Base64解码,切割,判断是否过期,若没有国企,则根据用户名查出用户信息,接着计算签名,比较签名,若签名一致?则登陆成功,否则自动登陆失败.
+当用户通过用户名,密码形式登陆成功后, 系统会根据用户名,密码以及令牌的过期时间计算出一个签名, 这个签名使用MD5进行加密,不可逆,然后将用户名, 过期时间, 以及签名拼接成一个字符串, 中间用":"隔开,最后通过Base64进行编码, 然后见编码后的结果返回到前端,也就是我们在浏览器中看到的令牌,当会话过期,浏览器访问资源时会携带Cookie中的令牌, 服务端拿到后,进行Base64解码,切割,判断是否过期,若没有国企,则根据用户名查出用户信息,接着计算签名,比较签名,若签名一致?则登陆成功,否则自动登陆失败.
 
 ## 提高安全性
 
@@ -2680,114 +1789,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 # OAuth2
 
-github测试
-
-```json
-{
-  "authorities": [
-    {
-      "authority": "ROLE_USER",
-      "attributes": {
-        "login": "Boranget",
-        "id": 50385405,
-        "node_id": "MDQ6VXNlcjUwMzg1NDA1",
-        "avatar_url": "https://avatars.githubusercontent.com/u/50385405?v=4",
-        "gravatar_id": "",
-        "url": "https://api.github.com/users/Boranget",
-        "html_url": "https://github.com/Boranget",
-        "followers_url": "https://api.github.com/users/Boranget/followers",
-        "following_url": "https://api.github.com/users/Boranget/following{/other_user}",
-        "gists_url": "https://api.github.com/users/Boranget/gists{/gist_id}",
-        "starred_url": "https://api.github.com/users/Boranget/starred{/owner}{/repo}",
-        "subscriptions_url": "https://api.github.com/users/Boranget/subscriptions",
-        "organizations_url": "https://api.github.com/users/Boranget/orgs",
-        "repos_url": "https://api.github.com/users/Boranget/repos",
-        "events_url": "https://api.github.com/users/Boranget/events{/privacy}",
-        "received_events_url": "https://api.github.com/users/Boranget/received_events",
-        "type": "User",
-        "site_admin": false,
-        "name": null,
-        "company": null,
-        "blog": "",
-        "location": null,
-        "email": null,
-        "hireable": null,
-        "bio": null,
-        "twitter_username": null,
-        "public_repos": 3,
-        "public_gists": 0,
-        "followers": 0,
-        "following": 0,
-        "created_at": "2019-05-07T23:17:50Z",
-        "updated_at": "2022-11-04T06:07:08Z",
-        "private_gists": 0,
-        "total_private_repos": 3,
-        "owned_private_repos": 3,
-        "disk_usage": 2947,
-        "collaborators": 0,
-        "two_factor_authentication": false,
-        "plan": {
-          "name": "free",
-          "space": 976562499,
-          "collaborators": 0,
-          "private_repos": 10000
-        }
-      }
-    },
-    {
-      "authority": "SCOPE_read:user"
-    }
-  ],
-  "attributes": {
-    "login": "Boranget",
-    "id": 50385405,
-    "node_id": "MDQ6VXNlcjUwMzg1NDA1",
-    "avatar_url": "https://avatars.githubusercontent.com/u/50385405?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/Boranget",
-    "html_url": "https://github.com/Boranget",
-    "followers_url": "https://api.github.com/users/Boranget/followers",
-    "following_url": "https://api.github.com/users/Boranget/following{/other_user}",
-    "gists_url": "https://api.github.com/users/Boranget/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/Boranget/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/Boranget/subscriptions",
-    "organizations_url": "https://api.github.com/users/Boranget/orgs",
-    "repos_url": "https://api.github.com/users/Boranget/repos",
-    "events_url": "https://api.github.com/users/Boranget/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/Boranget/received_events",
-    "type": "User",
-    "site_admin": false,
-    "name": null,
-    "company": null,
-    "blog": "",
-    "location": null,
-    "email": null,
-    "hireable": null,
-    "bio": null,
-    "twitter_username": null,
-    "public_repos": 3,
-    "public_gists": 0,
-    "followers": 0,
-    "following": 0,
-    "created_at": "2019-05-07T23:17:50Z",
-    "updated_at": "2022-11-04T06:07:08Z",
-    "private_gists": 0,
-    "total_private_repos": 3,
-    "owned_private_repos": 3,
-    "disk_usage": 2947,
-    "collaborators": 0,
-    "two_factor_authentication": false,
-    "plan": {
-      "name": "free",
-      "space": 976562499,
-      "collaborators": 0,
-      "private_repos": 10000
-    }
-  },
-  "name": "50385405"
-}
-```
-
 ## 搭建授权服务器
 
 ### 基于内存的
@@ -3112,6 +2113,781 @@ public class JWTResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 ```
 
-# @EnableWebSecurity
+
+
+# 原理
+
+## 实现原理
+
+底层使用了filter，但由于原生的filter需要手动注册到tomcat中，springsecurity提供了DelegatingFilterProxy，可以让开发者通过spring的bean注册的方式注册securityfilter的Bean
+
+DelegatingFilterProxy 管理了一个chain, 其中包含各种SecurityFilter的实现类, 通过FIlterProxy相当于间接放入了Java web filter中
+
+## 认证
+
+### AuthenticationManager
+
+```java
+public interface AuthenticationManager {
+    Authentication authenticate(Authentication var1) throws AuthenticationException;
+}
+
+```
+
+- 返回Authentication 代表认证成功
+- 抛出AuthenticationException异常，表示认证失败
+
+主要实现类为ProviderManager
+
+```java
+public class ProviderManager implements AuthenticationManager, MessageSourceAware, InitializingBean {
+    private static final Log logger = LogFactory.getLog(ProviderManager.class);
+    private AuthenticationEventPublisher eventPublisher;
+    private List<AuthenticationProvider> providers;
+```
+
+其中含有很多AuthenticationProvider的实现类,用于提供多种认证
+
+```java
+public interface AuthenticationProvider {
+    Authentication authenticate(Authentication var1) throws AuthenticationException;
+
+    boolean supports(Class<?> var1);
+}
+```
+
+### Authentication
+
+```java
+public interface Authentication extends Principal, Serializable {
+    // 权限信息
+    Collection<? extends GrantedAuthority> getAuthorities();
+	
+    // 密码
+    Object getCredentials();
+
+    // 用户身份详细信息
+    Object getDetails();
+
+    // 用户名
+    Object getPrincipal();
+
+    // 是否认证
+    boolean isAuthenticated();
+
+    void setAuthenticated(boolean var1) throws IllegalArgumentException;
+}
+ 
+```
+
+### SecurityContextHolder
+
+获取Authentication
+
+实现了线程绑定,只能被当前线程访问  
+
+:
+
+认证成功后返回Authentication对象,其中保存用户信息,同时将该对象放入ThreadLocal中的SecurityContextHolder中. 等登陆成功后响应时,会将Authentication拿出存入session
+
+此后每次有请求, 都会将Authentication取出并存入SecurityContextHolder,待请求处理结束, 再次存入session
+
+## 授权
+
+authorization
+
+### AccessDecisionManager
+
+```java
+public interface AccessDecisionManager {
+    void decide(Authentication var1, Object var2, Collection<ConfigAttribute> var3) throws AccessDeniedException, InsufficientAuthenticationException;
+
+    boolean supports(ConfigAttribute var1);
+
+    boolean supports(Class<?> var1);
+}
+
+```
+
+ 访问决策管理器，用来决定此次访问是否被允许，基于投票者的投票
+
+### AccessDecisionVoter\<T\>
+
+```java
+public interface AccessDecisionVoter<S> {
+
+	int ACCESS_GRANTED = 1;
+	int ACCESS_ABSTAIN = 0;
+	int ACCESS_DENIED = -1;
+
+
+	boolean supports(ConfigAttribute attribute);
+
+	boolean supports(Class<?> clazz);
+
+	
+	int vote(Authentication authentication, S object,
+			Collection<ConfigAttribute> attributes);
+}
+```
+
+投票器，检查当前用户是否具备访问某资源的条件，投出赞成反对或弃权，比较用户所带权限与当前请求资源的configAttribute中的权限是否吻合
+
+### ConfigAttribute
+
+```java
+public interface ConfigAttribute extends Serializable {
+	
+	String getAttribute();
+}
+```
+
+保存请求一个接口需要的授权的角色信息
+
+## 认证逻辑
+
+AuthenticationManager有一个实现类：ProviderManger，ProviderManager中有许多的AuthenticationProvider实现，分别提供不同的认证逻辑	
+
+只要有一个认证成功，就会返回一个完整的Authentication
+
+## 登录认证流程
+
+Authentication 登录认证主体对象
+
+![image-20221202173134811](SpringSecurity/image-20221202173134811.png)
+
+![image-20221202184017978](SpringSecurity/image-20221202184017978.png)
+
+
+
+#  HTTP Basic 登陆模式
+
+SS实现登录认证最简单的一种方式，密码相当于明文传输，防君子不防小人
+
+适合守护不是很重要的数据。
+
+用户名密码经过组合并Base64加密后存入请求的Header中的Authorization中：
+
+格式如: admin:password
+
+ ```java
+ http.httpBasic()//开启httpbasic
+                 .and()
+                 .authorizeRequests()
+                 .anyRequest()
+                 .authenticated();// 所有请求都需要登录认证才能访问
+ ```
+
+
+
+![image-20221202143656863](SpringSecurity/image-20221202143656863.png)
+
+# FormLogin登录认证模式
+
+formLogin登录认证不写Controller方法，使用UsernamePasswordAuthenticationFilter过滤器来进行登录认证，该过滤器默认集成，但需要配置。
+
+- 登录认证逻辑
+    - 登录URL
+    - 如何接收登陆参数
+    - 登陆成功后逻辑
+- 资源访问控制
+    - 什么角色访问什么资源
+- 用户角色权限
+    - 用户拥有什么角色
+
+## 登录认证逻辑
+
+```java
+ http.csrf().disable()
+                .formLogin()
+                    .loginPage("/login.html")
+                    .loginProcessingUrl("/login")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .defaultSuccessUrl("/")
+```
+
+
+
+## 资源访问控制
+
+角色是一种特殊的权限
+
+hasAnyAuthority("ROLE_user")
+
+等价于
+
+hasAnyRole("user")
+
+其中 ROLE 为固定前缀
+
+```java
+	.authorizeRequests()
+    .antMatchers("/login.html","/login")
+    .permitAll()
+    .antMatchers("/","biz1","biz2")
+    .hasAnyAuthority("ROLE_user","ROLE_admin")
+    .antMatchers("/syslog","/sysuser")
+    .hasAnyRole("admin")
+    //                    .antMatchers("syslog").hasAuthority("sys:log")
+    //                    .antMatchers("sysuser").hasAuthority("sys:user")
+```
+
+
+
+## 用户角色权限
+
+```java
+ @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        super.configure(auth);
+        auth.inMemoryAuthentication()
+                .withUser("user")
+                .password(getPasswordEncoder().encode("123456"))
+                .roles("user")
+            .and()
+                .withUser("admin")
+                .password(getPasswordEncoder().encode("123456"))
+                .roles("admin")
+//                .authorities("sys:log","sys:user")
+            .and()
+                .passwordEncoder(getPasswordEncoder());
+    }
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+```
+
+##  静态资源配置
+
+静态资源不经过过滤器
+
+```java
+@Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        super.configure(auth);
+        auth.inMemoryAuthentication()
+                .withUser("user")
+                .password(getPasswordEncoder().encode("123456"))
+                .roles("user")
+            .and()
+                .withUser("admin")
+                .password(getPasswordEncoder().encode("123456"))
+                .roles("admin")
+//                .authorities("sys:log","sys:user")
+            .and()
+                .passwordEncoder(getPasswordEncoder());
+    }
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+```
+
+## 总览
+
+```java
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    /**
+     * 进行安全认证及授权规则配置
+     *
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+//        super.configure(http);
+//        http.httpBasic()//开启httpbasic
+//                .and()
+//                .authorizeRequests()
+//                .anyRequest()
+//                .authenticated();// 所有请求都需要登录认证才能访问
+        http.csrf().disable()
+                .formLogin()
+                    .loginPage("/login.html")
+                    .loginProcessingUrl("/login")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .defaultSuccessUrl("/")
+                .and()
+                .authorizeRequests()
+                    .antMatchers("/login.html","/login")
+                        .permitAll()
+                    .antMatchers("/","biz1","biz2")
+                        .hasAnyAuthority("ROLE_user","ROLE_admin")
+                    .antMatchers("/syslog","/sysuser")
+                        .hasAnyRole("admin")
+//                    .antMatchers("syslog").hasAuthority("sys:log")
+//                    .antMatchers("sysuser").hasAuthority("sys:user")
+        ;
+
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        super.configure(auth);
+        auth.inMemoryAuthentication()
+                .withUser("user")
+                .password(getPasswordEncoder().encode("123456"))
+                .roles("user")
+            .and()
+                .withUser("admin")
+                .password(getPasswordEncoder().encode("123456"))
+                .roles("admin")
+//                .authorities("sys:log","sys:user")
+            .and()
+                .passwordEncoder(getPasswordEncoder());
+    }
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+//        super.configure(web);
+        web.ignoring().antMatchers("/css/**","/fonts/**","/img/**","/js/**");
+    }
+}
+
+```
+
+# 自定义验证结果处理器
+
+## 登录后重定向
+
+SavedRequestAwareAuthenticationSuccessHandler
+
+可记住企图访问的地址，登陆成功后重定向
+
+## 自定义验证结果处理器
+
+以前后端分离且json方式登录为例
+
+```yml
+spring:
+ security:
+    logintype: JSON
+```
+
+**成功处理器**
+
+```java
+/**
+ * SavedRequestAwareAuthenticationSuccessHandler
+ * 可记住企图访问的地址，登陆成功后重定向
+ */
+@Component
+public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+    @Value("${spring.security.logintype}")
+    private String loginType;
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) throws ServletException, IOException {
+//        super.onAuthenticationSuccess(request, response, authentication);
+        if(loginType.equalsIgnoreCase("JSON")){
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(AjaxResponse.success()));
+        }else{
+            super.onAuthenticationSuccess(request,response,authentication);
+        }
+    }
+}
+```
+
+**失败处理器**
+
+```java
+@Component
+public class MyAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+    @Value("${spring.security.logintype}")
+    private String loginType;
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+
+        if(loginType.equalsIgnoreCase("JSON")){
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(AjaxResponse.useInputError("请检查输入是否正确")));
+        }else{
+            super.onAuthenticationFailure(request, response, exception);
+        }
+    }
+}
+```
+
+**config中表单登陆配置**
+
+```java
+ @Resource
+    private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    @Resource
+    private MyAuthenticationFailureHandler myAuthenticationFailureHandler;
+
+ http.csrf().disable()
+                .formLogin()
+                    .loginPage("/login.html")
+                    .loginProcessingUrl("/login")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+     // 不使用默认成功页面而是使用处理器
+//                    .defaultSuccessUrl("/")
+                    .successHandler(myAuthenticationSuccessHandler)
+                    .failureHandler(myAuthenticationFailureHandler)
+```
+
+**html中返回json处理**
+
+```html
+<script type="text/javascript">
+    function loginhandle(){
+
+        const username = $("#username").val();
+        const password = $("#password").val();
+        if(username == ""||password==""){
+            alert("用户名或密码不能为空");
+            return;
+        }
+        $.ajax({
+            type:"POST",
+            url:"/login",
+            data:{
+                "username":username,
+                "password":password
+            },
+            success:function(json){
+                if(json.isok){
+                    location.href = '/';
+                }else {
+                    alert(json.message);
+                    location.href='login.html';
+                }
+            },
+            error:function (e){
+                alert(e);
+            }
+        })
+        return;
+    }
+</script>
+<form>
+    <span>用户名称</span><input type="text" name="username" id = "username"/> <br>
+    <span>用户密码</span><input type="password" name="password"  id = "password"/> <br>
+    <input type="button" value="登陆" onclick="loginhandle()">
+</form>
+```
+
+# Session
+
+## Spring Security 中的session创建策略
+
+- always 如果当前请求没有对应的session,则出样建一个session
+- ifRequired(默认),在需要使用到session的时候chuangjiansession
+- never 不会主动创建session,但会使用session
+- statless 不创建也不使用
+
+```java
+.and()
+    .sessionManagement()
+    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+```
+
+## 会话超时
+
+spring boot中
+
+server.servlet.session
+
+.timeout=15m
+
+spring.session.timeout = 15m(需要引入 session包,优先级高,超时时间最短一分钟, 设置小于一分钟也是一分钟)
+
+  ```java
+.and()
+    .sessionManagement()
+    .invalidSessionUrl("/")
+  ```
+
+## session保护
+
+对同一个session用户,每次登录会创建一个新的session, 此时sessionID会改变,将旧的session内容复制到新的session中
+
+- migrationSession(默认) 以上保护机制
+- none 原始会话不失效
+- newSession 创建新session,但不会复制
+
+```java
+.and()
+    .sessionManagement()
+    .sessionFixation()
+    .migrateSession()
+//  .newSession()
+//  .none()
+```
+
+## Cookie安全
+
+httpOnly:true 浏览器脚本无法获取cookie
+
+secure:true: 仅能通过HTTPS发送coolkie
+
+# 禁止多端在线
+
+```java
+public class CustomExpiredSessionStrategy implements SessionInformationExpiredStrategy {
+    // 页面跳转
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private ObjectMapper objectMapper = new ObjectMapper();
+    @Override
+    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",403);
+        map.put("msg","被迫下线"+event.getSessionInformation().getLastRequest());
+        event.getResponse().setContentType("application/json;charset=utf-8");
+        event.getResponse().getWriter().write(objectMapper.writeValueAsString(map));
+//         页面重定向
+//        redirectStrategy.sendRedirect(event.getRequest(),event.getResponse(),"/");
+    }
+}
+```
+
+```java
+.and()
+    .sessionManagement()
+    // 允许同时只有几个用户登录
+    .maximumSessions(1)
+    // 已经登陆的用户是否允许在其他客户端登录
+    .maxSessionsPreventsLogin(false)
+    .expiredSessionStrategy(new CustomExpiredSessionStrategy())
+```
+
+# RememberMe
+
+## RememberMeToken
+
+RememberMeToken = Base64（username + expiryTime + sinatureValue）
+
+signatureValue = userName，expirationTime 和 password 和 一个预定义的key组合起来进行MD5签名得到
+
+![image-20221207135722118](SpringSecurity/image-20221207135722118.png)
+
+## http配置
+
+```java
+.and()
+.rememberMe()
+.rememberMeParameter("remember-me-ao")
+.rememberMeCookieName("token-cookie")
+.tokenValiditySeconds(60*60*24*2)
+.tokenRepository(getPersistentTokenRepository())
+    
+```
+
+```java
+ @Resource
+    private DataSource dataSource;
+    @Bean
+    public PersistentTokenRepository getPersistentTokenRepository(){
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return  tokenRepository;
+    }
+```
+
+## 数据表固定配置
+
+![image-20221204171706523](SpringSecurity/image-20221204171706523.png)
+
+## 前端配置
+
+```http
+<form>
+	<input type = "checkbox" name = "remember-me"/>记住密码
+</form>
+```
+
+# 动态加载用户实体
+
+## 重写UserDetails
+
+相当于一个实体类
+
+## 重写UserDetailsService
+
+重写**loadUserByUserName**方法，返回一个UserDeatils对象。
+
+这里注意一下，传入的参数username就是config中配置的usernamePara配置的接收到的值
+
+针对于RBAC模型中的角色，在spring中是一种特殊的权限，可以在值之前加“ROLE_”前缀放入权限集合
+
+```java
+List<String> roleCodes;
+List<String> authorities;
+// 批量处理
+roleCodes = roleCodes.stream()
+    		.map(
+				rc -> "ROLE_" + rc
+			)
+    		.collect(Collectors.toList())
+```
+
+userDetails 列表中存储的并不是字符串格式,可做如下处理:
+
+```java
+authorities.addAll(roleCodes);
+userDetails.setAuthorities(
+    AuthorityUtils.commaSeparatedStringToAuthorityList(
+	String.join(","authorities)
+))
+```
+
+## configure配置
+
+```java
+// 注入userdetailservice
+@Resource
+MyUserDetailService mds;
+auth.userDetailsService(mds).passwordEncoder(passwordEncoder())
+```
+
+# 动态加载鉴权规则
+
+## 鉴权失败
+
+```java
+.and().exceptionHandling().accessDeniedHandler()
+```
+
+## 自定义鉴权规则
+
+ ```java
+@Component
+public class MyRBACService{
+	public boolean suibianqv(HttpServletRequest request, Authentication authentication){
+        Object pricipal = authentication.getPrincipal();
+        if(principal instanceof UserDetails){
+            UserDetails userDestils = ((UserDetails)principal);
+            SimpleGrantedAuthority  simpleGrantedAuthority = new SimpleGrantedAuthority(request.getRequestURI());
+            return userDetails.getAuthorities().contains(simpleGantedAuthority);
+        }
+        return false;
+    }
+}
+ ```
+
+```java
+and()
+                .authorizeRequests()
+                    .antMatchers("/login.html","/login")
+                        .permitAll()
+//                    .antMatchers("/","biz1","biz2")
+//                        .hasAnyAuthority("ROLE_user","ROLE_admin")
+//                    .antMatchers("/syslog","/sysuser")
+//                        .hasAnyRole("admin")
+                // 这里使用spel表达式
+                .anyRequest().access("@myRBACService.suibianqv(request,authentication)")
+```
+
+# SpEL
+
+## 表示或者
+
+```spel
+hasRole('admin') or hasAuthority('ROLE_admin') 
+```
+
+## 自定义验证逻辑和参数
+
+```java
+config.andMatch("/person/{id}")
+    .access("r bacService.checkUserId(authentication,#id)")
+    .anyRequest()
+    .access("@rbacService.hasPermission(request,authentication)")
+```
+
+## 在方法上使用
+
+需要开启配置
+
+```java
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+```
+
+@PreAuthorize("SPEL")
+
+@PreFilter("SPEL")
+
+@PostAuthorize("SPEL")
+
+@PostFilter("SPEL")
+
+post类型的注解用于判断返回值
+
+pre类型的注解用于判断传入的参数
+
+filter可以操作list中的值,不满足会剔除
+
+# 退出
+
+config中
+
+```java
+http.logout();
+```
+
+前端
+
+```html
+<a href="/logout">退出</a>
+```
+
+## 默认行为
+
+- 核心需求:当前的session失效,回收访问权限
+- 删除当前用户的remember-me 的 cookie信息
+- clear 清除当前的SecurityContext认证的上下文信息
+- 重定向到登陆页面,loginPage配置项指定的页面
+
+```java
+ logout()
+                .logoutUrl("/tuichu")
+                .logoutSuccessUrl("http://www.baidu.com")
+                .deleteCookies("JSESSIONID","token-cookie")
+```
+
+## loginOutHandler
+
+```java
+@Component
+public class MyLogOutHandler implements LogoutSuccessHandler {
+    @Override
+    public void onLogoutSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
+        response.sendRedirect("/login");
+    }   
+}
+```
+
+```java
+  logout()
+//                .logoutUrl("/tuichu")
+                .logoutSuccessUrl("http://www.baidu.com")
+                .deleteCookies("JSESSIONID","token-cookie")
+                .logoutSuccessHandler(myLogOutHandler)
+```
+
+# 组件
+
+## @EnableWebSecurity
 
 需要将其加到配置类上，才能启用Security的自定义配置，SpringBoot项目可以省略，单纯的Spring项目需要添加
