@@ -857,7 +857,7 @@ navigator（子）
 
 ```vue
 <script setup>
- // degineEmits用于定义向父组件提交数据的事件以及正式的提交数据
+ // degineEmits用于定义子组件向父组件提交数据的事件以及正式的提交数据
   import { defineEmits } from 'vue';
   // 定义一个向父组件提交数据的事件
   // sendMenu为事件的标识
@@ -904,7 +904,7 @@ function handler(data) {
     <Header class="header"></Header>
     <!-- 定义接收器并绑定处理事件的方法 -->
     <Navigator @sendMenu="handler" class="navigator"></Navigator>
-    <!-- msg为自定义名称的传递给子组件的信息，这里加了冒号则会将navigatorMsg作为表达式，这里会当作变量名去寻找对应的对象 -->
+    <!-- msg为自定义名称的传递给子组件的信息，可以不叫msg叫别的什么，这里加了冒号则会将navigatorMsg作为表达式，这里会当作变量名去寻找对应的对象 -->
     <Content class="content" :msg="navigatorMsg"></Content>
   </div>
 </template>
@@ -950,6 +950,8 @@ let x = defineProps(['msg']);
 ```
 
 # Router
+
+[嵌套路由 | Vue Router (vuejs.org)](https://router.vuejs.org/zh/guide/essentials/nested-routes.html)
 
 ## 两种方案
 
@@ -1039,13 +1041,6 @@ const router = createRouter({
 // 暴露
 export default router;
 ```
-
-## 路径跳转组件
-
-```vue
-<router-link to="/add">add</router-link>
-```
-
 ## 重定向
 
 ```js
@@ -1054,6 +1049,15 @@ export default router;
     // 注意这里是重定向的地址而不是组件
     redirect:"/list"
 }
+```
+
+## 路径跳转组件
+
+会在router-view部分显示
+
+```vue
+<router-link to="/add">add</router-link>
+<router-view/>
 ```
 
 ## router-view
@@ -1282,7 +1286,7 @@ function changeRoute(){
     router.push({path:'/add',query:{addItem1:2,addItem2:3}})
     ```
 
-# 路由守卫
+## 路由守卫
 
 在路由切换前后使用回调函数的方式进行处理，可做登录校验：（在展现页面前先判断下存储中有没有登录成功的凭证）
 
@@ -1424,6 +1428,56 @@ import { useRouter } from 'vue-router';
  
 </style>
 ```
+
+## childen
+
+注意name不能重名，否则会冲突
+
+children用于vue嵌套，下面这种情况，Framework为父框架，其中有个route-view组件，用于展示子vue
+
+```js
+import {createRouter, createWebHistory} from 'vue-router'
+import VueCookies from "vue-cookies";
+const routes = [
+    {
+        name: '登录页',
+        path: '/login',
+        component: ()=>import('../views/Login.vue'),
+    },
+    {
+        name: '主页',
+        path: '/',
+        component: ()=>import('../views/Framework.vue'),
+        children:[
+            {
+                path:"/blog/list",
+                name:"博客管理",
+                component:()=>import('../views/blog/Blog-list.vue')
+            },
+            {
+                path:"/blog/category",
+                name:"分类管理",
+                component:()=>import('../views/blog/Blog-category.vue')
+            }
+        ]
+    }
+];
+const router = createRouter({
+    routes,
+    history: createWebHistory(),
+})
+router.beforeEach((to, from, next) => {
+    console.log(to, from, next);
+    const ui = VueCookies.get("userInfo");
+    if (!ui && to.path!= "/login"){
+        router.push("/login")
+    }
+    next();
+});
+export default router
+```
+
+
 
 # promise
 
@@ -1897,6 +1951,20 @@ export const defindPerson = defineStore(
 
 ```
 
+**比较习惯的另一种写法**
+
+```js
+export const useCounterStore = defineStore('counter', () => {
+  const count = ref(0)
+  const doubleCount = computed(() => count.value * 2)
+  function increment() {
+    count.value++
+  }
+
+  return { count, doubleCount, increment }
+})
+```
+
 
 
 **展示**
@@ -2122,45 +2190,63 @@ $primary-color: #333;
 
 # 插槽
 
-在 Vue 中，`<template>` 标签是一个特殊的元素，它不会被渲染为真实的 DOM 元素，而是用于作为内容的逻辑容器。它可以用于包装多个元素或组件，并提供逻辑分组和结构，特别是在你需要使用插槽（slot）或条件渲染时。
+默认插槽：
 
-在代码片段：
-
-```html
-<el-input placeholder="请输入账号" v-model="formData.account" size="large">
-  <template #prefix>
-    <span class="iconfont icon-account"></span>
-  </template>
-</el-input>
-```
-
-`<template #prefix>` 是一个具名插槽（named slot）的示例。`#prefix` 表示这个插槽的名称是 `prefix`。在 Element UI 的 `el-input` 组件中，`prefix` 插槽通常用于在输入框的左侧插入一些自定义的内容，比如图标。
-
-- `<template #prefix>`：定义了一个名为 `prefix` 的插槽。
-- `<span class="iconfont icon-account"></span>`：在 `prefix` 插槽中插入了一个带有图标字体的 `span` 元素，用于显示账号图标。
-
-这样，`span` 元素作为 `prefix` 插槽的内容，会被渲染到 `el-input` 组件内部的相应位置，通常是输入框的左侧，从而实现了在输入框前显示图标的效果。
-
-在 Vue 3 中，还可以使用 `v-slot` 指令来定义插槽，这种写法在 Vue 2.6+ 中也是支持的，作为对具名插槽的另一种语法糖：
-
-```html
-<el-input placeholder="请输入账号" v-model="formData.account" size="large">
-  <template v-slot:prefix>
-    <span class="iconfont icon-account"></span>
-  </template>
-</el-input>
-```
-
-这里 `v-slot:prefix` 和 `#prefix` 是等价的，都表示定义了一个名为 `prefix` 的插槽。
-
-element-ui官方给出的模板是这样的，但是无效果，这是因为在 Vue 3 中，应该继续使用 `<template #prefix>` 的语法，因为 `slot` 属性在 Vue 3 中已经被废弃，而 `<template>` 标签的 `v-slot` 指令或 `#插槽名` 语法是推荐的方式。
+定义默认slot无需放在template下，使用直接写内容，注意默认插槽一个组件中只能有一个	
 
 ```vue
-<el-input
-    placeholder="请输入内容"
-    v-model="input4">
-    <i slot="prefix" class="el-input__icon el-icon-search"></i>
-</el-input>
+<div class="dialog-body">
+    <slot></slot>
+</div>
+
+<Dialog title="新增">
+    123
+</Dialog>
+```
+
+
+
+具名插槽：
+
+定义带名字的插槽（具名）需要将slot标签包裹在template中，具名slot定义方式如下：
+
+```vue
+<template>
+	<slot :name="column.scopedSlots">
+     </slot>
+</template>
+```
+
+使用插槽：使用v-slot=“插槽名”或者直接#插槽名
+
+```vue
+<template #cover>
+	<div>
+        123
+    </div>
+</template>
+or
+<template v-slot="cover">
+	<div>
+        123
+    </div>
+</template>
+```
+
+插槽传参给父组件，这里使使用了结构的方式将参数从子组件插槽中传递出来
+
+```vue
+<template #default="scope">
+    <slot
+          :name="column.scopedSlots"
+          :index="scope.$index"
+          :row="scope.row"
+          >
+        </slot>
+    </template>
+<template #cover="{ index, row }">
+	<Cover :cover="row.cover"></Cover>
+</template>
 ```
 
 # rules
@@ -2237,5 +2323,165 @@ const login = ()=>{
     }
   })
 }
+```
+
+# VueCookies
+
+用于向浏览器中存储cookie
+
+使用：
+
+```js
+import VueCookies from "vue-cookies";
+VueCookies.set("userInfo",result.data,0);
+```
+
+注意这里不要使用结构的方式引入VueCookies，否则引入的是undefind
+
+# :src 模板字符串
+
+```
+:src="`/api/file/getImage/${userInfo.avatar}`"
+```
+
+# Element+ 全局使用中文
+
+App.vue:
+
+```vue
+
+<template>
+ <div>
+    <el-config-provider :locale="zhCn">
+        <router-view></router-view>
+    </el-config-provider>
+ </div>
+</template>
+<script setup>
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+</script>
+
+
+<style scoped>
+
+</style>
+
+```
+
+# Element+ 表单自定义class custclass
+
+已经弃用，直接使用calss即可
+
+# modelValue
+
+在vue3中，子组件在定义props时，可在其中定义一名为modelValue的对象，该对象为v-model默认接受的值，用法如下：
+
+```vue
+// 子组件：
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: null,
+  }
+});
+
+// 父组件
+<CoverUpload v-model="dialogConfig.cover"></CoverUpload>
+```
+
+这里v-model绑定的值会自动绑到props中的modelValue上
+
+# v-model与:model的区别
+
+**v-model**
+
+v-model 是 v-model:value 的缩写，通常用于表单上的双向数据绑定（表单接受值 value，故v-model默认收集的就是 value ，所以缩写直接省略 value），可以实现子组件到父组件的双向数据动态绑定。数据不仅能从data流向页面，还可以从页面流向data。
+
+**:model**
+
+:model 是 v-bind:model 的缩写，可以实现将父组件的值传递给子组件，但是子组件不能传给父组件，无法双向绑定。
+
+**v-bind**
+
+v-bind:value 可以简写为 :value ，数据只能从data流向页面。
+
+# nextTick
+
+`nextTick(() => {...});`
+Vue 的 `nextTick` 函数用来延迟执行一段代码，直到下一次 DOM 更新循环结束之后。这通常用于在数据改变后确保 DOM 已经更新，然后再执行某些依赖于新 DOM 的操作。
+
+```js
+const edit = (type, value) => {
+  // 这里让对话框弹出，会更新formData的值，依赖的是:model属性
+  // 接着使用formDataRef.value.resetFields()方法清空表单，否则会保留上一次的值
+  // :model是element-ui用的，比如使用rule时候
+  dialogConfig.ifShow = true;
+  nextTick(() => {
+    // 要等渲染出来再清空，否则白清空了
+    formDataRef.value.resetFields();
+    if (type === "add") {
+      dialogConfig.title = "新增分类";   
+    } else if (type === "update") {
+      dialogConfig.title = "修改分类";
+      Object.assign(formData, value);
+      dialogConfig.cover = value.cover;
+    }
+    
+  });
+};
+```
+
+# Element+ form rules校验
+
+ref绑定的对象必须是直接在setup下的ref对象
+
+v-bind:model 指向的对象和fome-item的v-model对象必须是包含关系
+
+```vue
+
+<el-form
+         :rules="dialogFormRules"
+         ref="dialogFormRef"
+         :model="dialogFormData"
+         >
+    <el-form-item label="博客分类" prop="categoryId">
+        <el-select
+                   v-model="dialogFormData.categoryId"
+                   clearable
+                   placeholder="请选择分类"
+                   :style="{ width: '100%' }"
+                   >
+        </el-select>
+    </el-form-item>
+</el-form>
+<script>
+    const dialogFormRef = ref(null);
+const dialogFormRules = {
+  categoryId: [{ required: true, message: "请选择分类" }],
+  type: [{ required: true, message: "请选择类型" }],
+  reprintUrl: [{ required: true, message: "请输入转载地址" }],
+  allowComment: [{ required: true, message: "请选择是否允许评论" }],
+};
+const dialogFormData = reactive({
+  tags: [],
+});
+const dialogConfig = reactive({
+  title: "保存博客",
+  buttons: [
+    {
+      type: "danger",
+      text: "确定",
+      click: async (e) => {
+        dialogFormRef.value.validate(async (valid) => {
+          console.log(dialogFormData);
+          if (valid) {
+            return;
+          }
+        });
+      },
+    },
+  ],
+</script>
+
 ```
 

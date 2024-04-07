@@ -8,6 +8,12 @@ categories:
   - notes
 ---
 
+# 简介
+
+ 
+
+
+
 # 虚拟DOM
 
 - 本质是object类型的一般对象
