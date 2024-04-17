@@ -375,11 +375,39 @@ default T selectOne(@Param("ew") Wrapper<T> queryWrapper) {
 }
 ```
 
+## 泛型动态返回实例
+
+```java
+/**
+ * 将系统用户转换为Authing用户
+ * CreateUserInfoDto 与 CreateUserReqDto 功能类似，字段相同
+ * 抽象出来避免后期要存入多个字段需修改多处
+ * 
+ * @param sysUser
+ * @return
+ */
+private <T> T assignSysUserToAuthingUser(User sysUser, Class<T> clz) {
+    T authingUser = null;
+    try {
+        authingUser = clz.getDeclaredConstructor().newInstance();
+        clz.getMethod("setUsername",String.class).invoke(authingUser, sysUser.getUsername());
+        clz.getMethod("setPhone",String.class).invoke(authingUser, sysUser.getMobile());
+        // 猜测这里设置为true就可以直接用手机号登录了
+        clz.getMethod("setPhoneVerified",Boolean.class).invoke(authingUser, true);
+    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |IllegalAccessException e) {
+        throw new RuntimeException(e);
+    }
+    return authingUser;
+}
+```
+
+
+
 # IO
 
 ## ByteArrayOutputStream
 
-可以用该输出流来写入内容，且该流最后可转为byte数组
+可以用该输出流来写入内容，且该流最后可转为byte数组:`ByteArrayOutputStream.toByteArray()`
 
 ## 无法同时打开一个文件的输入流和输出流
 

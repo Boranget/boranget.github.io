@@ -1126,7 +1126,7 @@ java中通过配置文件的方式，将一些实现类注册到配置文件中�
 # 读取request请求体不完整
 
 原本使用inputstream的available来获取报文大小，但使用inputStream.available()并不总是返回整个流的大小。它只返回可以无阻塞地从此输入流读取（或跳过）的字节数的估计值。在实际应用中，这可能导致只读取了部分数据。
-获取不到完整的请求体内容是因为HTTP请求的正文（body）长度是动态的，而inputStream.available()方法返回的是在不阻塞的情况下可以从输入流中读取的字节数。当输入流中的数据量少于或等于输入流内部的缓冲区大小时，available()方法可能返回的是小于实际数据量的值，这就会导致您只读取了部分数据。为了完整地读取HTTP请求的正文内容，需要使用一个循环来不断读取输入流直到没有更多数据可读。
+获取不到完整的请求体内容是因为HTTP请求的正文（body）长度是动态的，而inputStream.available()方法返回的是在不阻塞的情况下可以从输入流中读取的字节数。当输入流中的数据量少于或等于输入流内部的缓冲区大小时，available()方法可能返回的是小于实际数据量的值，这就会导致最后只读取了部分数据。为了完整地读取HTTP请求的正文内容，需要使用一个循环来不断读取输入流直到没有更多数据可读。
 
 ```java
 byte[] buffer = new byte[1024];
@@ -1159,5 +1159,71 @@ public class SystemInit {
         System.out.println("123");
     }
 }
+```
+
+# 抽出公共模块，并引入公共模块中的配置
+
+公共模块中配置文件命名可以参考：`application-功能-环境.yaml`，注意不要与其他模块中的配置文件同名
+
+用到该公共模块的服务中，配置如下：
+
+```yml
+spring:
+  config:
+    import:
+      - application-功能-${spring.profiles.active}.yaml
+```
+
+# tomcat对文件上传大小的限制
+
+```yml
+# 上传文件大小限制
+spring:
+  servlet:
+    multipart:
+      max-file-size: 4GB
+      max-request-size: 4GB
+```
+
+# 接口参数校验
+
+在实体类字段上进行校验规则的注解，在用到这些实体类的Controller上标记@Validated可以对所有Controller方法中，有进行字段校验的实体类进行校验，或者也可以直接标记在Controller方法，进行单个参数的校验。
+
+```java
+public class FeedbackInfo extends BaseEntity {
+    /**
+     * ID
+     */
+    @TableId(value = "ID", type = IdType.ASSIGN_ID)
+    private Long id;
+    /**
+     * 内容
+     */
+    @NotEmpty
+    @TableField(value = "CONTENT")
+    @Schema(description = "反馈内容")
+    private String content;
+    /**
+     * 图片
+     */
+    @TableField(value = "IMAGE")
+    @Schema(description = "反馈图片")
+    private byte[] image;
+    /**
+     * 用户 id
+     */
+    @NotEmpty
+    @TableField(value = "USER_ID")
+    @Schema(description = "反馈用户ID")
+    private String userId;
+
+}
+```
+
+```java
+@Validated
+@RestController
+@RequestMapping("/feedback")
+public class FeedbackController {}
 ```
 

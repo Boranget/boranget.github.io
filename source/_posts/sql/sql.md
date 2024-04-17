@@ -798,6 +798,7 @@ CREATE TABLE table_name(
 - PRIMARY KEY - 主键，附有NOT NULL与UNIQUE效果
 - FOREIGN KEY - 参照另一个表中的值，参照完整性
 - CHECK - 保证列中的值符合指定的条件
+- DEFULT - 规定没有给列赋值时的默认值
 
 ```sql
 # mysql
@@ -830,10 +831,6 @@ City varchar(255),
 CONSTRAINT chk_Person CHECK (P_Id>0 AND City='Sandnes')
 )
 ```
-
-
-
-- DEFULT - 规定没有给列赋值时的默认值
 
 ## 索引
 
@@ -2765,5 +2762,50 @@ FOREIGN KEY：外键约束，目的是为了保证数据的完成性和唯一性
     UPDATE dir_dir_table SET parent_dir_id = 1 WHERE child_dir_id = 2;
     ```
 
+# insert ignore into
+
+当新增的记录在表中不存在的话则插入新的记录，注意这里比较的是全部字段，而不只是插入的时候指定的字段，比如插入的时候并不会指定自增主键的话，则肯定会插入，因为带上数据库自动分配的自增主键的话，整条记录完全是新的字段。
+
+```sql
+INSERT IGNORE INTO dir_dir_table (id, parent_dir_id, child_dir_id) VALUES (13,'5', '2')
+```
+
+# 删除表内容的几个方式
+
+- DROP
+
+    删除整张表数据，表结构以及表的索引、约束和触发器
+
+    效率高，无法回滚
+
+- TRUNCATE
+
+    删除表中全部数据，保留结构、索引、约束、触发器等其他数据，无法回滚，主键自增会重置
+
+- DELETE
+
+    删除部分数据，效率低，可以回滚，自增主键不会重置
+
+# 复制表的几个方式
+
+- AS
+
+    这种方式不会复制表的索引、约束、触发器等，只会复制结构和数据
+
+    ```sql
+    CREATE TABLE TEMP_TABLE AS SELECT * FROM MY_TABLE WHERE ...;
+    ```
+
+- LIKE
+
+    会复制结构、索引、约束、触发器等，但不会复制数据
+
+    ```sql
+    CREATE TABLE TEMP_TABLE LIKE MY_TABLE;
+    ```
+
     
 
+# mysql存文件
+
+mysql中自带的longblob类型，该类型最大可存储4g的内容

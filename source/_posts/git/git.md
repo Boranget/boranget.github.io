@@ -8,20 +8,9 @@ categories:
   - notes
 ---
 
-# 一些问题
+# 参考资料
 
-- git push 时提示
-
-  > fatal: unable to access 'https://github.com/***': Recv failure: Connection was reset
-
-  解决办法：执行
-
-  ```bash
-  git config --global --unset http.proxy
-  git config --global --unset https.proxy
-  ```
-
-  取消代理
+[Git - Book (git-scm.com)](https://git-scm.com/book/zh/v2/)
 
 # 简介
 
@@ -40,25 +29,62 @@ categories:
   - 版本控制是一种记录文件内容变化,以便于将来查阅特定版本修订情况的系统.
   - 版本控制其实最重要的是可以记录文件的修改历史, 从而让用户能够查看历史版本, 方便版本切换
 
-## git工作机制
-
-![image-20221031095007298](git/image-20221031095007298.png)
-
 ## git和代码托管中心
 
 代码托管中心是基于网络服务器的远程代码仓库,一般我们简单的成为远程库
 
 - 局域网
-  - GitLab
+    - GitLab
 - 互联网
-  - GitHub
-  - GItee
+    - GitHub
+    - GItee
 
 ## 分支
 
 在版本控制过程中,同时推进多个任务,我们可以为每个任务创建单独的分支,使用分支意味着从主线上离开了,开发分支不会影响主分支的运行
 
 git切换分支本质上是移动**Head**指针
+
+# 原理
+
+![image-20221031095007298](git/image-20221031095007298.png)
+
+## 区域
+
+工作区：除去.git文件夹的部分
+
+暂存区：累积修改
+
+本地库：以diff的形式存放历史代码
+
+## add
+
+add：add有以下功能：
+
+- 开始跟踪文件
+
+- 将修改提交到暂存区，比如文件的新增删除或者文件内容的变化
+- 合并时将有冲突的文件标记为已解决
+
+每次有对工作区文件修改时，若想要在commit时携带该修改，则需要将该修改通过add添加到暂存区
+
+## commit
+
+commit：将暂存区的所有修改提交到本地库
+
+
+
+## reset
+
+reset：版本穿梭，具体会改变指针的指向，但受影响的是工作区还是暂存区还是本地仓？
+
+## diff
+
+diff比较工作目录与暂存区中的差异，也就是没暂存起来的变化
+
+## rm
+
+rm用于从暂存区移除内容
 
 # 操作
 
@@ -98,7 +124,7 @@ git add 文件名
 
 将工作区的文件添加到暂存区
 
-(暂存区存在的意义: 在commit的时候,是选择将暂存区的文件提交的,如果没有暂存区的存在,我们就只能提交所有的文件到本地仓,但我们有的时候会有这样的需求:我只想将我修改的一部分提交到本地仓,此时我本就需要暂存区的帮助:将我们想要提交到本地仓的文件添加到暂存区,然后commit)
+(暂存区存在的意义: 累计修改，批量提交到本地仓)
 
 ## 提交本地库
 
@@ -321,3 +347,17 @@ build/ # 忽略项目里所有的build目录
 doc/*.txt # 忽略项目中所有的doc目录下的txt文件，但不包括doc/*/*.txt
 ```
 
+# github reset
+
+- git push 时提示
+
+    > fatal: unable to access 'https://github.com/***': Recv failure: Connection was reset
+
+    解决办法：执行
+
+    ```bash
+    git config --global --unset http.proxy
+    git config --global --unset https.proxy
+    ```
+
+    取消代理
