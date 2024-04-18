@@ -102,6 +102,25 @@ let person = {
 let {name, age} = person;
 ```
 
+连续结构赋值
+
+```js
+let obj = {
+    a:{
+        b:{
+            c: 1
+        }
+    }
+}
+const {a:{b:{c}}} = obj
+console.log(c)
+// 同时重命名
+const {a:{b:{c:name}}} = obj
+console.log(name)
+```
+
+
+
 ## 形参解构
 
 ```js
@@ -124,6 +143,32 @@ function objectjg({name,age}){
 // zhangsan 15
 objectjg(person);
 ```
+
+# 扩展运算符
+
+```js
+// 拼接数组或对象
+const arr = [1, 2, 3];
+const arr2 = [...arr, 4, 5, 6];
+
+// 使用展开运算符克隆一个对象，是浅复制
+const obj = { a: 1, b: 2 ,c:{name:'zhangsan'}};
+const newObj = { ...obj};
+obj.c.name="lisi"
+console.log(newObj);// newObj的c.name为lisi
+// 复制的同时还可以修改属性或者添加属性
+const newObj = { ...obj, a: 5 };
+console.log(newObj); // newObj的属性a被修改了
+
+// 批量形参
+const sum = (...args) => {
+    return args.reduce((a, b) => a + b, 0);
+};
+const res = sum(1, 2, 3, 4);
+console.log(res);
+```
+
+
 
 # 箭头函数
 
@@ -275,11 +320,52 @@ p.name="张三";
 p.age=15;
 ```
 
-## 调用实例方法
+## 实例方法的定义方式
+
+类中实例方法有两种定义方式，一种是直接定义，一种是属性定义
+
+直接定义的实例方法放在实例对象的原型对象上，而属性方法直接放在实例对象的上
+
+如果将属性定义的方法改为箭头函数，则由于箭头函数的this会指向外层所在的this，故箭头函数中的this会指向实例对象
 
 ```js
-p.eat("apple")
+class Person{
+    // 直接定义的实例方法放在实例对象的原型对象上
+    eat(){
+        console.log('eat');
+    }
+    // 而属性方法直接放在实例对象的上
+    speak = function(){
+        console.log('speak');
+    }
+	// 箭头函数
+    speak2 = () => {
+        console.log('speak2');
+    }
+}
+const p = new Person();
+console.log(p);
 ```
+
+![image-20240404115211061](ES6/image-20240404115211061.png)
+
+## 调用实例方法
+
+在类中定义的方法被放在了类的原型对象上，供实例使用
+
+在实例调用自身的实例方法时，实例方法中的this为当前实例
+
+```js
+p.eat()
+```
+
+但比如使用call去调用实例方法时，可以更改方法中的this指向，下面的call方法中如果使用了this，this会指向传入的`{"name":"zs"}`
+
+```js
+p.eat.call({"name":"zs"})
+```
+
+
 
 ## 调用静态方法
 
@@ -372,6 +458,10 @@ p.name = "张三"
 
 方法名命名为constructor即可
 
+构造器中的this为当前的实例对象
+
+构造方法也会存放在原型链上
+
 ```js
 class Person{
     // 定义成员变量
@@ -386,6 +476,14 @@ let p = new Person("张三",15)
 ```
 
 ## 继承
+
+子类在继承父类后，子类的构造器可以不写，可以直接使用父类的构造器。
+
+若在子类中定义了构造器，则必须调用父类的构造器，且必须在子类构造器最开始调用
+
+其实父类就是放在了子类对象的原型链上，所以子类可以直接调用父类的方法
+
+但是父类的属性不会直接继承到自身，可能会通过构造方法获得跟父类类似的属性
 
 ```js
 class Person{
@@ -527,3 +625,500 @@ class Person{};
 export default Person
 ```
 
+# 动态对象属性key
+
+```js
+const user = {
+    username: "john",
+    password: "password"
+}
+const key = "username"
+user[key] = "jane"
+const newUser = {[key]:"zs"}
+console.log(user)
+console.log(newUser)
+```
+
+# 函数柯里化
+
+一个函数的返回值是一个函数
+
+# promise
+
+**回调函数**
+
+回调函数是基于事件的自动调用函数，其他的代码不会等待回调函数执行完毕才向下走，所以回调函数的执行是异步的。
+
+回调函数是一种未来会执行的函数，回调函数以外的其他代码不会等这个函数的执行结果就会执行下去
+
+回调函数相当于一种”承诺“，其从提出后有三种状态
+
+- 进行中
+- 兑现（成功）
+- 失败
+
+针对承诺的三种状态要执行三种预案
+
+## 什么是promise
+
+promise是异步编程的一种解决方案，比传统的解决方案（回调函数和事件）更加强大，ES6原生提供了Promise对象。Promise类似于一个容器，其中保存着某个未来才会结束的事件（通常是一个异步操作）的结果
+
+有三种状态：
+
+- Pending 进行中
+- Resolved 已完成
+- Rejected 已失败
+
+只有其异步操作的结果可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。
+
+一旦状态改变就不会再改变。任何时候都可以得到这个结果，Promise的对象状态的改变，只有两种可能：Pending变为Resolved，或者从Pending变为Rejected，只要这两种情况发生，状态就凝固了，不会再改变了
+
+## 使用
+
+```js
+// 里面的函数便是回调函数
+let promise = new Promise(function(){});
+// 回调函数可接收两个参数：resolve 和 reject 
+// 这两个参数其实是函数，在回调函数中调用可改变当前promise的状态
+let promise = new Promise(function(resolve,reject){});
+// then方法会在promise对象的状态发生改变后执行
+// then中可以传入两个参数，分别为两个方法
+// 第一个方法为状态转为resolved时会执行的函数
+// 第二个方法为状态转为reject时会执行的代码
+// promise中的函数会在promise被声明的时候便开始执行
+// 而then方法会等待promise中的方法执行结束执行，then下方的方法不会等待then执行完成，但会等待promise代码执行完成（也就是说then是异步的，但promise中的方法不是？）
+promise.then(
+    function(){
+        console.log(resolve);
+    }
+    ,function(){
+        console.log(reject);
+    }
+)
+// resolve与reject函数可以传入参数作为消息，可以在then中的回调函数中接收
+let promise = new Promise(function(resolve,reject){
+    resolve("success");
+    reject("fail");
+});
+promise.then(
+    function(value){
+        console.log(value);
+    }
+    ,function(value){
+        console.log(value);
+    }
+)
+// then方法会返回另一个Promise，其值为
+// 如果成功函数中返回了非Promise值，则会将其包装为Promise作为then的返回
+// 如果成功函数中返回了一个Promise对象，则then的返回值则为该Promise
+// 如果成功函数中抛出了一个异常，则then会返回一个失败promise，失败原因为该异常
+// 如果失败状态没有指定返回值，则then会返回一个封装为成功的Promise，其值为undefined
+// 可调用该对象的catch函数
+// catch函数当promise中的回调函数报错或promise状态为reject的时候执行
+// 可接收一个参数，其值为回调函数中reject填入的值或者异常信息
+// 所以如果有catch处理的话，then中的第二个方法可以去掉
+let promise2 = promise.then(
+    function(value){
+        console.log(value);
+    }
+)
+promise2.catch(function(){})
+
+// 以上这些操作可以连写
+promise.then(
+    function(value){
+        console.log(value);
+    }
+).catch(function(value){
+    console.log(value);
+})
+```
+
+## 中断then链
+
+返回一个pending状态的promise用于终端then链处理
+
+```js
+fetch('www.baidu.com').then(
+  response => {
+    console.log('这一步只能证明连接服务器成功了');
+    // 返回一个 Promise 对象，该对象会在响应成功时解析为 JSON 对象，用于下面then的处理
+    return response.json();
+  },
+  error =>{
+    console.log('连接服务器失败', error);
+    // 中断then链调用
+    return new Promise(() => {});
+  }
+).then(
+  response => {
+    console.log('服务器返回的数据', response);
+  },
+  error => {
+    console.log('服务器返回错误', error);
+  }
+)
+```
+
+
+
+## async
+
+```js
+async function a(){
+    
+}
+// 箭头方式
+let a = async ()=>{}
+```
+
+async 所标识的函数会被封装为返回结果是一个pomise对象的函数，async标识函数的方法体则是Promise对象声明时所接收的那个回调函数。
+
+如果在a函数中返回结果，则该promise的状态会变为Resolved，返回的结果会放入resolve的参数中，
+
+如果在a函数中抛出异常，则该promise的状态会变为Rejected，异常信息放入reject的参数中。
+
+如果a函数return了一个promise对象，则该promise就是这个promise
+
+```js
+let promise = a();
+promise.then().catch()
+```
+
+## await
+
+用于快速获取promise对象在成功状态下的返回值，只能在async修饰的方法中使用
+
+如果await操作的promise返回的是异常，则await操作会抛出异常
+
+与await在同一个方法体中且在await后的代码会等待await执行结束
+
+```js
+let res = await Promise.resolve(obj)
+// res = obj
+```
+
+```js
+async function p(){
+    return 0;
+}
+async function fun(){
+    let res = await p();
+    console.log(res);
+}
+fun()
+```
+
+使用await只能获取成功后的结果数据，那如何处理失败呢？答案是使用trycatch
+
+```js
+async a() {
+    try {
+        const response = await fetch("www.baidu.com");
+        const data = await response.json();
+        console.log(data);
+    } catch (e) {
+        console.log(e);
+    }
+}
+```
+
+
+
+# fetch
+
+兼容性不高，老版本浏览器有不兼容，与xhr无关
+
+```js
+fetch('www.baidu.com').then(
+  response => {
+    console.log('这一步只能证明连接服务器成功了');
+    // 返回一个 Promise 对象，该对象会在响应成功时解析为 JSON 对象，用于下面then的处理
+    return response.json();
+  },
+  error =>{
+    console.log('连接服务器失败', error);
+    // 中断then链调用
+    return new Promise(() => {});
+  }
+).then(
+  response => {
+    console.log('服务器返回的数据', response);
+  },
+  error => {
+    console.log('服务器返回错误', error);
+  }
+)
+// 优化
+fetch('www.baidu.com').then(
+    response => {
+        console.log('这一步只能证明连接服务器成功了');
+        // 返回一个 Promise 对象，该对象会在响应成功时解析为 JSON 对象，用于下面then的处理
+        return response.json();
+    }
+).then(
+    response => {
+        console.log('服务器返回的数据', response);
+    }
+).catch(
+    error => {
+        console.log('服务器连接失败', error);
+    }
+);
+```
+
+# Axios
+
+用于发送请求
+
+```bash
+npm install axios
+```
+
+```vue
+<script setup>
+import { ref } from "vue";
+import axios from "axios";
+
+let msg = ref("");
+function getMsg() {
+  // 方法返回一个promise对象
+  axios({
+    // url
+    url: "https://api.uomg.com/api/rand.qinghua?format=json",
+    // method
+    method: "get",
+    // params会以键值对形式拼接到url后，
+    params: {},
+    // data 会以json形式放入请求体
+    data: {}
+  })
+    .then((response) => {
+      /**
+       * response的结构
+       * {
+       *    data：服务端响应的数据，如果是个json数据，会自动转为对象
+       *    status：响应状态码
+       *    statusText：响应描述
+       *    headers：响应头
+       *    config：本次请求的配置信息
+       *    request：本次请求的XMLHttpRequest属性
+       * }
+       */
+      console.log(response);
+      console.log(response.data.content)
+      msg.value = response.data.content;
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+</script>
+<template>
+  <div>
+    <h1>{{ msg }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+**Object.assign(a,b)**
+
+可将b中的属性赋予a对象，若a对象中已有，则覆盖，没有则创建
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let data = reactive({});
+function getMsg() {
+  // 方法返回一个promise对象
+  axios({
+    // url
+    url: "https://api.uomg.com/api/rand.qinghua?format=json",
+    // method
+    method: "get",
+    // params会以键值对形式拼接到url后，
+    params: {},
+    // data 会以json形式放入请求体
+    data: {}
+  })
+    .then((response) => {
+      /**
+       * response的结构
+       * {
+       *    data：服务端响应的数据，如果是个json数据，会自动转为对象
+       *    status：响应状态码
+       *    statusText：响应描述
+       *    headers：响应头
+       *    config：本次请求的配置信息
+       *    request：本次请求的XMLHttpRequest属性
+       * }
+       */
+      console.log(response);
+      console.log(response.data.content)
+      Object.assign(data,response.data)
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+</script>
+<template>
+  <div>
+    <h1>{{ data.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+## 简写
+
+由于await后的代码会等待await执行结束，则若在提交按钮绑定的方法中使用await获取数据，通过获取到的数据来判断当前方法应该返回的值是可行的，因为return会等待await的执行结果
+
+**get**
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let showData = reactive({});
+
+async function getMsg(){
+  // axios.get(url,{params,headers})
+  let promise = axios.get("https://api.uomg.com/api/rand.qinghua?format=json",{
+    params:{
+      name:"zs"
+    }
+  })
+  let {data} = await promise;
+  Object.assign(showData,data)
+}
+</script>
+<template>
+  <div>
+    <h1>{{ showData.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+**post**
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let showData = reactive({});
+
+async function getMsg() {
+  // axios.get(url,{params,headers})
+  let promise = axios.post(
+    "https://api.uomg.com/api/rand.qinghua?format=json",
+    // 这个对象是请求体
+    {
+      username: "zs",
+      password: "123456",
+    },
+    {
+      params: {
+        name: "zs",
+      },
+    }
+  );
+  let { data } = await promise;
+  Object.assign(showData, data);
+}
+</script>
+<template>
+  <div>
+    <h1>{{ showData.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+## 拦截器
+
+axios可通过creat方法生成一个实例，该实例有着与axios相似的方法调用，可在某具体js中生成该实例并将该实例暴露，且在js文件中给该实例添加拦截器，以下示例并没有单独抽离实例js
+
+```vue
+<script setup>
+import { ref, reactive } from "vue";
+import axios from "axios";
+
+let showData = reactive({});
+
+async function getMsg() {
+  // axios.get(url,{params,headers})
+  /**
+   * baseURL 使用该实例发送的请求之前会拼接baseURL
+   * timeout 请求超时时间，毫秒单位
+   */
+  let axiosins = axios.create({
+    baseURL: "https://api.uomg.com",
+    timeout: 10000,
+  });
+  // 设置请求拦截器，两个函数
+  axiosins.interceptors.request.use(
+    config => {
+      // 设置请求的信息，比如请求头、体等，最后需要返回这个config
+      // config.headers.Accept="application/json,123"
+      return config;
+    },
+    error => {
+      // 请求错误拦截，需要返回一个失败的promise
+      return Promise.reject(error)
+    }
+  );
+  // 设置响应拦截器，两个函数
+  axiosins.interceptors.response.use(
+    response => {
+      // 响应状态码为200时执行,response需要返回，否则没有响应
+      console.log(123)
+      return response
+    },
+    error => {
+      // 其他状态码执行, 最后需要返回一个失败的promise
+      console.log(error)
+      return Promise.reject(error)
+    }
+  );
+  let promise = axiosins.get("/api/rand.qinghua?format=json", {
+    params: {
+      name: "zs",
+    },
+  });
+  let { data } = await promise;
+  Object.assign(showData, data);
+}
+</script>
+<template>
+  <div>
+    <h1>{{ showData.content }}</h1>
+    <button @click="getMsg">变</button>
+  </div>
+</template>
+<style scoped>
+</style>
+```
+
+# 跨域
+
+原因，浏览器当前请求的视图中的某个目标指向的地址与视图的地址不在同一个域。
+
+- 方法一：前端服务器发请求
+- 方法二：先发送预检请求，用于检查目标服务器是否安全
+  - 前端先发送一个option的预检请求（自动发送）
+  - 后端新增一个过滤器，如果收到的请求是预检请求，则拦截处理，正常请求则放行。在预检请求的响应头中设置是否允许跨域等的信息。
