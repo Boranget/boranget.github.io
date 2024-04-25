@@ -228,7 +228,9 @@ git remote -v
 
 ## 推送
 
-git push 别名 分支
+git push <远程主机名> <本地分支名>
+
+git push <远程主机名> <本地分支名>:<远程分支名>
 
 ## 克隆
 
@@ -361,3 +363,11 @@ doc/*.txt # 忽略项目中所有的doc目录下的txt文件，但不包括doc/*
     ```
 
     取消代理
+
+# git stash
+
+可将当前分支在暂存区的修改存起来，这样在暂存区看不到这些修改
+
+# 修改commit信息
+
+使用`git commit --amend`

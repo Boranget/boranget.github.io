@@ -1227,3 +1227,153 @@ public class FeedbackInfo extends BaseEntity {
 public class FeedbackController {}
 ```
 
+# @RequestParam
+
+如果Params和Body的form中都有一个相同名字的key，则在通过@RequestParam获取该key的时候会将两个值同时获取并拼接
+
+# 文件上传与下载
+
+**文件上传**
+
+```java
+// contronller
+@PostMapping("/upload")
+@CdsApiOperation("上传操作手册")
+@Operation(summary = "上传操作手册")
+@CdsOperationLog(title = TitleConstant.AUTHOR, businessType = BusinessTypeConstant.ADD)
+public Result upload(@RequestParam("file") MultipartFile mdZipFile, @RequestParam("title") String title) {
+    boolean save = manualService.createNewManual(mdZipFile, title);
+    if (save) {
+        return ResultUtil.ok(ResultEnum.SUCCESS);
+    }
+    return ResultUtil.fail("操作手册上传失败，请重试或联系管理员", ResultEnum.FAIL);
+}
+// service
+@Override
+@Transactional
+public Boolean createNewManual(MultipartFile mdZipFile, String title) {
+    // 文件类型是否合法
+    String originalFilename = mdZipFile.getOriginalFilename();
+    String[] split = originalFilename.split("\\.");
+    if (!suffixSet.contains(split[split.length - 1])) {
+        throw new GlobalException("文件类型非支持的压缩格式，支持类型:" + suffixSet.stream().collect(Collectors.joining(",")));
+    }
+    // 判断是否已存在
+    LambdaQueryWrapper<ManualInfo> wrapper = new LambdaQueryWrapper<>();
+    wrapper.eq(ManualInfo::getTitle, title);
+    Long l = baseMapper.selectCount(wrapper);
+    if (l != 0) {
+        // 存在则返回false
+        return false;
+    }
+    // 插入到数据库，获取id
+    baseMapper.insert(ManualInfo.builder().title(title).build());
+    ManualInfo manualInfo = baseMapper.selectOne(wrapper);
+    Long id = manualInfo.getId();
+    // 保存压缩包到 /manual/id/zip/..
+    String currentManualPath = MD_PATH + "/" + id;
+    String zipFilePath = currentManualPath + ZIP_DIR;
+    String zipFileName = MD_PATH + "/" + id + ZIP_DIR + "/" + originalFilename;
+    try {
+        File zipFilePathFile = new File(zipFilePath);
+        if (!zipFilePathFile.exists()) {
+            zipFilePathFile.mkdirs();
+        }
+        FileCopyUtils.copy(mdZipFile.getInputStream(), new FileOutputStream(zipFileName));
+    } catch (IOException e) {
+        throw new GlobalException(e.getMessage());
+    }
+    // 解压压缩包到 /manual/id/content/..
+    String contentFilePath = currentManualPath + CONTENT_DIR + "/";
+    try {
+        ZipUtil.unzip(zipFileName, contentFilePath, ZipUtil.UTF_8);
+    } catch (FileNotFoundException e) {
+        throw new GlobalException(e.getMessage());
+    }
+    // 进入内容文件夹，将存储图片的文件夹重命名为image
+    File currentContentDir = new File(contentFilePath);
+    File[] files = currentContentDir.listFiles();
+    for (File c : files) {
+        // 可能存在没有图片文件夹的情况
+        if (c.isDirectory()) {
+            c.renameTo(new File(currentContentDir + IMG_DIR + "/"));
+        } else if (c.getName().endsWith("md")) {
+            // 处理md文件内容，修改图片地址
+            // 开启缓冲reader，按行读取，读到图片地址则替换
+            BufferedReader bufferedReader = null;
+            BufferedWriter bufferedWriter = null;
+            try {
+                bufferedReader = new BufferedReader(new FileReader(c));
+                File target = new File(c.getParentFile(), id + ".md");
+                bufferedWriter = new BufferedWriter(new FileWriter(target));
+                String currentLine = null;
+                while ((currentLine = bufferedReader.readLine()) != null) {
+                    Pattern pattern = Pattern.compile("!\\[.*\\]\\((.*)\\)");
+                    Matcher matcher = pattern.matcher(currentLine);
+                    if (matcher.find()) {
+                        // TestManual/image-20240422144302572.png
+                        String oriImg = matcher.group(1);
+                        // 获取图片名
+                        String[] split1 = oriImg.split("[/,\\\\]");
+                        String imgFileName = split1[split1.length - 1];
+                        // 组装服务器地址
+                        StringBuilder sb = new StringBuilder(SERVER_IMG_PATH_PERFIX);
+                        sb.append("?");
+                        sb.append("id=").append(id);
+                        sb.append("&");
+                        sb.append("img=").append(imgFileName);
+                        String serverImgPath = sb.toString();
+                        currentLine = currentLine.replace(oriImg, serverImgPath);
+                    }
+                    // 写入拷贝
+                    bufferedWriter.write(currentLine);
+                    bufferedWriter.newLine();
+                }
+            } catch (IOException e) {
+                throw new GlobalException(e.getMessage());
+            } finally {
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException e) {
+                        throw new GlobalException(e.getMessage());
+                    }
+                }
+                if (bufferedWriter != null) {
+                    try {
+                        bufferedWriter.close();
+                    } catch (IOException e) {
+                        throw new GlobalException(e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+```
+
+**下载文件**
+
+```java
+// controller
+@GetMapping("/getOriginZip")
+@CdsApiOperation("获取原件")
+@Operation(summary = "获取原件")
+public void getOriginZip(HttpServletResponse response, @RequestParam("id") Long id) {
+    LambdaQueryWrapper<ManualInfo> wrapper = new LambdaQueryWrapper<>();
+    wrapper.eq(ManualInfo::getId, id);
+    ManualInfo one = manualService.getOne(wrapper);
+    if (one == null) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return;
+    }
+    try {
+        ServletOutputStream outputStream = response.getOutputStream();
+        manualService.getOriginZip(id, outputStream);
+    } catch (IOException e) {
+        throw new GlobalException(e.getMessage());
+    }
+}
+```
+

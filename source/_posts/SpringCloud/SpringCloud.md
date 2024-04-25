@@ -358,8 +358,6 @@ controller:
 InputStream inputStream = feignResponse.body().asInputStream();
 ```
 
-# 
-
 # nacos结合ribbon
 
 ## nacos客户端配置
