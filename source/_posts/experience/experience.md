@@ -840,3 +840,13 @@ springboot启动报错Invalid value type for attribute 'factoryBeanObjectType': 
 
 - 检查rdp剪贴板服务，尝试重启
 - 连接时选择远程桌面资源：本地剪贴板
+
+# Shell
+
+## 延时操作
+
+延时两秒
+
+```ba
+timeout /t 2
+```

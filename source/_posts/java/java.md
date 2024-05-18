@@ -428,3 +428,61 @@ ClassName::methodName
 - 实例方法引用
 
     lambd表达式中调用某个实例的某个方法，可以简化为使用`该实例所属的类::该方法`
+
+# 正则匹配
+
+创建Pattern并指定正则表达式，在正则表达式中，使用小括号`()`标识子表达式
+
+子表达式可通过使用`matcher.group`指定序号获取，0为整个表达式匹配的内容
+
+若整个正则表达式匹配到了内容，则find会返回true
+
+`.*`与`.*?`的区别：带问号为非贪婪匹配，会尽可能匹配更少的字符，而不带问号为贪婪匹配，会尽量匹配更多的字符
+
+```java
+public class MatcherTest {
+    public static void main(String[] args) {
+        String currentLine = "123456![image-20240422144249123](TestManual/image-20240422144249123.png)-(123)123456()";
+        // group2 为 123)123456(
+//        Pattern pattern = Pattern.compile("!\\[.*\\]\\((.*?)\\).*\\((.+)\\)");
+        // group2 为 123
+        Pattern pattern = Pattern.compile("!\\[.*\\]\\((.*?)\\).*\\((.+?)\\)");
+        Matcher matcher = pattern.matcher(currentLine);
+        if (matcher.find()) {
+            System.out.println(matcher.group(0));
+            System.out.println(matcher.group(1));
+            System.out.println(matcher.group(2));
+        }
+    }
+
+}
+```
+
+# 删除文件夹
+
+```java
+public void deleteDir(String filePath) {
+    // 删！
+    File file = new File(filePath);
+    Stack<File> fileStack = new Stack<>();
+    fileStack.push(file);
+    while (!fileStack.isEmpty()) {
+        File currentFile = fileStack.pop();
+        if (currentFile.isDirectory()) {
+            File[] fileArray = currentFile.listFiles();
+            if (fileArray.length == 0) {
+                currentFile.delete();
+                continue;
+            }
+            // 如果文件夹不空，需要先删文件夹内容再删文件夹
+            // 将文件夹先存回去
+            fileStack.push(currentFile);
+            // 将文件夹内容加入栈中
+            fileStack.addAll(Arrays.stream(fileArray).toList());
+            continue;
+        }
+        currentFile.delete();
+    }
+}
+```
+

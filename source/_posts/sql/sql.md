@@ -2806,6 +2806,10 @@ INSERT IGNORE INTO dir_dir_table (id, parent_dir_id, child_dir_id) VALUES (13,'5
 
     
 
-# mysql存文件
+# mysql存储文件
 
 mysql中自带的longblob类型，该类型最大可存储4g的内容
+
+# linux mysql执行SQL文件
+
+命令行中use数据库，执行source  文件路径
