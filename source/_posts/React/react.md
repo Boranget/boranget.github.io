@@ -675,7 +675,7 @@ NavLink:
 
 ## demo
 
-```js
+```jsx
 // index.js
 
 import React from'react';
@@ -937,7 +937,7 @@ export default class B extends Component {
   ```
 
   ```jsx
-  {this.props.location.state.id
+  this.props.location.state.id
   ```
 
 ## 路由替换
@@ -987,3 +987,515 @@ class Header extends Component {
 export default withRouter(Header)
 ```
 
+# redux
+
+用于组件间通信，需要安装redux
+
+state为当前状态，action是一个对象，其中包括操作与操作参数
+
+构造数据操作器
+
+```jsx
+export default function countReducer(state = 99, action) {
+    switch (action.type) {
+        case 'INCREMENT':
+            return state + action.data;
+        case 'DECREMENT':
+            return state - action.data;
+        default:
+            // 默认值/初始化
+            return state;
+    }
+}
+```
+
+构造store，使用上方的数据操作器
+
+```jsx
+import { createStore } from "redux";
+import countReducer from "./count_reducer";
+export default createStore(countReducer);
+```
+
+获取值，从store中获取当前值
+
+```jsx
+import store from '../../../redux/store'
+{store.getState()}
+```
+
+操作值，dispatch用于通知数据操作器要执行的操作
+
+```jsx
+import store from '../redux/store'
+store.dispatch({type:'INCREMENT',data:1*1})
+```
+
+更新页面数据
+
+```jsx
+store.subscribe(() => {
+    // store中数据有变化则调用监听器事件
+})
+```
+
+：全局更新
+
+```jsx
+import React from'react';
+import ReactDOM from'react-dom';
+import App from './App';
+import './index.css';
+import { BrowserRouter,HashRouter } from 'react-router-dom';
+import store from './redux/store';
+
+ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));
+
+store.subscribe(() => {
+    ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));
+})
+
+```
+
+## 异步action
+
+同步的action是一个对象，异步action是一个函数，需要安装redux-thunk
+
+添加中间件
+
+```jsx
+import { createStore, applyMiddleware } from "redux";
+import countReducer from "./count_reducer";
+import { thunk } from "redux-thunk";
+export default createStore(countReducer, applyMiddleware(thunk));
+```
+
+添加creater，返回一个函数，redux会传入dispatch
+
+```jsx
+export const createIncrementAsyncAction = (data,time) => {
+    return (dispatch)=>{
+        setTimeout(()=>{
+            dispatch({
+                type: "INCREMENT",
+                data: data
+            })
+        },time)
+    }
+    
+}
+```
+
+```jsx
+store.dispatch(createIncrementAsyncAction(200,3000))
+```
+
+## react-redux
+
+- 不再需要强制渲染，使用redux容器封装原先容器会自动强制渲染
+- 使用provider自动将store传给有需要的redux容器，供容器中的connect方法调用时使用
+
+**reducers**
+
+```js
+const defaultState = []
+export default function countReducer(state=defaultState, action) {
+    switch (action.type) {
+        case 'ADD_BOOK':
+            return [...state, action.data];
+        default:
+            // 默认值/初始化
+            return state;
+    }
+}
+```
+
+```js
+const defaultState = []
+export default function countReducer(state=defaultState, action) {
+    switch (action.type) {
+        case 'ADD_PERSON':
+            return [...state, action.data];
+        default:
+            // 默认值/初始化
+            return state;
+    }
+}
+```
+
+**actionCreaters**
+
+```js
+export const addBookActionCreater = (data) => {
+  return {
+    type: "ADD_BOOK",
+    data: data,
+  };
+};
+```
+
+```js
+export const addPersonActionCreater = (data) => {
+    return {
+        type: "ADD_PERSON",
+        data: data,
+    };
+};
+```
+
+**store**
+
+```js
+import { combineReducers, createStore } from "redux";
+import bookListReducer from "./reducers/Book";
+import personListReducer from "./reducers/Person";
+// 合并多个reducer为一个
+const allReducer = combineReducers({
+  // Add all your reducers here
+  bookList: bookListReducer,
+  personList: personListReducer
+});
+
+export default createStore(allReducer);
+```
+
+**index**
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import "./index.css";
+import { BrowserRouter, HashRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+
+ReactDOM.render(
+  // 使用provider包裹APP，会自动再需要store的子组件中传入store
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
+  document.getElementById("root")
+);
+
+```
+
+**Book组件**
+
+```jsx
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { addBookActionCreater } from "../../redux/actions/Book";
+import {nanoid} from 'nanoid';
+// ui组件，不能直接暴露，需要使用redux容器包装
+class Book extends Component {
+  addBook = () => {
+    const name = this.bookName.value;
+    this.props.addBook({ bookName: name });
+  };
+  render() {
+    return (
+      <div>
+        <input ref={(o) => (this.bookName = o)} />
+        <button onClick={() => this.addBook()}>Add Book</button>
+        <br/>
+        总共有{this.props.personCount}个人分享以下书籍
+        <ul>
+          {this.props.bookList.map((p) => {
+            return ( <li key={nanoid()}>bookName: {p.bookName}</li>);
+          })}
+        </ul>
+      </div>
+    );
+  }
+}
+// 暴露使用redux包装后的Book组件
+export default connect(
+  // 这里为将redux中的state映射到Book组件的props的操作
+  (state) => ({ bookList: state.bookList ,personCount: state.personList.length }),
+  // 这里为将redux中的action映射到Book组件的props的操作
+  { addBook: addBookActionCreater }
+)(Book);
+
+```
+
+**Person组件**
+
+```jsx
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { addPersonActionCreater } from "../../redux/actions/Person";
+import {nanoid} from 'nanoid';
+// ui组件，不能直接暴露，需要使用redux容器包装
+class Person extends Component {
+  addPerson = () => {
+    const name = this.personName.value;
+    this.props.addPerson({ personName: name });
+  };
+  render() {
+    return (
+      <div>
+        <input ref={(o) => (this.personName = o)} />
+        <button onClick={() => this.addPerson()}>Add Person</button>
+        <br/>
+        总共有{this.props.bookCount}本书为以下人提供
+        <ul>
+          {this.props.personList.map((p) => {
+            return <li key={nanoid()}>personName: {p.personName}</li>;
+          })}
+        </ul>
+      </div>
+    );
+  }
+}
+// 暴露使用redux包装后的Person组件
+export default connect(
+  // 这里为将redux中的state映射到Person组件的props的操作
+  (state) => ({ personList: state.personList ,bookCount:state.bookList.length}),
+  // 这里为将redux中的action映射到Person组件的props的操作
+  { addPerson: addPersonActionCreater }
+)(Person);
+
+```
+
+# setState其他写法
+
+- 携带回调函数
+  react会在修改完state后调用回调函数
+
+  ```js
+  this.setState({count:1},()=>{修改完成})
+  ```
+
+  
+
+- 传入一个函数，获取其返回值
+
+  ```js
+  this.setState((state,props)=>{
+      return {count:state.count+props.plus}
+  })
+  ```
+
+# 懒加载
+
+使用lazy引入模块，同时需要设置loding组件，使用suspense组件将会懒加载的组件包裹并指定loding组件
+
+```jsx
+// import Person from "./component/Person/Person";
+// import Book from "./component/Book/Book";
+import { lazy } from "react";
+const Person = lazy(() => import("./component/Person/Person"));
+const Book = lazy(() => import("./component/Book/Book"));
+<Suspense fallback={<div>Loading...</div>}>
+    <Switch>
+        <Route path="/person" exact component={Person} />
+        <Route path="/book" exact component={Book} />
+        <Redirect to="/person" />
+    </Switch>
+</Suspense>
+```
+
+# useState
+
+使得函数式组件可以操作state
+
+useState函数会返回一个数组，第一个参数为state值，第二个参数为设置state的方法
+
+```jsx
+export default function FunctionComponent() {
+  const [count, setCount] = React.useState(0)
+  const [name, setName] = React.useState('')
+  return (
+    <div style={{border: '1px solid black'}}>
+      当前计数：{count}
+      <button onClick={() => setCount(count + 1)}>加1</button>
+      <button onClick={() => setCount(count => count - 1)}>减1</button>
+      <br />
+      当前名字：{name}
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+    </div>
+  )
+}
+```
+
+# useEffect
+
+用于模拟生命周期
+
+# useRef
+
+用于在函数组件中生成ref容器
+
+# Fragment
+
+当组件根节点使用，放置组件时，Fragment标签会消除
+
+# Context
+
+用于父组件向子孙组件传递数据
+
+# PureComponent
+
+用于避免不必要的render，重写了shoudUpdate，进行props和state的比较，如果与之前的状态有区别再进行render，但在比较时只进行浅对比，也就是只比较对象地址值，所以在setState时不要传入之前的state对象
+
+# 插槽/renderProps
+
+```jsx
+<SlotComponent render={(val)=>{return <div>{val}</div>}}/>
+
+export default function SlotComponent(props) {
+  return (
+    <div>
+        以下为插槽内容：<br/>
+      {props.render?props.render("hello"):null}
+    </div>
+  )
+}
+```
+
+# 错误边界
+
+将错误捕获并处理，避免影响全局，只能捕获后代组件生命周期的错误，不能捕获自己产生的错误和其他组件在合成事件或者定时器中产生的错误
+
+使用`getDerivedStateFromError`配合`componentDidCatch`进行异常的捕获处理
+
+# Route6
+
+- 移除了`<Switch>`组件，改用`<Routes>`组件替代，且Route组件外必须包裹Routes
+- Navigate组件，只要该组件被渲染，就会引起路由的切换，其带有replace属性，值为布尔类型，相当于操作history
+- Route 新增caseSensitive属性，用于开启路由大小写敏感
+
+```jsx
+function App() {
+  return (
+    <div className="App">
+      {/* <Navigate to="/login" /> */}
+      <Link className="menu-item" to="/login">A</Link>
+      <Link className="menu-item" to="/register">B</Link>
+      <Routes >
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+      </Routes>
+      <Navigate to="/login" />
+  =============或者=========================
+       <Routes >
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+      </Routes>
+    </div>
+  );
+}
+```
+
+- 取消NavLink的activeClassName属性，改用通过回调函数的返回值设置
+
+```jsx
+<NavLink className={(active)=>active ? "menu-item active" : "menu-item"} to="/login">C</NavLink>
+```
+
+- useRoutes 通过对象数组生成Routes组件，可以将对象数组抽象出一个js
+
+```jsx
+function App() {
+  const elements = useRoutes([
+    { path: "login", element: <Login /> },
+    { path: "register", element: <Register /> },
+    { path: "/", element: <Navigate to="/login" /> },
+  ])
+  return (
+    <div className="App">
+      {/* <Navigate to="/login" /> */}
+      <Link className="menu-item" to="/login">A</Link>
+      <Link className="menu-item" to="/register">B</Link>
+      <NavLink className={(active)=>active ? "menu-item active" : "menu-item"} to="/login">C</NavLink>
+      {elements}
+    </div>
+  );
+}
+```
+
+- 可通过路由表构建子路由，但在组件中需要通过Outlet组件声明当前组件的子路由展示区
+
+```jsx
+const elements = useRoutes([
+    {
+        path: "login",
+        element: <Login />,
+        children: [
+            { path: "phoneLogin", element: <PhoneLogin /> },
+            { path: "passwordLogin", element: <PasswordLogin /> },
+        ],
+    },
+]);
+export default function Login() {
+  return (
+    <div>
+      Login
+      <Link to="/login/phoneLogin">phoneLogin</Link>
+      <Link to="/login/passwordLogin">passwordLogin</Link>
+      {/* 这里的Link中的to可以简写为如下 */}
+      <Link to="./phoneLogin">phoneLogin</Link>
+      <Link to="./passwordLogin">passwordLogin</Link>
+      {/* 或者 */}
+      <Link to="phoneLogin">phoneLogin</Link>
+      <Link to="passwordLogin">passwordLogin</Link>
+      {/* 使用<Outlet/>组件渲染子路由 */}
+      <Outlet/>
+    </div>
+  )
+}
+```
+
+- 路由传参，多了几个hook
+
+  - params传参使用useParams接收
+
+    ```jsx
+    const params = useParams();
+    ```
+
+  - search传参使用useSearchParams接收
+
+    ```jsx
+    const [search, setSearch] = useSearchParams();
+    console.log(search.get('id'))
+    setSearch('id=123')
+    ```
+
+  - state传参将states属性移到了to外面
+
+    ```jsx
+    <Link to="./phoneLogin" state={{"id":1}}>phoneLogin</Link>
+    const {state} = useLocation();
+    ```
+
+- 编程式路由，无需再将组件经过withRouter处理，可直接使用useNavigate
+
+  ```jsx
+  const navigate = useNavigate();
+  const go = ()=>{
+      navigate('/login',{
+          replace: true,
+          state:{
+              id:123
+          }
+      })
+  }
+  // 前进后退
+  navigate(1);
+  navigate(-1)
+  ```
+
+- useInRouterContext
+  判断当前环境是否被Router包裹，也就是是否处于路由能控制的环境
+- useNavigationType
+  返回当前导航类型，返回值POP、PUSH、REPLACE，指是如何来到当前页面的，POP指直接访问当前地址或者刷新页面
+- useOutlet
+  用来呈现当前组件中要渲染的嵌套路由对象
+
+- useResolvedPath
+  给顶一个URL解析其中的path、search、hash值
