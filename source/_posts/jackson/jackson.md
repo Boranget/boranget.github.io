@@ -217,3 +217,70 @@ public String sName;
 ```
 
 **或者使用规范的小驼峰**
+
+# 企图用泛型控制反序列化结果
+
+譬如如下代码
+
+```java
+ String body = "{\r\n" +
+                "  \"result\": true,\r\n" +
+                "  \"code\": 0,\r\n" +
+                "  \"msg\": \"\",\r\n" +
+                "  \"data\": {\r\n" +
+                "    \"userid\": \"241234\"\r\n" +
+                "  }\r\n" +
+                "}";
+ObjectMapper om = new ObjectMapper();
+Map<String, String> bodyJsonObject = null;
+try {
+    bodyJsonObject = om.readValue(body, Map.class);
+} catch (Throwable e2) {
+    // TODO Auto-generated catch block
+}
+```
+
+在bodyJsonObject声明时使用的泛型是没有效果的，最终的bodyJsonObject的转换结果如下：
+
+![image-20240508094940638](jackson/image-20240508094940638.png)
+
+可以看到value并没有被约束为String类型
+
+多数情况下使用Map是要临时提取其中的值，可使用JsonNode
+
+# JsonNode
+
+类似于fastJson中的JsonObject
+
+```java
+public static void main(String[] args) throws Exception {
+    String jsonStr =
+            "{\n" +
+            "  \"result\": false,\n" +
+            "  \"code\": 1007,\n" +
+            "  \"msg\": \"不合法的token\",\n" +
+            "  \"data\": {\n" +
+            "    \"userId\": \"123456\"\n" +
+            "  },\n" +
+            "  \"arrayData\": [\n" +
+            "    {\n" +
+            "      \"k1\": \"v1\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"k2\": \"v2\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"stringArray\": [\n" +
+            "    \"001\",\n" +
+            "    \"002\"\n" +
+            "  ]\n" +
+            "}";
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode jsonNode = objectMapper.readTree(jsonStr);
+    boolean result = jsonNode.get("result").asBoolean();
+    String userId = jsonNode.get("data").get("userId").asText();
+    String k1 = jsonNode.get("arrayData").get(0).get("k1").asText();
+    String arr1 = jsonNode.get("stringArray").get(0).asText();
+}
+```
+
