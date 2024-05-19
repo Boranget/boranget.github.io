@@ -835,3 +835,18 @@ public class MyApplicationListener implements ServletContextAttributeListener {
     }
 }
 ```
+
+# Cookie设置与携带策略
+
+## 设置
+
+- 访问子域，设置子域、父域、兄弟域的cookie
+    - 当前域与父域可设置，兄弟域不可
+- 访问父域，设置子域、父域、兄弟域的cookie
+    - 只能设置父域
+
+## 携带
+
+- 访问子域不会携带父域cookie
+
+- 访问父域不会携带子域cookie

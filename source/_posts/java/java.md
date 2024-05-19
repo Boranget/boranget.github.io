@@ -486,3 +486,29 @@ public void deleteDir(String filePath) {
 }
 ```
 
+# java原生发送http请求
+
+```java
+private String getRequest() throws IOException {
+		String target = "http://17.28:50000/nwa";
+		URL url = new URL(target);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+		// con.connect()
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        return (content.toString());
+
+	}
+```
+
+可以不通过connect()方法来建立连接，因为getOutputStream()方法会隐式的进行connect。
+
+使用方法 `HttpURLConnection.setFollowRedirects(false);`来禁用重定向，从而获取中间结果

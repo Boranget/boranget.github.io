@@ -10,7 +10,7 @@ categories:
 
 # 项目
 
-一个文件转换项目
+一个文件转换项目，可用于文件转为pdf等
 
 [GitHub - jodconverter/jodconverter: JODConverter automates document conversions using LibreOffice or Apache OpenOffice.](https://github.com/jodconverter/jodconverter)
 
