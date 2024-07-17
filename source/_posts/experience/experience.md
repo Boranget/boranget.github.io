@@ -49,6 +49,22 @@ categories:
 
 # OKHTTP
 
+## post传空请求体
+
+post传空的请求体不能直接传null，需要传一个对象
+
+```java
+static RequestBody getEmptyRequestBody(){
+    return RequestBody.create(null, "");
+}
+Request request = new Request.Builder()
+    .url(Constants.FILE_SYSTEM_HOST + Constants.TOKEN_URL + "?client=" + Constants.TOKEN_CLIENT + "&password=" + Constants.TOKEN_PASSWORD)
+    .post(getEmptyRequestBody())
+    .build();
+```
+
+
+
 ## 文件的上传和下载
 
 ```java
@@ -850,3 +866,12 @@ springboot启动报错Invalid value type for attribute 'factoryBeanObjectType': 
 ```ba
 timeout /t 2
 ```
+
+# jar打jar包
+
+[jar命令打包java应用和java打jar包的几种方式详解_java -jar-CSDN博客](https://blog.csdn.net/lcczpp/article/details/130854591)
+
+```shell
+E:\work_file\高教炎黄\app\out>jar -cvf hello.jar ./production
+```
+
