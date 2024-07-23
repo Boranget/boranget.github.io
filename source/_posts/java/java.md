@@ -512,3 +512,16 @@ private String getRequest() throws IOException {
 可以不通过connect()方法来建立连接，因为getOutputStream()方法会隐式的进行connect。
 
 使用方法 `HttpURLConnection.setFollowRedirects(false);`来禁用重定向，从而获取中间结果
+
+# try后跟括号
+
+在java1.7后，可以将实现了AutoCloseable的资源写在try后的括号中，在离开该范围后，会自动关闭资源：
+
+```java
+try (InputStream keyStoreData = new FileInputStream(jksFilePath)) {           // Path for jks
+    KeyStore keyStore = KeyStore.getInstance("JKS");
+    keyStore.load(keyStoreData, keyStorePassword);
+    return safeHttpsBuilder(keyStore, password, HttpClients.custom()).build();
+}
+```
+
