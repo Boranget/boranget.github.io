@@ -1377,3 +1377,23 @@ public void getOriginZip(HttpServletResponse response, @RequestParam("id") Long 
 }
 ```
 
+# Springboot升级3.2报错
+
+[Spring Boot 升级 3.2 报错 Invalid value type for attribute ‘factoryBeanObjectType‘: java.lang.String_invalid value type for attribute 'factorybeanobjec-CSDN博客](https://blog.csdn.net/u013737132/article/details/134938131)
+
+Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+
+原因，mybatis的实现中用到的api在springboot3.2后更改了
+
+解决方法：使用mybtais plus 355
+
+注意组件id与springboot2.几的时候不同，但不改居然也能下载东西
+
+```
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+    <version>3.5.7</version>
+</dependency>
+```
+
