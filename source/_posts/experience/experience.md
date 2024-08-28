@@ -49,6 +49,16 @@ categories:
 
 # OKHTTP
 
+## OKHTTP4 设置MediaType
+
+```java
+MediaType jsonMediaType=MediaType.Companion.parse("application/json;charset=utf-8");
+Request tokenRequest = new Request.Builder()
+    .url(TOKEN_URL)
+    .post(RequestBody.create(tokenJsonNode.toString(), jsonMediaType))
+    .build();
+```
+
 ## post传空请求体
 
 post传空的请求体不能直接传null，需要传一个对象

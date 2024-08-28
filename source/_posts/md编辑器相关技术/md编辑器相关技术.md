@@ -1,9 +1,10 @@
 ---
-title: 文本编辑器相关技术记录
+title: md编辑器相关技术记录
 date: 2024-08-6 17:35:19
 updated: 2024-08-6 17:35:19
 tags:
   - 编辑器
+  - markdown
 categories:
   - notes
 ---
@@ -19,6 +20,8 @@ categories:
 [Vditor 实现 Markdown 所见即所得 - 链滴 (ld246.com)](https://ld246.com/article/1577370404903)
 
 [关于所见即所得 Markdown 编辑器的讨论 - 链滴 (ld246.com)](https://ld246.com/article/1579414663700)
+
+[剪贴板操作 Clipboard API 教程 - 阮一峰的网络日志 (ruanyifeng.com)](https://www.ruanyifeng.com/blog/2021/01/clipboard-api.html)
 
 # Selection
 
@@ -82,7 +85,7 @@ element.contentEditable = "true"
 
 会在selection变化时触发，包括选区变化，点击了新的位置或者输入了新的内容
 
-# 关于md的分析
+# 思路记录
 
 在考虑是否使用抽象语法树来分析整个文档，或者使用抽象语法树的时候要不要将h2与h1（等情况）的层级关系抽象到语法树中，目前看来md最合适的方式是所有的元素都在一个层级，比如标题、与标题下的正文，这些元素应该是在同一个层级就可以（抽象为一个一个块），这样在进行标题的添加与删除时，不会导致整个文档的语法树层级变化太大，而对每一块做编辑的时候，每次只需要重新渲染当前块即可，这样变化量较小
 
@@ -93,3 +96,5 @@ element.contentEditable = "true"
 关于块级上下文思路
 
 碰到一个空行后则开启/关闭一个上下文，在上下文中要根据当前上下文渲染样式，比如碰到代码块或者列表这种多行的块结构，特殊情况比如代码块等有标准的块上下文标识的按照具体情况考虑
+
+// 2024/8/12 此处又爬去学编译原理了 

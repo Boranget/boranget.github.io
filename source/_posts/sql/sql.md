@@ -2813,3 +2813,13 @@ mysql中自带的longblob类型，该类型最大可存储4g的内容
 # linux mysql执行SQL文件
 
 命令行中use数据库，执行source  文件路径
+
+# 裁剪字符串
+
+SUBSTR(name, 1, CHAR_LENGTH(name)-3) 截取name字段，取除name字段后三位的所有字符
+
+```
+SELECT SUBSTR('成都融资事业部', 1, CHAR_LENGTH('成都融资事业部')-3)
+```
+
+结果：成都融资
