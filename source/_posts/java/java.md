@@ -525,3 +525,8 @@ try (InputStream keyStoreData = new FileInputStream(jksFilePath)) {           //
 }
 ```
 
+# 非静态代码块
+
+已知静态代码块在编译后会有一个static 的init方法
+
+而非静态代码块在编译后会编织到当前类每个构造方法中，并在构造方法的具体逻辑之前执行
