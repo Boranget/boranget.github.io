@@ -368,7 +368,7 @@ ln [option]  \<文件名\>
 - -s 软链接（符号链接）
 - -v 显示详细的处理过程
 
-注意的是。如果删除软链接时，文件名末尾带斜杠，会显示资源忙
+注意的是。如果删除软链接时，文件名末尾带斜杠（文件夹软连接），会显示资源忙，所以删文件夹软连接时，要带r但是末尾不带斜杠
 
 ## 移动复制
 
@@ -887,4 +887,56 @@ systemctl restart servername
 # 刷新服务
 systemctl daemon-reload
 ```
+
+# mailx
+
+> \# systemctl stop postfix
+>
+> \# systemctl disable postfix
+>
+> \#  yum  -y install mailx
+>
+> **postfix为本地邮箱推送方式需安装的软件，若同时配置本地和外部邮箱两种发送方式，系统会优先采用外部邮箱方式，所以该步骤不是必须但最好关闭这个服务。**
+
+**安装**
+
+mailx是一个再linux上进行邮件发送的工具
+
+可以通过yum安装`yum install mailx -y`
+
+**配置**
+
+如果不确定你的系统中的 mail/mailx 的配置文件的文件名，可以在终端执行下面的命令来查看:
+
+ ```
+strings `which mail` | grep '\.rc'
+ ```
+
+`vim /etc/mail.rc`
+
+```
+set from=13510861001@126.com     //对方收到邮件时显示的发件人
+
+set smtp=smtp.126.com            //第三方发邮件的smtp服务器地址
+
+set smtp-auth-user=13510861001   //第三方发邮件的用户名 
+
+set smtp-auth-password="XXX"     //用户名对应的密码,有些邮箱填的是授权码,需要在邮箱设置中开放
+
+set smtp-auth=login              //SMTP的认证方式，默认是login，也可以改成CRAM-MD5或PLAIN方式
+```
+
+**发送**
+
+```shell
+- 无正文邮件
+mail -s "主题" 收件地址
+- 有正文邮件
+mail -s "主题" 收件地址 < 文件（存储正文内容）
+echo "正文" | mail -s "主题" 收件地址
+- 带附件
+mail -a 附件文件 -s "主题" 收件地址 < 文件(邮件正文)
+```
+
+
 

@@ -290,6 +290,15 @@ public static void main(String[] args) throws Exception {
 
 JsonNode是Jackson中为了处理[JOSN](https://so.csdn.net/so/search?q=JOSN&spm=1001.2101.3001.7020)文本的树模型(tree model)。可以将JSON文本转成JsonNode，也可以将JsonNode转成JOSN文本。JsonNode是只读的，不可修改，用它可以方便的获取JSON中某字段的值。
 
+可使用如下代码创建一个空节点
+
+```java
+ObjectMapper mapper = new ObjectMapper(); 
+ObjectNode rootNode = mapper.createObjectNode();
+```
+
+
+
 **JsonNode VS ObjectNode**
 
 ObjectNode和ArrayNode都是JsonNode类的扩展，不同的是JsonNode是只读的，而ObjectNode和ArrayNode是可以修改的。如果只是从JSON文本中读取数据，用JsonNode就够了。

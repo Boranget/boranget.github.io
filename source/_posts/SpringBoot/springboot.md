@@ -1377,3 +1377,41 @@ public void getOriginZip(HttpServletResponse response, @RequestParam("id") Long 
 }
 ```
 
+# Springboot升级3.2报错
+
+## 问题一
+
+[Spring Boot 升级 3.2 报错 Invalid value type for attribute ‘factoryBeanObjectType‘: java.lang.String_invalid value type for attribute 'factorybeanobjec-CSDN博客](https://blog.csdn.net/u013737132/article/details/134938131)
+
+Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+
+原因，mybatis的实现中用到的api在springboot3.2后更改了
+
+解决方法：使用mybtais plus 355
+
+注意组件id与springboot2.几的时候不同，但不改居然也能下载东西
+
+```
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+    <version>3.5.7</version>
+</dependency>
+```
+
+## 问题二
+
+[从 Spring Boot 3.1.5 升级到 3.2.0 后出现错误“IllegalStateException: No target Validator set” - java - SO中文参考 - www.soinside.com](https://www.soinside.com/question/wnWUob5T3KzPnLEE463pDR)
+
+java.lang.IllegalStateException: No target Validator set
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+
+NotBlank不再支持数值类型，需要改为NotNull
+
+![image-20240816112842668](springboot/image-20240816112842668.png)

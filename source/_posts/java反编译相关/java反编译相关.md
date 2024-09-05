@@ -69,7 +69,7 @@ public abstract class Test {
 那在编译该类时，便需要依赖该jar包，编译设置依赖的方法如下
 
 ```powershell
-java -classpath ./test.jar Test.java
+javac -classpath ./test.jar Test.java
 ```
 
 其中test.jar便是Test.class所属的jar包
@@ -77,6 +77,6 @@ java -classpath ./test.jar Test.java
 若需要配置多个位置的类路径，中间用冒号分隔
 
 ```powershell
-java -classpath ./lib:./test.jar Test.java
+javac -classpath ./lib:./test.jar Test.java
 ```
 

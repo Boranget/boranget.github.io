@@ -18,7 +18,7 @@ JVMPI（Java Virtual Machine Profiler Interface）与JVMDI（Java Virtual Machin
 
 # JAVA AGENT
 
-在JDK1.5之后，jvm提供了探针接口Instrumentation。，底层依赖JVMTI的native api，在1.6之后，jvm提供了attach接口，同样是依赖JVMTI的native接口。
+在JDK1.5之后，jvm提供了探针接口Instrumentation，底层依赖JVMTI的native api，在1.6之后，jvm提供了attach接口，同样是依赖JVMTI的native接口。
 
 可认为Java Agent可以理解为是一种特殊的Java程序，是调用Instrumentation接口的客户端。
 

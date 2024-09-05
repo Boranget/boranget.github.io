@@ -342,6 +342,7 @@ git push origin ...
 - 如果最后面是/，表示要忽略的是当前目录下的所有名称为该名称的目录
 
 ```
+application-local.yml # 忽略所有地方的application-local.yml文件
 *.txt # 忽略所有txt文件
 !lib.txt # 但是lib.txt除外
 /temp #忽略项目根目录下的temp目录
