@@ -13,3 +13,9 @@ categories:
 idea中关闭所有项目，展示启动界面，在启动界面中找到customize，点击all setting
 
 ![image-20240403152057156](idea/image-20240403152057156.png)
+
+# maven成功下载依赖但pom找不到版本
+
+尝试`Invalidate Caches/Restart`
+
+![image-20240615164643447](idea/image-20240615164643447.png)

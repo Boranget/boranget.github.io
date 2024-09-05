@@ -246,7 +246,7 @@ try {
 
 可以看到value并没有被约束为String类型
 
-多数情况下使用Map是要临时提取其中的值，可使用JsonNode
+多数情况下使用Map是要临时提取其中的值，此时较好的方法可使用JsonNode代替
 
 # JsonNode
 
