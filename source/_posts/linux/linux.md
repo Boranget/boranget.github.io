@@ -938,5 +938,19 @@ echo "正文" | mail -s "主题" 收件地址
 mail -a 附件文件 -s "主题" 收件地址 < 文件(邮件正文)
 ```
 
+# linux截图网页
 
+需要安装cutycapt
+
+使用`cutycapt --url=https://willyoupressthebutton.com/24434/ --out=example.png --javascript=off --min-width=1180 --min-height=820`
+
+# linux裁剪图片
+
+需要安装imagemagic
+
+`sudo apt install imagemagick-6.q16hdri`
+
+裁剪：
+
+`convert example.png -crop 1180x730+0+0 target.png`
 
