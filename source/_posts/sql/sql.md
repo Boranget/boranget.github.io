@@ -406,7 +406,8 @@ SELECT DATEDIFF(date_add(NOW(), INTERVAL 1 MONTH), NOW());
 SELECT SUBSTR(LAST_DAY(NOW()),9,2);
 ```
 
-- WHEN-CASE
+- WHEN-CASE-END
+  end 跟字段名
 
 ```sql
 # 第一种用法，case后无表达式，when中加条件

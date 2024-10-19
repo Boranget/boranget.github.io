@@ -132,3 +132,7 @@ output>lists>path 为上面组成的推流地址
 
 
 ```
+
+# 启动
+
+`./kplayer play start`
