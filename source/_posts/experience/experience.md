@@ -165,6 +165,57 @@ Request request = new Request.Builder()
 
 
 
+## 异步请求处理
+
+```java
+// 线程计数器
+CountDownLatch countDownLatch = new CountDownLatch(base64ImgArray.length);
+for (String base64Img : base64ImgArray) {
+    // 提交异步任务
+    doMatch(boName, invoiceNumFieldName, statusFieldName, bindId, base64Img, accessToken, countDownLatch);
+}
+countDownLatch.await();
+
+// 异步方法
+private void doMatch(
+    String boName,
+    String invoiceNumFieldName,
+    String statusFieldName,
+    String bindId,
+    String base64Img,
+    String accessToken,
+    CountDownLatch countDownLatch
+) throws Exception {
+    // ..............
+    Request ocrRequest = new Request.Builder()
+        .url(OCR_URL + "?access_token=" + accessToken)
+        .post(RequestBody.create(requestJsonNode.toString(), jsonMediaType))
+        .build();
+    Call ocrCall = client.newCall(ocrRequest);
+    // 异步处理响应
+    ocrCall.enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            countDownLatch.countDown();
+            throw new RuntimeException(e);
+        }
+
+        @Override
+        public void onResponse(Call call, Response ocrResponse) throws IOException{
+            try {
+               // .........
+            }finally {
+                countDownLatch.countDown();
+            }
+
+        }
+    });
+
+}
+```
+
+
+
 # Fegin
 
 ## Fegin传输文件MultipartFile
