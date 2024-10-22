@@ -129,3 +129,14 @@ mybatis-plus:
 
 同时检查是否配置了mapperscan或者在mapper类上加了@mapper注解
 
+# UpdateWapper
+
+mybatis-plus进行更新操作时可构造updateWapper，wapper上可指定查询条件以及更新动作
+
+```java
+LambdaUpdateWrapper<PrintProduct> registeredWrapper = new LambdaUpdateWrapper<>();
+registeredWrapper.eq(PrintProduct::getWbsNumber,printRegisterSaveReqVo.getWbsNumber())
+    .set(PrintProduct::getRegistered,true);
+printProductMapper.update(registeredWrapper);
+```
+

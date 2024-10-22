@@ -250,7 +250,7 @@ class MyRunnable implements Runnable {
 
 # FutureTask
 
- 使用了Callable接口，该接口可以有返回值, 并可以抛出异常
+ 传入Callable接口，该接口可以有返回值, 并可以抛出异常
 
 ```java
 public FutureTask(Callable<V> callable) {

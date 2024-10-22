@@ -1376,3 +1376,6 @@ public static void main(String[] args) {
 
 实现 ImportSelector 或者DefferredServiceImportSelector的类，需要实现selectImports方法，返回一个字符串数组，其中元素是要引入的configuration或者bean类的全限定类名
 
+# Transaction注解
+
+在Spring中，事务的处理有两种方式，注解标记是其中一种，在方法上标记Transaction注解即可
