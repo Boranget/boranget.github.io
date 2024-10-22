@@ -538,6 +538,16 @@ key不能使用index的原因（单纯的展示，不进行修改倒也可以）
 
 使用 create-react-app 进行react项目的初始化
 
+```
+npx create-react-app my-app
+cd my-app
+npm start
+```
+
+
+
+> 如果你之前通过 `npm install -g create-react-app` 全局安装了 `create-react-app`，我们建议你使用 `npm uninstall -g create-react-app` 或 `yarn global remove create-react-app` 卸载软件包，以确保 `npx` 始终使用最新版本。
+
 # 数据存放
 
 划分区域，哪几个区域会共享数据，就将共享的数据放到他们共同的父组件中

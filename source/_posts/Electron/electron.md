@@ -8,25 +8,7 @@ categories:
   - notes
 ---
 
-# 入门
-
-## 项目准备
-
-### 拓展
-
-### ()=>{} 与()=>的区别
-
-不加{}时,后面直接加返回值,加大括号,需要在其中加入返回语句
-
-### const{a} = b与 const a= b的区别
-
-个人理解:
-
-const{a} = b 是 获取 b中一个叫a的属性
-
-const a = b 是把b赋给a
-
-#### npm install
+# npm install
 
 ```bash
 npm install moduleName # 安装模块到项目目录下
@@ -41,20 +23,26 @@ npm install -save-dev moduleName # -save-dev 的意思是将模块安装到项�
 
 ![image-20221103092647748](electron/image-20221103092647748.png)
 
-#### npm 文件夹权限问题：
+# npm 文件夹权限
 
 右键属性，安全页面给所有用户完全访问权限
 
 [【Node.js】Node.js安装及环境配置 - 腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/article/1572591)
 
-### 主体
+# 安装electron
 
-#### 初始化脚手架
+`npm install electron --save-dev`
+
+# 简单构建
+
+## 初始化脚手架
 
 ```bash
 # 新建项目文件夹
 npm init
 ```
+
+这里注意入口需要设为main.js而不是默认的index
 
 参数类似于
 
@@ -86,11 +74,11 @@ npm init
 }
 ```
 
-#### 运行主进程
+## 运行主进程
 
 在根目录下创建main.js,并运行npm start
 
-#### 最后文件结构
+## 最后文件结构
 
 **index.html**
 
@@ -128,6 +116,10 @@ const createWinddow = ()=>{
         height:600,
         webPreferences:{
             // 预加载js
+            // Node.js概念：
+        	//  _dirname 指向当前执行脚本所在的目录
+        	//  path.join 用于拼接路径
+        	//  以上相对路径在开发模式和打包模式中都将有效
             preload: path.join(__dirname, 'preload.js')
         }
         
@@ -173,17 +165,8 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
 注意这里为何要用预加载:
 
-> 在网页中我们需要获取node 版本号,这些信息在Node的全局变量process中,只能在主进程访问,但我们在主进程中无法直接编辑DOM,所以我们需要通过预加载脚本来控制DOM
+> 在网页中我们需要获取node 版本号,这些信息在Node的全局变量process中,只能在主进程访问,但我们在主进程中无法直接编辑DOM,所以我们需要通过预加载脚本来控制DOM，预加载脚本在渲染器进程加载之前加载，并有权访问两个渲染器全局 (例如 window 和 document) 和 Node.js 环境。
 >
-> ```txt
-> 现在，最后要做的是输出Electron的版本号和它的依赖项到你的web页面上。
-> 
-> 在主进程通过Node的全局 process 对象访问这个信息是微不足道的。 然而，你不能直接在主进程中编辑DOM，因为它无法访问渲染器 文档 上下文。 它们存在于完全不同的进程！
-> 
-> 注意：如果您需要更深入地了解Electron进程，请参阅 进程模型 文档。
-> 
-> 这是将 预加载 脚本连接到渲染器时派上用场的地方。 预加载脚本在渲染器进程加载之前加载，并有权访问两个 渲染器全局 (例如 window 和 document) 和 Node.js 环境。
-> ```
 
 一些node.js中的概念
 
@@ -197,9 +180,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
 - 我们创建了一个 `main.js` 脚本来运行我们的主要进程，它控制我们的应用程序 并且在 Node.js 环境中运行。 在此脚本中， 我们使用 Electron 的 `app` 和 `BrowserWindow` 模块来创建一个浏览器窗口，在一个单独的进程(渲染器)中显示网页内容。
 - 为了访问渲染器中的Node.js的某些功能，我们在 `BrowserWindow` 的构造函数上附加了一个预加载脚本。
 
-#### 打包
+## 打包
 
-使用 electron forge
+使用 electron forge来进行打包
+
+注意打包的时候必须保证`package.json`中的作者和描述字段不是空的
 
 **安装**
 
@@ -208,9 +193,122 @@ npm install --save-dev @electron-forge/cli
 npx electron-forge import
 ```
 
+转换脚本完成后，Forge 会将一些脚本添加到 `package.json` 文件中。
+
 **打包**
 
 ```bash
 npm run make
 ```
+
+# 日志打印
+
+主进程打在vscode控制台，渲染进程打在浏览器的console
+
+# whenReady
+
+通常使用触发器的 `.on` 函数来监听 Node.js 事件。
+
+```diff
++ app.on('ready', () => {
+- app.whenReady().then(() => {
+  createWindow()
+})
+```
+
+但是 Electron 暴露了 `app.whenReady()` 方法，作为其 `ready` 事件的专用监听器，这样可以避免直接监听 .on 事件带来的一些问题。 参见 [electron/electron#21972](https://github.com/electron/electron/pull/21972) 。
+
+# 预加载脚本
+
+预加载脚本在渲染器加载网页之前注入。
+
+在 BrowserWindow 构造器中使用 `webPreferences.preload` 传入脚本的路径。
+
+在预加载脚本中使用内容桥可以设置在渲染进程中的全局变量
+
+```js
+const { contextBridge } = require('electron/renderer')
+
+contextBridge.exposeInMainWorld('versions', {
+  node: () => process.versions.node,
+  chrome: () => process.versions.chrome,
+  electron: () => process.versions.electron
+})
+```
+
+renderer.js
+
+```js
+const information = document.getElementById('info')
+information.innerText = `This app is using Chrome (v${window.versions.chrome()}), Node.js (v${window.versions.node()}), and Electron (v${window.versions.electron()})`
+```
+
+index.html中
+
+```js
+<script src="./renderer.js"></script>
+```
+
+Electron 应用通常使用预加载脚本来设置进程间通信 (IPC) 接口以在两种进程之间传输任意信息。
+
+# 进程间通信
+
+让渲染进程和主进程互相通信
+
+可使用 Electron 的 `ipcMain` 模块和 `ipcRenderer` 模块来进行进程间通信。 从网页向主进程发送消息，可以使用 `ipcMain.handle` 设置一个主进程处理程序（handler），然后在**预处理脚本**中暴露一个被称为 `ipcRenderer.invoke` 的函数来触发该处理程序（handler）。
+
+```js
+const { contextBridge, ipcRenderer } = require('electron')
+
+contextBridge.exposeInMainWorld('versions', {
+  node: () => process.versions.node,
+  chrome: () => process.versions.chrome,
+  electron: () => process.versions.electron,
+  ping: () => ipcRenderer.invoke('ping')
+  // 除函数之外，我们也可以暴露变量，但注意安全问题
+})
+```
+
+不建议直接通过 context bridge 暴露 `ipcRenderer` 模块，这将使得渲染器能够直接向主进程发送任意的 IPC 信息，会使得其成为恶意代码最强有力的攻击媒介。
+
+如上的代码相当于提前构造好了一个函数`ping`并发布到了渲染进程的全局变量中，该函数的行为为从ipcRenderer中触发了`ping`这个事件，接下来需要在主进程中接受这个事件。
+
+```js
+const { app, BrowserWindow, ipcMain } = require('electron/main')
+const path = require('node:path')
+
+const createWindow = () => {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+  win.loadFile('index.html')
+}
+app.whenReady().then(() => {
+  // 注意handle的第二个参数必须是一个函数对象
+  ipcMain.handle('ping', () => 'pong')
+  createWindow()
+})
+```
+
+渲染进程（页面js）调用
+
+```js
+const information = document.getElementById('info')
+information.innerText = `This app is using Chrome (v${window.versions.chrome()}), Node.js (v${window.versions.node()}), and Electron (v${window.versions.electron()})`
+const func = async () => {
+    const response = await window.versions.ping()
+    console.log(response)
+}
+func()
+```
+
+
+
+# DEVTools
+
+在BrowserWindow对象实例win上执行`win.webContents.openDevTools()`即可打开开发者工具
 
