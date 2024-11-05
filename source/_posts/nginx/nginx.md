@@ -521,3 +521,9 @@ try_files $uri $uri.html $uri/ =404;
 try_files $uri $uri.html $uri/ 404.html;
 ```
 
+# 缓冲区大小
+
+get 请求下载文件时，net::ERR_INCOMPLETE_CHUNKED_ENCODING 200 (OK)
+
+>- `nginx`配置缓冲区设置过小；
+>- `nginx`的临时目录（`/proxy_temp`）没有权限写入缓存文件；

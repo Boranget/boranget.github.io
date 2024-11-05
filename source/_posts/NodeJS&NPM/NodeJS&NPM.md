@@ -29,7 +29,7 @@ categories:
 ```bash
 // 查看
 npm config get registry
-// 切换
+// 最新（2024）切换镜像
 npm config set registry https://registry.npmmirror.com
 ```
 

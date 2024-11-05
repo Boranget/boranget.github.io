@@ -81,6 +81,8 @@ public interface CityMapper {
 
 # 数据类型映射
 
+JDBC TYPE JDBCTYPE java type javatype
+
 ![image-20230104163609041](mybatis/image-20230104163609041.png)
 
 # VO/DO/DTO

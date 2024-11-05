@@ -100,3 +100,205 @@ openssl pkcs12 -in ftp_scb_test0913.p12  -out sftp_key.pem -provider default -pr
 # JSCH文档
 
 [ChannelSftp (JSch API) (epaul.github.io)](https://epaul.github.io/jsch-documentation/javadoc/)
+
+# JSCH例子
+
+```java
+package com.cds2;
+
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Properties;
+import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+public class SftpCatcher {
+    // 渣打Sftp连接信息
+    private static final String SCB_SFTP_HOST = "H.com";
+    private static final int SCB_SFTP_PORT = 4022;
+    private static final String SCB_SFTP_USER = "Test";
+    private static final String SCB_SFTP_KEY_FILE = "conversion.key";
+    // 中转Sftp连接信息
+    private static final String CACHE_SFTP_HOST = "39.0.0.0";
+    private static final int CACHE_SFTP_PORT = 4022;
+    private static final String CACHE_SFTP_USER = "123";
+    private static final String CACHE_SFTP_PASSWORD = "123";
+
+    // 日志分隔符字符串
+    private static final String LOG_SEPARATOR = "=================";
+
+
+    public static void main(String[] args) throws Exception {
+        // ====== 构建SCB会话 ======
+        JSch scbJsch = new JSch();
+        Session scbSession = null;
+        scbJsch.addIdentity(SCB_SFTP_KEY_FILE);
+        scbSession = scbJsch.getSession(SCB_SFTP_USER, SCB_SFTP_HOST, SCB_SFTP_PORT);
+        Properties scbConfig = new Properties();
+        scbConfig.put("StrictHostKeyChecking", "no");
+        scbSession.setConfig(scbConfig);
+        scbSession.connect();
+        final ChannelSftp scbChannelSftp = (ChannelSftp) scbSession.openChannel("sftp");
+        scbChannelSftp.connect();
+        // ====== 构建中转会话 ======
+        JSch cacheJsch = new JSch();
+        JSch.setConfig("server_host_key", JSch.getConfig("server_host_key") + ",ssh-rsa,ssh-dss");
+        JSch.setConfig("PubkeyAcceptedAlgorithms", JSch.getConfig("PubkeyAcceptedAlgorithms") + ",ssh-rsa,ssh-dss");
+        Session cacheSession = null;
+        cacheSession = cacheJsch.getSession(CACHE_SFTP_USER, CACHE_SFTP_HOST, CACHE_SFTP_PORT);
+        cacheSession.setPassword(CACHE_SFTP_PASSWORD);
+        Properties cacheConfig = new Properties();
+        cacheConfig.put("StrictHostKeyChecking", "no");
+        cacheSession.setConfig(cacheConfig);
+        cacheSession.connect();
+        final ChannelSftp cacheChannelSftp = (ChannelSftp) cacheSession.openChannel("sftp");
+        cacheChannelSftp.connect();
+        // 新开两个线程进行两个定时任务
+        // 渣打2中转
+        ScheduledExecutorService s2cScheduledExecutorService = Executors.newScheduledThreadPool(1);
+        s2cScheduledExecutorService.scheduleAtFixedRate(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            transformFireFromSCBToCache(scbChannelSftp, cacheChannelSftp);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                },
+                5,
+                60,
+                TimeUnit.SECONDS
+        );
+        // 中转2渣打
+        ScheduledExecutorService c2sScheduledExecutorService = Executors.newScheduledThreadPool(1);
+        c2sScheduledExecutorService.scheduleAtFixedRate(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            transformFireFromCacheToSCB(scbChannelSftp, cacheChannelSftp);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                },
+                0,
+                10,
+                TimeUnit.SECONDS
+        );
+    }
+
+    /**
+     * 将符合要求的文件从渣打SFTP服务器上，移动到中转SFTP服务器上
+     * PI将文件取走后，可以配置自动删除与自动归档
+     * @param scbChannelSftp
+     * @param cacheChannelSftp
+     * @throws Exception
+     */
+    private static synchronized void transformFireFromSCBToCache(ChannelSftp scbChannelSftp, ChannelSftp cacheChannelSftp) throws Exception {
+        log("渣打2中转",Thread.currentThread().toString());
+        Vector<ChannelSftp.LsEntry> ls = scbChannelSftp.ls("/");
+        for (ChannelSftp.LsEntry entry : ls) {
+            if (entry.getFilename().matches("GCNA8976.*MT940UTF8_DEFAULT.*")) {
+                log("transformFireFromSCBToCache","match::true::" + entry);
+                try (
+                        InputStream fileInputStream = scbChannelSftp.get(entry.getFilename());
+                        OutputStream outputStream = cacheChannelSftp.put(entry.getFilename());
+                ) {
+                    byte[] bytes = new byte[1024];
+                    int len;
+                    while ((len = fileInputStream.read(bytes)) != -1) {
+                        outputStream.write(bytes, 0, len);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // 删除渣打服务器上的源文件
+                scbChannelSftp.rm(entry.getFilename());
+            } else {
+                log("transformFireFromSCBToCache","match::false::" + entry);
+            }
+        }
+    }
+
+    /**
+     * 将中转SFTP服务器上/tft_in中的文件，移动到渣打SFTP服务器上的/tft_in目录下
+     * 将文件从中转服务器发送到渣打服务器，需要手动归档
+     * @param scbChannelSftp
+     * @param cacheChannelSftp
+     * @throws Exception
+     */
+    private static synchronized void transformFireFromCacheToSCB(ChannelSftp scbChannelSftp, ChannelSftp cacheChannelSftp) throws Exception {
+        log("中转2渣打",Thread.currentThread().toString());
+        final String dirPath = "/tft_in/";
+        final String archivePath = "/archiveDir/tft_in/";
+        Vector<ChannelSftp.LsEntry> ls = cacheChannelSftp.ls(dirPath);
+        for (ChannelSftp.LsEntry entry : ls) {
+            if (entry.getAttrs().isDir()) {
+                continue;
+            }
+            log("transformFireFromCacheToSCB", entry.toString());
+            // 将文件移动到渣打服务器上
+            try (
+                    InputStream fileInputStream = cacheChannelSftp.get(dirPath + entry.getFilename());
+                    OutputStream outputStream = scbChannelSftp.put(dirPath + entry.getFilename());
+                    FileOutputStream archiveOutputStream = new FileOutputStream("cache.file");
+            ) {
+                byte[] bytes = new byte[1024];
+                int len;
+                while ((len = fileInputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, len);
+                    archiveOutputStream.write(bytes, 0, len);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 归档
+            try (
+                    InputStream fileInputStream = new FileInputStream("cache.file");
+                    OutputStream outputStream = cacheChannelSftp.put(archivePath + entry.getFilename());
+            ) {
+                byte[] bytes = new byte[1024];
+                int len;
+                while ((len = fileInputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, len);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 删除中转服务器上的文件
+            cacheChannelSftp.rm(dirPath + entry.getFilename());
+
+        }
+    }
+
+    static void log(String logger, String message){
+        // 构造日志消息：时间+logger::+message
+        String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "::" + logger + "::" + message;
+        // 将日志消息写到控制台
+        System.out.println(logMessage);
+        // 将日志消息写入文件
+        try (
+                FileWriter fileWriter = new FileWriter("log.txt", true);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        ) {
+            bufferedWriter.write(logMessage);
+            bufferedWriter.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+
+```
+

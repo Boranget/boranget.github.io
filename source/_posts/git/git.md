@@ -350,7 +350,7 @@ build/ # 忽略项目里所有的build目录
 doc/*.txt # 忽略项目中所有的doc目录下的txt文件，但不包括doc/*/*.txt
 ```
 
-# github reset
+# github connection reset
 
 - git push 时提示
 
