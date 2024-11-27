@@ -28,9 +28,12 @@ categories:
 ## 配置
 
 - 启动时会连接官网，但是官网已经挂了，所以直接ok
-
 - 可以点击ssh标签页修改端口等信息
 - 选择用户标签页新增用户，可选择密码模式、公钥模式
+
+## 连接
+
+如果连接时失败可尝试使用管理员权限重新启动服务应用
 
 ## sftp的认证方式
 
@@ -106,9 +109,7 @@ openssl pkcs12 -in ftp_scb_test0913.p12  -out sftp_key.pem -provider default -pr
 ```java
 package com.cds2;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -121,45 +122,29 @@ import java.util.concurrent.TimeUnit;
 
 public class SftpCatcher {
     // 渣打Sftp连接信息
-    private static final String SCB_SFTP_HOST = "H.com";
+    private static final String SCB_SFTP_HOST = "H2H-uat.sc.com";
     private static final int SCB_SFTP_PORT = 4022;
-    private static final String SCB_SFTP_USER = "Test";
+    private static final String SCB_SFTP_USER = "1";
     private static final String SCB_SFTP_KEY_FILE = "conversion.key";
     // 中转Sftp连接信息
-    private static final String CACHE_SFTP_HOST = "39.0.0.0";
+    private static final String CACHE_SFTP_HOST = "39.100.88.104";
     private static final int CACHE_SFTP_PORT = 4022;
-    private static final String CACHE_SFTP_USER = "123";
-    private static final String CACHE_SFTP_PASSWORD = "123";
+    private static final String CACHE_SFTP_USER = "1";
+    private static final String CACHE_SFTP_PASSWORD = "1";
 
-    // 日志分隔符字符串
-    private static final String LOG_SEPARATOR = "=================";
+    // 从渣打服务器拉取的频率（秒）
+    private static final long s2cInterval = 30 * 60; // 半个小时
+
+    // 向渣打服务器推送的频率（秒）
+    private static final long c2sInterval = 10; // 十秒
 
 
     public static void main(String[] args) throws Exception {
-        // ====== 构建SCB会话 ======
-        JSch scbJsch = new JSch();
-        Session scbSession = null;
-        scbJsch.addIdentity(SCB_SFTP_KEY_FILE);
-        scbSession = scbJsch.getSession(SCB_SFTP_USER, SCB_SFTP_HOST, SCB_SFTP_PORT);
-        Properties scbConfig = new Properties();
-        scbConfig.put("StrictHostKeyChecking", "no");
-        scbSession.setConfig(scbConfig);
-        scbSession.connect();
-        final ChannelSftp scbChannelSftp = (ChannelSftp) scbSession.openChannel("sftp");
-        scbChannelSftp.connect();
-        // ====== 构建中转会话 ======
-        JSch cacheJsch = new JSch();
+        log("main", "程序启动");
+        // 允许使用ssh-rsa,ssh-dss
+        // 由于是类变量，只设置一次
         JSch.setConfig("server_host_key", JSch.getConfig("server_host_key") + ",ssh-rsa,ssh-dss");
         JSch.setConfig("PubkeyAcceptedAlgorithms", JSch.getConfig("PubkeyAcceptedAlgorithms") + ",ssh-rsa,ssh-dss");
-        Session cacheSession = null;
-        cacheSession = cacheJsch.getSession(CACHE_SFTP_USER, CACHE_SFTP_HOST, CACHE_SFTP_PORT);
-        cacheSession.setPassword(CACHE_SFTP_PASSWORD);
-        Properties cacheConfig = new Properties();
-        cacheConfig.put("StrictHostKeyChecking", "no");
-        cacheSession.setConfig(cacheConfig);
-        cacheSession.connect();
-        final ChannelSftp cacheChannelSftp = (ChannelSftp) cacheSession.openChannel("sftp");
-        cacheChannelSftp.connect();
         // 新开两个线程进行两个定时任务
         // 渣打2中转
         ScheduledExecutorService s2cScheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -167,15 +152,11 @@ public class SftpCatcher {
                 new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            transformFireFromSCBToCache(scbChannelSftp, cacheChannelSftp);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
+                        transformFireFromSCBToCache();
                     }
                 },
                 5,
-                60,
+                s2cInterval,
                 TimeUnit.SECONDS
         );
         // 中转2渣打
@@ -184,104 +165,192 @@ public class SftpCatcher {
                 new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            transformFireFromCacheToSCB(scbChannelSftp, cacheChannelSftp);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
+                        transformFireFromCacheToSCB();
                     }
                 },
                 0,
-                10,
+                c2sInterval,
                 TimeUnit.SECONDS
         );
+    }
+
+    static Session getScbSession() throws JSchException {
+        // ====== 设置SCB会话参数 ======
+        JSch scbJsch = new JSch();
+        scbJsch.addIdentity(SCB_SFTP_KEY_FILE);
+        final Session scbSession = scbJsch.getSession(SCB_SFTP_USER, SCB_SFTP_HOST, SCB_SFTP_PORT);
+        Properties scbConfig = new Properties();
+        scbConfig.put("StrictHostKeyChecking", "no");
+        scbSession.setConfig(scbConfig);
+        return scbSession;
+    }
+
+    static Session getCacheSession() throws JSchException {
+        // ====== 设置中转会话参数 ======
+        JSch cacheJsch = new JSch();
+        final Session cacheSession = cacheJsch.getSession(CACHE_SFTP_USER, CACHE_SFTP_HOST, CACHE_SFTP_PORT);
+        cacheSession.setPassword(CACHE_SFTP_PASSWORD);
+        Properties cacheConfig = new Properties();
+        cacheConfig.put("StrictHostKeyChecking", "no");
+        cacheSession.setConfig(cacheConfig);
+        return cacheSession;
     }
 
     /**
      * 将符合要求的文件从渣打SFTP服务器上，移动到中转SFTP服务器上
      * PI将文件取走后，可以配置自动删除与自动归档
-     * @param scbChannelSftp
-     * @param cacheChannelSftp
+     *
      * @throws Exception
      */
-    private static synchronized void transformFireFromSCBToCache(ChannelSftp scbChannelSftp, ChannelSftp cacheChannelSftp) throws Exception {
-        log("渣打2中转",Thread.currentThread().toString());
-        Vector<ChannelSftp.LsEntry> ls = scbChannelSftp.ls("/");
-        for (ChannelSftp.LsEntry entry : ls) {
-            if (entry.getFilename().matches("GCNA8976.*MT940UTF8_DEFAULT.*")) {
-                log("transformFireFromSCBToCache","match::true::" + entry);
+    private static synchronized void transformFireFromSCBToCache() {
+        log("渣打2中转", Thread.currentThread().toString());
+        Session scbSession = null;
+        Session cacheSession = null;
+        ChannelSftp scbChannelSftp = null;
+        ChannelSftp cacheChannelSftp = null;
+        try {
+            scbSession = getScbSession();
+            cacheSession = getCacheSession();
+            // 建立scb会话
+            scbSession.connect();
+            scbChannelSftp = (ChannelSftp) scbSession.openChannel("sftp");
+            scbChannelSftp.connect();
+            // 建立cache会话
+            cacheSession.connect();
+            cacheChannelSftp = (ChannelSftp) cacheSession.openChannel("sftp");
+            cacheChannelSftp.connect();
+            Vector<ChannelSftp.LsEntry> ls = scbChannelSftp.ls("/");
+            for (ChannelSftp.LsEntry entry : ls) {
+                if (entry.getFilename().matches("GCNA8976.*MT940UTF8_DEFAULT.*")) {
+                    log("transformFireFromSCBToCache", "match::true::" + entry);
+                    try (
+                            InputStream fileInputStream = scbChannelSftp.get(entry.getFilename());
+                            OutputStream outputStream = cacheChannelSftp.put(entry.getFilename());
+                    ) {
+                        byte[] bytes = new byte[1024];
+                        int len;
+                        while ((len = fileInputStream.read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, len);
+                        }
+                        log("transformFireFromSCBToCache", "文件传输完成::" + entry.getFilename());
+                    } catch (Exception e) {
+                        log("transformFireFromSCBToCache", "文件传输失败::" + entry.getFilename());
+                        log("transformFireFromSCBToCache", e);
+                    }
+//                     TODO 删除渣打服务器上的源文件
+//                    scbChannelSftp.rm(entry.getFilename());
+//                    log("transformFireFromSCBToCache", "移除渣打服务器文件::" + entry.getFilename() + "::成功");
+                } else {
+                    log("transformFireFromSCBToCache", "match::false::" + entry);
+                }
+            }
+        } catch (Exception e) {
+            log("transformFireFromSCBToCache", e);
+        } finally {
+            if (scbChannelSftp != null) {
+                scbChannelSftp.exit();
+            }
+            if (scbSession != null) {
+                scbSession.disconnect();
+            }
+            if (cacheChannelSftp != null) {
+                cacheChannelSftp.exit();
+            }
+            if (cacheSession != null) {
+                cacheSession.disconnect();
+            }
+        }
+
+    }
+
+    /**
+     * 将中转SFTP服务器上/tft_in中的文件，移动到渣打SFTP服务器上的/tft_in目录下
+     * 将文件从中转服务器发送到渣打服务器，需要手动归档
+     *
+     * @throws Exception
+     */
+    private static synchronized void transformFireFromCacheToSCB() {
+        log("中转2渣打", Thread.currentThread().toString());
+        Session scbSession = null;
+        Session cacheSession = null;
+        ChannelSftp scbChannelSftp = null;
+        ChannelSftp cacheChannelSftp = null;
+        try {
+            scbSession = getScbSession();
+            cacheSession = getCacheSession();
+            // 建立scb会话
+            scbSession.connect();
+            scbChannelSftp = (ChannelSftp) scbSession.openChannel("sftp");
+            scbChannelSftp.connect();
+            // 建立cache会话
+            cacheSession.connect();
+            cacheChannelSftp = (ChannelSftp) cacheSession.openChannel("sftp");
+            cacheChannelSftp.connect();
+
+            final String dirPath = "/tft_in/";
+            final String archivePath = "/archiveDir/tft_in/";
+            Vector<ChannelSftp.LsEntry> ls = cacheChannelSftp.ls(dirPath);
+            for (ChannelSftp.LsEntry entry : ls) {
+                if (entry.getAttrs().isDir()) {
+                    continue;
+                }
+                log("transformFireFromCacheToSCB", entry.toString());
+                // 将文件移动到渣打服务器上
                 try (
-                        InputStream fileInputStream = scbChannelSftp.get(entry.getFilename());
-                        OutputStream outputStream = cacheChannelSftp.put(entry.getFilename());
+                        InputStream fileInputStream = cacheChannelSftp.get(dirPath + entry.getFilename());
+                        OutputStream outputStream = scbChannelSftp.put(dirPath + entry.getFilename());
+                        FileOutputStream archiveOutputStream = new FileOutputStream("cache.file");
+                ) {
+                    byte[] bytes = new byte[1024];
+                    int len;
+                    while ((len = fileInputStream.read(bytes)) != -1) {
+                        outputStream.write(bytes, 0, len);
+                        archiveOutputStream.write(bytes, 0, len);
+                    }
+                    log("transformFireFromCacheToSCB", "文件传输完成::" + entry.getFilename());
+                } catch (Exception e) {
+                    log("transformFireFromCacheToSCB", "文件传输失败::" + entry.getFilename());
+                    log("transformFireFromCacheToSCB", e);
+                }
+                // 归档
+                try (
+                        InputStream fileInputStream = new FileInputStream("cache.file");
+                        OutputStream outputStream = cacheChannelSftp.put(archivePath + entry.getFilename());
                 ) {
                     byte[] bytes = new byte[1024];
                     int len;
                     while ((len = fileInputStream.read(bytes)) != -1) {
                         outputStream.write(bytes, 0, len);
                     }
+                    log("transformFireFromCacheToSCB", "归档完成::" + entry.getFilename());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log("transformFireFromCacheToSCB", "归档失败::" + entry.getFilename());
+                    log("transformFireFromCacheToSCB", e);
                 }
-                // 删除渣打服务器上的源文件
-                scbChannelSftp.rm(entry.getFilename());
-            } else {
-                log("transformFireFromSCBToCache","match::false::" + entry);
+                // 删除中转服务器上的文件
+                cacheChannelSftp.rm(dirPath + entry.getFilename());
+                log("transformFireFromCacheToSCB", "移除中转服务器文件::" + entry.getFilename() + "::成功");
+
+            }
+        } catch (Exception e) {
+            log("transformFireFromSCBToCache", e);
+        } finally {
+            if (scbChannelSftp != null) {
+                scbChannelSftp.exit();
+            }
+            if (scbSession != null) {
+                scbSession.disconnect();
+            }
+            if (cacheChannelSftp != null) {
+                cacheChannelSftp.exit();
+            }
+            if (cacheSession != null) {
+                cacheSession.disconnect();
             }
         }
     }
 
-    /**
-     * 将中转SFTP服务器上/tft_in中的文件，移动到渣打SFTP服务器上的/tft_in目录下
-     * 将文件从中转服务器发送到渣打服务器，需要手动归档
-     * @param scbChannelSftp
-     * @param cacheChannelSftp
-     * @throws Exception
-     */
-    private static synchronized void transformFireFromCacheToSCB(ChannelSftp scbChannelSftp, ChannelSftp cacheChannelSftp) throws Exception {
-        log("中转2渣打",Thread.currentThread().toString());
-        final String dirPath = "/tft_in/";
-        final String archivePath = "/archiveDir/tft_in/";
-        Vector<ChannelSftp.LsEntry> ls = cacheChannelSftp.ls(dirPath);
-        for (ChannelSftp.LsEntry entry : ls) {
-            if (entry.getAttrs().isDir()) {
-                continue;
-            }
-            log("transformFireFromCacheToSCB", entry.toString());
-            // 将文件移动到渣打服务器上
-            try (
-                    InputStream fileInputStream = cacheChannelSftp.get(dirPath + entry.getFilename());
-                    OutputStream outputStream = scbChannelSftp.put(dirPath + entry.getFilename());
-                    FileOutputStream archiveOutputStream = new FileOutputStream("cache.file");
-            ) {
-                byte[] bytes = new byte[1024];
-                int len;
-                while ((len = fileInputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, len);
-                    archiveOutputStream.write(bytes, 0, len);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            // 归档
-            try (
-                    InputStream fileInputStream = new FileInputStream("cache.file");
-                    OutputStream outputStream = cacheChannelSftp.put(archivePath + entry.getFilename());
-            ) {
-                byte[] bytes = new byte[1024];
-                int len;
-                while ((len = fileInputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, len);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            // 删除中转服务器上的文件
-            cacheChannelSftp.rm(dirPath + entry.getFilename());
-
-        }
-    }
-
-    static void log(String logger, String message){
+    static void log(String logger, String message) {
         // 构造日志消息：时间+logger::+message
         String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "::" + logger + "::" + message;
         // 将日志消息写到控制台
@@ -297,6 +366,14 @@ public class SftpCatcher {
             e.printStackTrace();
         }
 
+    }
+
+    static void log(String logger, Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        String errorStack = sw.toString();
+        log(logger, errorStack);
     }
 }
 

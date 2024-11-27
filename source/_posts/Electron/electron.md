@@ -218,11 +218,21 @@ npm run make
 
 但是 Electron 暴露了 `app.whenReady()` 方法，作为其 `ready` 事件的专用监听器，这样可以避免直接监听 .on 事件带来的一些问题。 参见 [electron/electron#21972](https://github.com/electron/electron/pull/21972) 。
 
-# 预加载脚本
+# 预加载脚本=Preload
 
-预加载脚本在渲染器加载网页之前注入。
+预加载脚本在渲染器加载网页之前加载。其挂载到渲染器进程上的（一个Window的实例），同时可以调用Node的api
 
 在 BrowserWindow 构造器中使用 `webPreferences.preload` 传入脚本的路径。
+
+```js
+const win = new BrowserWindow({
+  webPreferences: {
+    preload: 'path/to/preload.js'
+  }
+})
+```
+
+
 
 在预加载脚本中使用内容桥可以设置在渲染进程中的全局变量
 
@@ -249,13 +259,15 @@ index.html中
 <script src="./renderer.js"></script>
 ```
 
-Electron 应用通常使用预加载脚本来设置进程间通信 (IPC) 接口以在两种进程之间传输任意信息。
+Electron 应用通常使用预加载脚本来设置进程间通信 (IPC) 接口以在两种进程之间传输任意信息。由于其是在网页加载之前执行的，故可以在加载网页之前设置全局变量，将预留的主进程订阅服务引入渲染器进程。
 
 # 进程间通信
 
+## 主进程暴露、渲染进程调用
+
 让渲染进程和主进程互相通信
 
-可使用 Electron 的 `ipcMain` 模块和 `ipcRenderer` 模块来进行进程间通信。 从网页向主进程发送消息，可以使用 `ipcMain.handle` 设置一个主进程处理程序（handler），然后在**预处理脚本**中暴露一个被称为 `ipcRenderer.invoke` 的函数来触发该处理程序（handler）。
+可使用 Electron 的 `ipcMain` 模块和 `ipcRenderer` 模块来进行进程间通信。 从网页向主进程发送消息，可以使用 `ipcMain.handle` 设置一个主进程处理程序（handler），然后在**预处理脚本**中暴露一个 `ipcRenderer.invoke` 的函数来触发该处理程序（handler）。
 
 ```js
 const { contextBridge, ipcRenderer } = require('electron')
@@ -306,9 +318,73 @@ const func = async () => {
 func()
 ```
 
+## 渲染进程暴露，主进程调用
+
+主进程中使用`webContents`发送消息
+
+```js
+click: () => mainWindow.webContents.send('update-counter', 1),
+```
+
+preload中
+
+```js
+const { contextBridge, ipcRenderer } = require('electron/renderer')
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  onUpdateCounter: (callback) => ipcRenderer.on('update-counter', (_event, value) => callback(value)),
+  counterValue: (value) => ipcRenderer.send('counter-value', value)
+})
+```
+
+渲染进程
+
+```js
+window.electronAPI.onUpdateCounter((value) => {
+  const oldValue = Number(counter.innerText)
+  const newValue = oldValue + value
+  counter.innerText = newValue.toString()
+  window.electronAPI.counterValue(newValue)
+})	
+```
+
 
 
 # DEVTools
 
 在BrowserWindow对象实例win上执行`win.webContents.openDevTools()`即可打开开发者工具
+
+# BrowserWindow
+
+每个BW的实例会创建一个应用程序窗口，且再单独的渲染器进程中加载一个网页。可通过属性`webContents`获取内容。当一个BW实例被销毁时，其渲染器进程也会终止。
+
+# 上下文隔离
+
+`预加载`脚本 和 Electron的内部逻辑 运行在所加载的 webconten网页 之外的另一个独立的上下文环境。如果您在预加载脚本中设置 `window.hello = 'wave'` 并且启用了上下文隔离，当网站尝试访问`window.hello`对象时将返回 undefined。
+
+在上下文启用的情况下，可以在预加载脚本中使用`contextBridge`api进行内容的暴露
+
+# 菜单
+
+```js
+  const menu = Menu.buildFromTemplate([
+    {
+      label: app.name,
+      submenu: [
+        {
+          click: () => mainWindow.webContents.send("update-counter", 1),
+          label: "Increment",
+        },
+        {
+          click: () => mainWindow.webContents.send("update-counter", -1),
+          label: "Decrement",
+        },
+      ],
+    },
+  ]);
+
+  Menu.setApplicationMenu(menu);
+```
+
+
 

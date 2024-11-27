@@ -372,3 +372,61 @@ doc/*.txt # 忽略项目中所有的doc目录下的txt文件，但不包括doc/*
 # 修改commit信息
 
 使用`git commit --amend`
+
+# 丢弃更改
+
+### **1.** 没有添加到暂存区
+
+没有add , 可以用命令
+
+```text
+git checkout – filepathname（eg: git checkout – test.cpp）
+```
+
+如果是放弃所有，直接执行
+
+```text
+git checkout .    
+```
+
+此命令不会删除新建的文件，需手动删除
+
+### 2. 已经添加到暂存区：
+
+已经使用git add添加到暂存区，可以用命令
+
+```text
+git reset HEAD filepathname （比如： git reset HEAD readme.md）
+```
+
+放弃所有
+
+```text
+git reset HEAD .
+```
+
+执行完此命令后，文件状态就回归到第一种情况了，此时再按照情况1处理。
+
+### 3. 已经提交到本地仓库：
+
+使用git commit提交到本地仓库，可以用命令回退到上一次commit的状态
+
+```text
+git reset --hard HEAD^
+```
+
+可以用命令回退到任意版本：
+
+```text
+git reset --hard commitid
+```
+
+### 4. 放弃本地修改，强制和远程同步
+
+在使用Git的过程中，有些时候我们只想要git服务器中的最新版本的项目，对于本地的项目中修改不做任何理会，就需要用到Git pull的强制覆盖，具体代码如下：
+
+```text
+$ git fetch --all
+$ git reset --hard origin/master 
+$ git pull
+```

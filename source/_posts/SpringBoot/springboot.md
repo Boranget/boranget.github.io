@@ -1415,3 +1415,36 @@ java.lang.IllegalStateException: No target Validator set
 NotBlank不再支持数值类型，需要改为NotNull
 
 ![image-20240816112842668](springboot/image-20240816112842668.png)
+
+# LocalDateTime
+
+LocalDateTime 反序列化问题
+
+在实体类中使用LocalDateTime 类型接收字符串时，需要在字段上添加`@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")`注解，且pattern不可变，同时前端传值必须传时分秒
+
+或者可自定义反序列化器.
+
+```java
+/**
+* 加工部门退样至下一环节
+*/
+@Schema(description = "加工部门退样至下一环节")
+@JsonDeserialize(using = NoTimeLocalDateTimeDeserializer.class)
+private LocalDateTime pdReturnsCleanCopyToNextStage;
+
+
+
+// =========
+
+public class NoTimeLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+    @Override
+    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+        String dateStr = jsonParser.getText().trim();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("GMT+8"));
+        LocalDate date = LocalDate.parse(dateStr, formatter);
+        return date.atStartOfDay();  // 默认为午夜时间
+    }
+}
+
+```
+
