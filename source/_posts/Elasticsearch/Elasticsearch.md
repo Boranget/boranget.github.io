@@ -14,7 +14,7 @@ categories:
 
 # 配置
 
-windows下直接启动`bin\elasticsearch.bat`后无法访问，经验证，需要先将配置文件中的`xpack.security.enabled: true`改为`xpack.security.enabled: false`。
+windows下直接启动`bin\elasticsearch.bat`后无法访问（hang up），经验证，需要先将配置文件中的`xpack.security.enabled: true`改为`xpack.security.enabled: false`。
 
 # 启动
 
