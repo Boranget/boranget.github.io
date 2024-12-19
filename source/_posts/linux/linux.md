@@ -413,6 +413,10 @@ find [搜索范围] [option]  \<关键词\>
   - find -size +20M 查找大于20M的文件
   - find -size 20M 查找等于20M的文件
   - find -size -20M 查找小于20M的文件
+  
+- -exec 对搜索结果进行操作
+
+![image-20241202102028993](linux/image-20241202102028993.png)
 
 locate 在索引中查找，会快一点，但需要更新索引
 

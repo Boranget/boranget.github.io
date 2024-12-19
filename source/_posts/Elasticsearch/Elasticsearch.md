@@ -284,3 +284,26 @@ match搜索
 }
 ```
 
+# wildcard查询
+
+wildcard查询也是基于term的，模糊查询的范围只能在分词结果上进行。
+
+如下，content为要查询的字段，value为要查询的内容，case_insensitive为忽略大小写
+
+```
+{
+    "query":{
+        "wildcard":{
+            "content":{
+                "value":"docnUm_*000000000020402*",
+            "case_insensitive": true
+            }
+        }
+        
+    }
+}
+```
+
+## wildcard字段
+
+可在mapping中将一个字段的类型改为wildcard类型，这样在wildcard搜索时 会对效率有提升（未测试）

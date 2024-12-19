@@ -2824,3 +2824,69 @@ SELECT SUBSTR('成都融资事业部', 1, CHAR_LENGTH('成都融资事业部')-3
 ```
 
 结果：成都融资
+
+# 开启/提交/回滚事务
+
+```sql
+mysql> select * from test1;
++------+
+| a   |
++------+
+|   1 |
++------+
+1 row in set (0.00 sec)
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into test1 values (2);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into test1 values (3);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> commit;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from test1;
++------+
+| a   |
++------+
+|   1 |
+|   2 |
+|   3 |
++------+
+3 rows in set (0.00 sec)
+
+
+mysql> select * from test1;
++------+
+| a   |
++------+
+|   1 |
+|   2 |
+|   3 |
++------+
+3 rows in set (0.00 sec)
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> delete from test1;
+Query OK, 3 rows affected (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from test1;
++------+
+| a   |
++------+
+|   1 |
+|   2 |
+|   3 |
++------+
+3 rows in set (0.00 sec)
+
+```
+

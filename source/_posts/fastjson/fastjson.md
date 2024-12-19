@@ -97,15 +97,19 @@ public String getLifnr() {
 }
 ```
 
-# 常用方法
+## 序列化
 
-- 对象转为json字符串：JSON.toJSONString(Object object)
+对象转为json字符串：JSON.toJSONString(Object object)
 
-    ```java
-    // 若需要保留null值
-    JSON.toJSONString(saveExportDto, String.valueOf(SerializerFeature.WriteMapNullValue));
-    ```
+```java
+// 若需要保留null值
+JSON.toJSONString(saveExportDto, String.valueOf(SerializerFeature.WriteMapNullValue));
+```
 
-- json字符串转为JSONObject对象：JSON.parseObject(String string)
 
-    
+
+## 反序列化
+
+json字符串转为JSONObject对象：JSON.parseObject(String string)
+
+  
