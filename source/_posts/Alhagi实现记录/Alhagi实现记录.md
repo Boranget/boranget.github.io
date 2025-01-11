@@ -67,3 +67,76 @@ https://spec.commonmark.org/0.31.2/
     - 如果说当前指针所指的关闭结构并不同时是一个开启结构，则从栈中移除当前结构，因为它也已经当不成关闭结构了
     - 设置当前指针为下一个元素
 
+# 源码阅读记录
+
+```js
+// 反斜杠
+var C_BACKSLASH = 92;
+// 依次为十六进制的|十进制的|实体名格式的HTML实体匹配
+var ENTITY = "&(?:#x[a-f0-9]{1,6}|#[0-9]{1,7}|[a-z][a-z0-9]{1,31});";
+// HTML标签名
+var TAGNAME = "[A-Za-z][A-Za-z0-9-]*";
+// HTML属性名
+var ATTRIBUTENAME = "[a-zA-Z_:][a-zA-Z0-9:._-]*";
+// 非引号字符
+var UNQUOTEDVALUE = "[^\"'=<>`\\x00-\\x20]+";
+// 被单引号括住的值
+var SINGLEQUOTEDVALUE = "'[^']*'";
+// 被双引号括住的值
+var DOUBLEQUOTEDVALUE = '"[^"]*"';
+// 属性值的组成
+var ATTRIBUTEVALUE =
+    "(?:" +
+    UNQUOTEDVALUE +
+    "|" +
+    SINGLEQUOTEDVALUE +
+    "|" +
+    DOUBLEQUOTEDVALUE +
+    ")";
+// 属性值定义
+var ATTRIBUTEVALUESPEC = "(?:" + "\\s*=" + "\\s*" + ATTRIBUTEVALUE + ")";
+// 属性定义
+var ATTRIBUTE = "(?:" + "\\s+" + ATTRIBUTENAME + ATTRIBUTEVALUESPEC + "?)";
+// 开始标签
+var OPENTAG = "<" + TAGNAME + ATTRIBUTE + "*" + "\\s*/?>";
+// 结束标签
+var CLOSETAG = "</" + TAGNAME + "\\s*[>]";
+// HTML注释
+var HTMLCOMMENT = "<!-->|<!--->|<!--[\\s\\S]*?-->"
+// PI
+var PROCESSINGINSTRUCTION = "[<][?][\\s\\S]*?[?][>]";
+// 声明
+var DECLARATION = "<![A-Za-z]+" + "[^>]*>";
+// CDATA
+var CDATA = "<!\\[CDATA\\[[\\s\\S]*?\\]\\]>";
+// HTML标签
+var HTMLTAG =
+    "(?:" +
+    OPENTAG +
+    "|" +
+    CLOSETAG +
+    "|" +
+    HTMLCOMMENT +
+    "|" +
+    PROCESSINGINSTRUCTION +
+    "|" +
+    DECLARATION +
+    "|" +
+    CDATA +
+    ")";
+// HTML开头的行
+var reHtmlTag = new RegExp("^" + HTMLTAG);
+// 反斜杠或者正则表达式
+var reBackslashOrAmp = /[\\&]/;
+// 允许被转义的字符
+var ESCAPABLE = "[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]";
+// 转义字符或者HTML实体，gi为flag，代表全局+不区分大小写
+var reEntityOrEscapedChar = new RegExp("\\\\" + ESCAPABLE + "|" + ENTITY, "gi");
+// xml中的特殊字符（需要转义）
+var XMLSPECIAL = '[&<>"]';
+// 搜索全局的XML特殊字符
+var reXmlSpecial = new RegExp(XMLSPECIAL, "g");
+```
+
+
+

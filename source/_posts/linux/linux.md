@@ -734,7 +734,7 @@ ip route delete 192.168.1.0/24 dev eth0 # 删除路由
 - 开放指定端口
   
   ```shell
-  firewall-cmd --zone=public --and-port=3306/tcp --permanent
+  firewall-cmd --zone=public --add-port=3306/tcp --permanent
   ```
   
   > –zone #作用域
@@ -752,7 +752,7 @@ ip route delete 192.168.1.0/24 dev eth0 # 删除路由
     每次打开或者关闭防火墙需要重启才生效
   
   ```shell
-  firewwall-cmd --reload
+  firewall-cmd --reload
   ```
 
 - 检查端口是否开放
