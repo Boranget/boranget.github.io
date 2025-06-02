@@ -8,7 +8,7 @@ categories:
   - experience
 ---
 
-# 项目
+# 文件转换项目
 
 一个文件转换项目，可用于文件转为pdf等
 
@@ -56,11 +56,11 @@ fi
 
 ```
 
-# 步骤
+## 步骤
 
 运行以上脚本即可，libreoffice会安装到opt目录下
 
-# 乱码
+## 乱码
 
 - 系统字体缺失
 
@@ -69,3 +69,12 @@ fi
 - liberoffice字体缺失
 
     在/opt/libreoffice7.5/share/fonts目录存入字体文件夹，重启服务
+
+# 最新版安装方式
+
+参考官网https://zh-cn.libreoffice.org/get-help/install-howto/linux/
+
+如果当前系统安装了apt则使用deb包，如果当前系统安装了yum则使用rpm包
+
+经测试使用文档转换功能无需安装语言包
+

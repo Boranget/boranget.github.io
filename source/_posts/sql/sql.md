@@ -25,7 +25,7 @@ ON temp_a.value = b.value
 WHERE b.value IS NULL;
 ```
 
-这里使用了虚拟/临时表的概念,虚拟表不会实际创建一张表,只在当前连接可见,当关闭当前的数据库连接后, 会清除该缓存
+这里使用了虚拟/临时表的概念，虚拟表不会实际创建一张表，只在当前连接可见。当关闭当前的数据库连接后会清除该缓存
 
 # 连接时 ON 和 WHERE 的区别
 
@@ -34,6 +34,8 @@ WHERE b.value IS NULL;
   2、where条件是在临时表生成好后，再对临时表进行过滤的条件。这时已经没有left join的含义（必须返回左边表的记录）了，条件不为真的就全部过滤掉。
 
 # 在没有group by时也可以使用having
+
+效果相当于将整体视为一个分组，但不建议；还是建议使用whee
 
 # 关于in/exists
 
@@ -89,7 +91,60 @@ EXISTS是外表做loop循环，先主查询，再子查询，然后去子查询�
 - extra
   - 额外信息
 
-# 排序函数/开窗函数
+# 开窗函数
+
+```sql
+-- 创建一个临时表
+CREATE TABLE TempTable (
+    ID INT,
+    Score INT
+);
+ 
+-- 插入一些数据
+INSERT INTO TempTable (ID, Score)
+VALUES
+(1, 90),
+(2, 85),
+(3, 90),
+(4, 80),
+(5, 95),
+(6, 85);
+-- ROW_NUMBER()：
+-- 为每一行分配一个连续的唯一行号。
+SELECT
+    ID,
+    Score,
+    ROW_NUMBER() OVER (ORDER BY Score DESC) AS RowNum
+FROM
+    TempTable;
+-- RANK()：
+-- 为具有相同值的行分配相同的排名，但后续的排名会跳过。
+SELECT
+    ID,
+    Score,
+    RANK() OVER (ORDER BY Score DESC) AS RankNum
+FROM
+    TempTable;
+-- DENSE_RANK()：
+-- 也为具有相同值的行分配相同的排名，但后续的排名不会跳过。
+SELECT
+    ID,
+    Score,
+    DENSE_RANK() OVER (ORDER BY Score DESC) AS DenseRankNum
+FROM
+    TempTable;
+		
+-- NTILE()：
+-- 将结果集分为指定数量的近似相等的组，并为每个组分配一个组号。如下为分为了两组
+SELECT
+    ID,
+    Score,
+    NTILE(2) OVER (ORDER BY Score DESC) AS NTileNum
+FROM
+    TempTable;
+```
+
+
 
 ![image-20220729144350171](sql/image-20220729144350171.png)
 
@@ -491,6 +546,8 @@ ON a.MANAGER_ID = b.EMPLOYEE_ID;
 
 ### 分组/聚合函数
 
+group by 分组函数用于在聚合之前的分组统计
+
 * 聚合函数
 
   * AVG() - 返回集合的平均值。
@@ -672,7 +729,8 @@ SELECT * from employees WHERE DEPARTMENT_ID = 30;
 
 
 - 交
-  - 交的话可以通过IN, 在其中一个表查出所有的ID,接着在另一个表中保留ID IN (集合)的记录
+
+  交的话可以通过IN, 在其中一个表查出所有的ID,接着在另一个表中保留ID IN (集合)的记录
 
 ```sql
 # 4.	透过范例一及范例二所得的数据，找出为业务部门且为主管数据
@@ -681,7 +739,8 @@ SELECT DISTINCT e2.* FROM employees e1 INNER JOIN employees e2 ON e2.EMPLOYEE_ID
 ```
 
 - 并
-  - 并可以直接使用UNION
+
+  并可以直接使用UNION
 
 ```sql
 # 3.	透过范例一及范例二所得的数据，找出为业务部门或为主管数据
@@ -691,7 +750,8 @@ SELECT * from employees WHERE DEPARTMENT_ID = 30;
 ```
 
 - 差
-  - 与交类似,改为NOT IN
+
+  与交类似,改为NOT IN
 
 ```sql
 # 5.	透过范例一及范例二所得的数据，找出为主管但不为业务部门数据
@@ -709,9 +769,7 @@ SELECT DISTINCT e2.* FROM employees e1 INNER JOIN employees e2 ON e2.EMPLOYEE_ID
 (5) GROUP BY <group_by_list> 
 (6) WITH {CUBE | ROLLUP} 
 (7) HAVING <having_condition> 
-(10) ORDER BY <order_by_list>
-
-- 其中ORDER BY为对最后的结果进行整理
+(10) ORDER BY <order_by_list> 
 
 ## INSERT
 
@@ -773,8 +831,6 @@ UPDATE employees SET SALARY = (
 	) as a
 );
 ```
-
-
 
 # DDL
 
@@ -2765,7 +2821,7 @@ FOREIGN KEY：外键约束，目的是为了保证数据的完成性和唯一性
 
 # insert ignore into
 
-当新增的记录在表中不存在的话则插入新的记录，注意这里比较的是全部字段，而不只是插入的时候指定的字段，比如插入的时候并不会指定自增主键的话，则肯定会插入，因为带上数据库自动分配的自增主键的话，整条记录完全是新的字段。
+当新增的记录在表中不存在的话则插入新的记录，注意这里比较的是全部字段，而不只是插入的时候指定的字段，比如插入的时候指定自增主键的话，则肯定会插入，因为带上数据库自动分配的自增主键的话，整条记录完全是新的字段。
 
 ```sql
 INSERT IGNORE INTO dir_dir_table (id, parent_dir_id, child_dir_id) VALUES (13,'5', '2')
@@ -2890,3 +2946,14 @@ mysql> select * from test1;
 
 ```
 
+# 索引
+
+## 复合索引
+
+索引本身是为了加速查询，对于查询操作来说，对数据进行预先的排序，在查询的时候进行大小的比较当然会加快查询速度。
+
+索引的底层实现比如可以是B+树，对于树来说，排序的时候会有往左节点还是右节点插入值的操作，决定哪一侧就是通过比较插入值的大小
+
+单个字段索引就是比较该字段的大小
+
+复合索引就是，比如有三个字段ABC，则会先比较A，在A比较结果的基础上比较B，在AB的结果上比较C，从而决定插入位置，这同时也限制了，要使用符合索引的时候，必须有最左侧的字段，否则不会触发该符合索引

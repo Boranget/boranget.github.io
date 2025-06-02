@@ -370,6 +370,14 @@ ln [option]  \<文件名\>
 
 注意的是。如果删除软链接时，文件名末尾带斜杠（文件夹软连接），会显示资源忙，所以删文件夹软连接时，要带r但是末尾不带斜杠
 
+### 软连接
+
+```
+ln -s 源目录/文件 软连接名
+```
+
+
+
 ## 移动复制
 
 cp 软链接到另一个位置，该软连接会失效，若试图将其打开会提示没有那个文件或目录。
@@ -402,6 +410,10 @@ cal 查看日历（需要安装）
 
 find [搜索范围] [option]  \<关键词\>
 
+- 搜索范围中，目录名是区分大小写的
+- 可使用星号进行目录名的通配
+- 可使用`/*/`匹配一层目录如`/A/*/B`
+
 - -name 按照文件名 默认为该模式
   
   可使用通配符* 比如find -name \*ello\*
@@ -416,7 +428,7 @@ find [搜索范围] [option]  \<关键词\>
   
 - -exec 对搜索结果进行操作
 
-![image-20241202102028993](linux/image-20241202102028993.png)
+    ![image-20241202102028993](linux/image-20241202102028993.png)
 
 locate 在索引中查找，会快一点，但需要更新索引
 
@@ -734,7 +746,7 @@ ip route delete 192.168.1.0/24 dev eth0 # 删除路由
 - 开放指定端口
   
   ```shell
-  firewall-cmd --zone=public --and-port=3306/tcp --permanent
+  firewall-cmd --zone=public --add-port=3306/tcp --permanent
   ```
   
   > –zone #作用域
@@ -752,7 +764,7 @@ ip route delete 192.168.1.0/24 dev eth0 # 删除路由
     每次打开或者关闭防火墙需要重启才生效
   
   ```shell
-  firewwall-cmd --reload
+  firewall-cmd --reload
   ```
 
 - 检查端口是否开放
