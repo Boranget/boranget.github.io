@@ -14,6 +14,8 @@ https://github.com/winsw/winsw
 
 https://blog.csdn.net/xch_yang/article/details/129167189
 
+https://github.com/winsw/winsw/blob/v3/docs/xml-config-file.md
+
 # 使用方式
 
 ## 配置文件
@@ -22,19 +24,15 @@ https://blog.csdn.net/xch_yang/article/details/129167189
 
 ```xml
 <service> 
-     <!-- 服务唯一ID -->
-     <id>imApiId</id>
-     <!-- 服务名称-->
-     <name>imApiService</name>
-     <!-- 服务描述-->
-     <description>this is im api,author:chaodev</description>
-     <executable>java</executable> 
-     <arguments>-jar imApi.jar</arguments>
-     <!-- 开机启动 -->
-     <startmode>Automatic</startmode>
-     <!-- 日志配置 -->
-     <logpath>%BASE%\logs</logpath>
-     <logmode>rotate</logmode>
+    <id>catcher</id> 
+    <name>catcher</name>
+    <description>This is catcher service.</description>
+    <!-- java环境变量 -->
+    <executable>C:\amer\jdk17\jdk-17.0.8\bin\java</executable> 
+    <arguments>-jar "C:\amer\sftpserver\catcher\catcher-1.0-SNAPSHOT.jar"</arguments>
+    <!-- 开机启动 -->
+    <startmode>Automatic</startmode>
+    <workingdirectory>C:\amer\sftpserver\catcher</workingdirectory>
  </service>
 ```
 

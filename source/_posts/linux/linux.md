@@ -970,3 +970,36 @@ mail -a 附件文件 -s "主题" 收件地址 < 文件(邮件正文)
 
 `convert example.png -crop 1180x730+0+0 target.png`
 
+# ssh指纹获取
+
+![image-20250220101750142](linux/image-20250220101750142.png)
+
+host参数需要连接sftp服务器时所需的ip，一般连接工具所生成的为md5格式
+
+`ssh-keyscan 10.67.3.105|grep ssh-rsa|cut -d ' ' -f3|base64 -d|openssl dgst -c - md5`
+
+也有应用需要sha1的哈希指纹，则将最后一个参数换成sha1
+
+cut -d是文本分割，base64 -d是对前面提取出的 Base64 编码的公钥进行解码操作，openssl dgst 命令用于计算解码后的公钥的 哈希值
+
+# UMASK
+
+使用`umask`，其值为用户排除的权限，使用
+
+```
+umask
+```
+
+可以查看当前设置
+
+使用
+
+```
+umask 022
+```
+
+可以设置当前的默认权限
+
+目录的默认权限最大可以是 777，换算成字母就是 "drwxrwxrwx"，umask 的值是 022，也就是 "-----w--w-"。把两个字母权限相减，得到的就是新建目录的默认权限，即 (drwxrwxrwx) - (-----w--w-) = (drwxr-xr-x)
+
+而文件的默认权限最大为666，当umask设为022时，文件权限为644
