@@ -466,3 +466,271 @@ if __name__ == "__main__":
 # 优雅的不等式
 
 从代码注释给出的样例输入可以看出，将四分之一圆减去其内接三角形转换成定积分形式就能证明 π≥2，显然构造一个可以被四分之一圆覆盖并且面积等于 2/3 的函数图像就可以证明 π≥8/3，一个很容易想到的例子就是抛物线 f(x)=1−x2，刚好可以满足要求
+
+# 无法获取的秘密
+
+![image-20250629150451208](hackergame2024/image-20250629150451208.png)
+
+![image-20250629154433468](hackergame2024/image-20250629154433468.png)
+
+## 涉及点
+
+### 图像编码
+
+将文件编码为图像，通过截屏等方式下载到本地后再解码，由于novnc有图像传输压缩，故无法进行彩色编码（会色彩失真），可通过黑白编码保证数据准确性。
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>二进制文件转黑白图片</title>
+</head>
+<body>
+    <input type="file" id="fileInput" onchange="processFile(this.files[0])">
+    <div id="status">选择文件开始转换</div>
+    <div id="results"></div>
+
+    <script>
+        // 处理文件
+        function processFile(file) {
+            if (!file) return;
+            document.getElementById('status').textContent = `处理中: ${file.name}`;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const buffer = e.target.result;
+                const bytes = new Uint8Array(buffer);
+                convertToImages(bytes);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 转换为图片
+        function convertToImages(bytes) {
+            const width = 1024;
+            const height = 768;
+            const bitsPerImage = width * height;
+            // 向上取整
+            const totalImages = Math.ceil(bytes.length * 8 / bitsPerImage);
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+
+            // 按图片数量循环
+            for (let i = 0; i < totalImages; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx.createImageData(width, height);
+                const data = imageData.data;
+                
+                // 当前图片bit起始位置
+                let bitIndex = i * bitsPerImage;
+                for (let pixel = 0; pixel < width * height && bitIndex < bytes.length * 8; pixel++) {
+                    // 获取当前像素要存储的字节
+                    const bytePos = Math.floor(bitIndex / 8);
+                    // 位的位置
+                    const bitPos = bitIndex % 8;
+                    // 获取当前bit的值
+                    const bitValue = (bytes[bytePos] >> (7 - bitPos)) & 1;
+                    
+                    const color = bitValue ? 0 : 255; // 1=黑色, 0=白色
+                    const idx = pixel * 4;
+                    data[idx] = color;     // R
+                    data[idx + 1] = color; // G
+                    data[idx + 2] = color; // B
+                    data[idx + 3] = 255;   // A
+                    
+                    bitIndex++;
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                results.appendChild(createImageCard(canvas, i + 1, totalImages));
+            }
+
+            document.getElementById('status').textContent = `处理完成: 生成 ${totalImages} 张图片`;
+        }
+
+        // 创建图片卡片
+        function createImageCard(canvas, imageNum, totalImages) {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <h3>图片 ${imageNum}/${totalImages}</h3>
+                <button onclick="downloadCanvas(this.previousElementSibling, 'binary_part${imageNum}.png')">下载</button>
+            `;
+            div.insertBefore(canvas, div.firstChild);
+            return div;
+        }
+    </script>
+</body>
+</html>
+    
+```
+
+
+
+### 浏览器自动输入
+
+由于只能通过键盘输入，而且有时间限制，故使用自动输入。console中使用如下代码
+
+```js
+// 获取目标输入元素
+const inputElement = document.getElementById('tc');
+
+// 设置输入内容
+const htmlString = '<!DOCTYPE html><html><head><title>Binary File to Black-and-White Image</title></head><body><input type="file"id="fileInput"onchange="processFile(this.files[0])"><div id="status">Select a file to start conversion</div><div id="results"></div><script>function processFile(file){if(!file)return;document.getElementById("status").textContent=`Processing:${file.name}`;const reader=new FileReader();reader.onload=function(e){const buffer=e.target.result;const bytes=new Uint8Array(buffer);convertToImages(bytes)};reader.readAsArrayBuffer(file)}function convertToImages(bytes){const width=1024;const height=768;const bitsPerImage=width*height;const totalImages=Math.ceil(bytes.length*8/bitsPerImage);const results=document.getElementById("results");results.innerHTML="";for(let i=0;i<totalImages;i++){const canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;const ctx=canvas.getContext("2d");const imageData=ctx.createImageData(width,height);const data=imageData.data;let bitIndex=i*bitsPerImage;for(let pixel=0;pixel<width*height&&bitIndex<bytes.length*8;pixel++){const bytePos=Math.floor(bitIndex/8);const bitPos=bitIndex%8;const bitValue=(bytes[bytePos]>>(7-bitPos))&1;const color=bitValue?0:255;const idx=pixel*4;data[idx]=color;data[idx+1]=color;data[idx+2]=color;data[idx+3]=255;bitIndex++}ctx.putImageData(imageData,0,0);results.appendChild(createImageCard(canvas,i+1,totalImages))}document.getElementById("status").textContent=`Conversion completed:${totalImages}images generated`}function createImageCard(canvas,imageNum,totalImages){const div=document.createElement("div");div.innerHTML=`<h3>Image ${imageNum}/${totalImages}</h3><button onclick="downloadCanvas(this.previousElementSibling, "binary_part${imageNum}.png")">Download</button>`;div.insertBefore(canvas,div.firstChild);return div}</script></body></html>';
+
+// 逐个字符模拟键盘输入
+for (let i = 0; i < htmlString.length; i++) {
+  const char = htmlString[i];
+  
+  // 设置输入框的值（模拟每个字符的输入）
+  inputElement.value += char;
+  
+  // 触发键盘事件（keydown、keypress、keyup）
+  const eventInit = {
+    bubbles: true,
+    cancelable: true,
+    key: char,
+    code: char.charCodeAt(0).toString(),
+    which: char.charCodeAt(0),
+    keyCode: char.charCodeAt(0),
+    charCode: char.charCodeAt(0)
+  };
+  
+  // 触发keydown事件
+  const keydownEvent = new KeyboardEvent('keydown', eventInit);
+  inputElement.dispatchEvent(keydownEvent);
+  
+  // 触发keypress事件
+  const keypressEvent = new KeyboardEvent('keypress', eventInit);
+  inputElement.dispatchEvent(keypressEvent);
+  
+  // 触发keyup事件
+  const keyupEvent = new KeyboardEvent('keyup', eventInit);
+  inputElement.dispatchEvent(keyupEvent);
+  
+  // 触发input事件（模拟真实输入）
+  const inputEvent = new Event('input', { bubbles: true });
+  inputElement.dispatchEvent(inputEvent);
+  
+  // 添加延迟，模拟真实输入速度（可选）
+  await new Promise(resolve => setTimeout(resolve, 1));
+}
+```
+
+### 解码部分
+
+```python
+import os
+import sys
+from PIL import Image
+
+def images_to_binary(image_files, output_file, original_size=None):
+    """
+    将多个黑白图像文件按输入顺序转换回二进制文件
+    
+    参数:
+    image_files (list): 图像文件路径列表（按所需顺序排列）
+    output_file (str): 输出的二进制文件路径
+    original_size (int, optional): 原始文件大小（字节）
+    """
+    # 存储所有位数据的列表
+    bit_data = []
+    
+    total_images = len(image_files)
+    
+    # 按用户提供的顺序处理图像文件
+    for i, image_file in enumerate(image_files, 1):
+        try:
+            # 打开图像
+            with Image.open(image_file) as img:
+                width, height = img.size
+                pixels = img.load()
+                
+                # 最后一张图片可能不完整，需要特殊处理
+                is_last_image = (i == total_images)
+                bits_per_image = width * height
+                
+                # 遍历图像中的每个像素，提取位数据
+                for y in range(height):
+                    for x in range(width):
+                        pixel_index = y * width + x
+                        
+                        # 如果是最后一张图片，且已知原始大小，则计算有效位
+                        if is_last_image and original_size is not None:
+                            total_bits = original_size * 8
+                            if pixel_index >= total_bits:
+                                break  # 超出有效位范围，停止处理
+                        
+                        # 获取像素值 (0=白色, 255=黑色)
+                        pixel = pixels[x, y]
+                        if isinstance(pixel, tuple):
+                            pixel = pixel[0]
+                            
+                        # 转换为位: 这里和编码逻辑要符合
+                        bit = 1 if pixel < 127 else 0
+                        bit_data.append(bit)
+                        
+                    # 最后一张图片的优化中断
+                    if is_last_image and original_size is not None and pixel_index >= total_bits:
+                        break
+                
+                print(f"Processed image {i}/{total_images}: {image_file}")
+                
+        except Exception as e:
+            print(f"Error processing {image_file}: {e}")
+            continue
+    
+    # 如果提供了原始大小，只保留有效位
+    if original_size is not None:
+        total_bits = original_size * 8
+        if len(bit_data) > total_bits:
+            bit_data = bit_data[:total_bits]
+            print(f"Trimmed excess bits: {len(bit_data)} total bits kept")
+    
+    # 将位数据转换为字节
+    byte_data = bytearray()
+    for i in range(0, len(bit_data), 8):
+        byte = 0
+        for j in range(8):
+            if i + j < len(bit_data):
+                byte = (byte << 1) | bit_data[i + j]
+        byte_data.append(byte)
+    
+    # 写入二进制文件
+    with open(output_file, 'wb') as f:
+        f.write(byte_data)
+    
+    print(f"Successfully reconstructed file to {output_file}")
+    print(f"Original size: {original_size if original_size else 'unknown'} bytes")
+    print(f"Reconstructed size: {len(byte_data)} bytes")
+    print(f"Images used: {len(image_files)}")
+    
+    # 如果提供了原始大小，检查还原是否完整
+    if original_size is not None and len(byte_data) != original_size:
+        print(f"Warning: Reconstructed file size ({len(byte_data)} bytes) does not match original size ({original_size} bytes)")
+
+def main():
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Convert a series of black-and-white images back to the original binary file.')
+    parser.add_argument('-o', '--output', required=True, help='Output file name')
+    parser.add_argument('-s', '--size', type=int, help='Original file size in bytes (optional but recommended)')
+    parser.add_argument('images', nargs='+', help='List of image files (PNG format)')
+    
+    args = parser.parse_args()
+    
+    # 检查所有图像文件是否存在
+    missing_files = [f for f in args.images if not os.path.exists(f)]
+    if missing_files:
+        print(f"Error: The following files do not exist: {', '.join(missing_files)}")
+        sys.exit(1)
+    
+    # 执行转换
+    images_to_binary(args.images, args.output, args.size)
+
+if __name__ == "__main__":
+    main()
+```
+
