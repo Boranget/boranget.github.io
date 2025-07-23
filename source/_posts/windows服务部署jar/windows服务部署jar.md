@@ -16,6 +16,10 @@ https://blog.csdn.net/xch_yang/article/details/129167189
 
 https://github.com/winsw/winsw/blob/v3/docs/xml-config-file.md
 
+# 存在问题
+
+使用winsw启动的java进程的默认用户为System，使用jps无法查找到非当前用户启动的java进程
+
 # 使用方式
 
 ## 配置文件
@@ -58,3 +62,16 @@ https://github.com/winsw/winsw/blob/v3/docs/xml-config-file.md
 3. Place those two files side by side, because that's how WinSW discovers its co-related configuration.
 4. Run [`myapp.exe install [options\]`](https://github.com/winsw/winsw/blob/v3/docs/cli-commands.md#install-command) to install the service.
 5. Run [`myapp.exe start`](https://github.com/winsw/winsw/blob/v3/docs/cli-commands.md#start-command) to start the service.
+
+# 指定用户执行
+
+https://github.com/winsw/winsw/blob/v3/docs/xml-config-file.md
+
+```xml
+<serviceaccount>
+  <username>DomainName\UserName</username>
+  <password>Pa55w0rd</password>
+  <allowservicelogon>true</allowservicelogon>
+</serviceaccount>
+```
+

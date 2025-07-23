@@ -163,6 +163,7 @@ categories:
 - id  \<用户名\>  查询用户信息
 - su -  \<用户名\>  切换用户
 - su 切换到root
+- sudo su 适用于在sudo组中的用户切换到root
 - exit 返回上一个用户
 - groupadd  \<组名\> 添加组
 - groupdel  \<组名\> 删除组
@@ -264,10 +265,18 @@ categories:
   
   - 强制覆盖 \\cp [option] \<源文件/目录\> \<目标目录/目标文件名\> 
   
+  - -n 复制时忽略已存在文件
+  
+  - 复制目录下文件到目标已存在目录
+
+      ```
+      cp ./dirname/. ./targetdir
+      ```
+  
   - scp 系统之间传输文件（需要开启ssh）
     
     scp C:\Users\zbh\Desktop\1.txt  lucas@192.168.11.150:/home/lucas/
-
+  
 - rm [option]  <目录名/文件名> 删除
   
   - -r 删除文件夹
@@ -374,6 +383,10 @@ ln [option]  \<文件名\>
 
 ```
 ln -s 源目录/文件 软连接名
+ln -snf 源目录/文件 软连接名
+	-n: 覆盖
+	-f: 强制
+find . -type l -ls 查看当前目录下及子目录中所有软连接
 ```
 
 
