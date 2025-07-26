@@ -18,7 +18,9 @@ categories:
 
 # 使用
 
-运行arthas时，会输出jps信息，输入序号选择对应的java进程进行跟踪
+- 执行arthas-boot.jar包，碰到拒绝访问问题可使用管理员权限打开cmd
+- 运行arthas时，会输出jps信息，输入序号选择对应的java进程进行跟踪；
+- 注意由于jps只能查看与当前用户相同的java进程，故arthas也需要使用与目标java进程相同的用户启动
 
 # 命令
 
@@ -112,4 +114,18 @@ tt可以记录一段时间内指定方法的执行情况，需要注意的是，
 ```
 tt --delete-all
 ```
+
+# thread
+
+查看目标进程中的所有线程
+
+`thread`
+
+![image-20250710171657681](arthas/image-20250710171657681.png)
+
+查看具体某个线程的执行情况
+
+`thread 线程ID`
+
+
 

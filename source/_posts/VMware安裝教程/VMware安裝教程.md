@@ -12,6 +12,8 @@ categories:
 
 [VMware 17 下载安装及永久激活使用教程 - 嘿笨笨熊 - 博客园 (cnblogs.com)](https://www.cnblogs.com/hellogmy/p/17253041.html)
 
+[系统镜像](https://msdn.itellyou.cn/)
+
 # 下载
 
 下载地址：[下载 VMware Workstation Pro | CN](https://www.vmware.com/cn/products/workstation-pro/workstation-pro-evaluation.html)
@@ -40,3 +42,14 @@ categories:
 
 > bb：ZA5RU-6FYD5-48EPY-3XXEE-PAUGD
 
+# 最新
+
+现已无需破解，官方提供免费使用，但需要注册账号
+
+[注册地址](https://profile.broadcom.com/web/registration)
+
+登录时使用邮箱和密码登录
+
+# VMTools
+
+下载iso后使用硬件设置加载iso，在系统中会弹出安装流程，安装即可
