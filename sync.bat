@@ -16,7 +16,12 @@ git pull origin master
 :: Git提交流程
 echo 正在提交本地更改...
 git add .
+<<<<<<< HEAD:dep.bat
 git commit -m"%commit_msg%"
+=======
+git commit -m%1
+git pull origin master
+>>>>>>> a208910156e1c76945c88bc36331e9a96cef5ed2:sync.bat
 git push origin master
 
 echo 操作完成！

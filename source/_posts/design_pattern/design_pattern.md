@@ -30,7 +30,7 @@ Interator对象中引用了容器对象，最基本的实现为next和hasNext
 
 q: 为何要引入iterator模式，如果只是数组，明明直接使用for循环语句遍历
 
-a：引入itreator模式后可以将遍历与实现分离
+a：引入iterator模式后可以将遍历与实现分离
 
 ## 相关角色
 
@@ -366,9 +366,7 @@ Display d = new CountDisplay(new StringDisplay(""));
 
 ## 其他
 
-至于为什么需要在被访问者中添加accept方法：如果直接使用visit方法而不使用accept
-
-方法，会导致访问者对象与被访问对象紧密耦合，访问者对象必须知道被访问对象的节点类型。
+至于为什么需要在被访问者中添加accept方法：如果直接使用visit方法而不使用accept方法，会导致访问者对象与被访问对象紧密耦合，访问者对象必须知道被访问对象的节点类型。
 
 - 双重分发
 
