@@ -377,7 +377,7 @@ doc/*.txt # 忽略项目中所有的doc目录下的txt文件，但不包括doc/*
 
 ### **1.** 没有添加到暂存区
 
-没有add , 可以用命令
+没有add , 可以用如下命令从暂存区中恢复文件
 
 ```text
 git checkout – filepathname（eg: git checkout – test.cpp）
@@ -389,7 +389,7 @@ git checkout – filepathname（eg: git checkout – test.cpp）
 git checkout .    
 ```
 
-此命令不会删除新建的文件，需手动删除
+此命令不会删除新建的文件（未跟踪），需手动删除
 
 ### 2. 已经添加到暂存区：
 
