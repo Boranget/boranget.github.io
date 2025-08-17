@@ -149,43 +149,41 @@ public class JsonModifyUtil {
 
 # xml转json
 
+可指定数组xpth，numberxpth以及是否要去掉最外层结构
+
 ```java
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.dom4j.*;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class TransformXmlToJson {
-    private static final String ARRAY_SIGN = "this_is_array";
+public class Xml2Json {
+    private static final String ARRAY_SIGN = "boranget_say_this_is_array";
+    private static final String NUMBER_SIGN = "boranget_say_this_is_number";
 
     public static void main(String[] args) {
-        String xmlNeedTransform = "<a>\n" +
-                "    <b>bvalue</b>\n" +
-                "    <c>cvalue</c>\n" +
-                "    <c>cvalue</c>\n" +
-                "    <c>cvalue</c>\n" +
-                "    <d>\n" +
-                "        <da>12</da>\n" +
-                "        <db>bvalue</db>\n" +
-                "        <dc>cvalue</dc>\n" +
-                "        <dc>cvalue</dc>\n" +
-                "        <dc>cvalue</dc>\n" +
-                "    </d>\n" +
-                "</a>";
-        String needArrayXpath = "";
-        String res = transformToJson(xmlNeedTransform,needArrayXpath);
+        String xmlNeedTransform = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<ns0:MT_ACE_JBEAN_REQ xmlns:ns0=\"http://pi.amersports.com/bpm_ace\"><DATA1>aa</DATA1><DATA2>bb</DATA2><DATA3>cc</DATA3><DATA4>dd</DATA4><DATA5>ee</DATA5><array><test>11</test></array><obj><dec>22</dec></obj></ns0:MT_ACE_JBEAN_REQ>";
+        List<String> needArrayXpaths = new ArrayList<>();
+        needArrayXpaths.add("/MT_ACE_JBEAN_REQ/array");
+        List<String> needNumberXpaths = new ArrayList<>();
+        needNumberXpaths.add("/MT_ACE_JBEAN_REQ/obj/dec");
+        boolean stripOutElement = true;
+        String res = transformToJson(xmlNeedTransform, needArrayXpaths, needNumberXpaths, stripOutElement);
         System.out.println(res);
     }
 
     /**
      * 将xml字符串转换为json字符串
+     *
      * @param xmlNeedTransform 需要转换为json的xml字符串
-     * @param needArrayXpath 需要转为数组的节点xpath
+     * @param needArrayXpaths  需要转为数组的节点xpath
      * @return
      */
-    private static String transformToJson(String xmlNeedTransform, String needArrayXpath) {
+    private static String transformToJson(String xmlNeedTransform, List<String> needArrayXpaths, List<String> needNumberXpaths, Boolean stripOutElement) {
+        String res = null;
         Document d = null;
 
         try {
@@ -193,29 +191,86 @@ public class TransformXmlToJson {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        setArrayName(d, needArrayXpath);
-        JSONObject res = transformToJsonObject(d);
-        return res.toJSONString();
+
+        setSpecName(d, needArrayXpaths, needNumberXpaths);
+
+        JSONObject resJson = transformToJsonObject(d);
+        // 删除JSON最外层节点
+        if(stripOutElement){
+            Set<Map.Entry<String, Object>> entries = resJson.entrySet();
+            if (entries != null&&entries.size() == 1){
+                String rootKey = entries.iterator().next().getKey();
+                Object root = resJson.get(rootKey);
+                if(root instanceof JSONObject){
+                    JSONObject newRoot = new JSONObject();
+                    ((JSONObject) root).forEach((k, v) -> newRoot.put(k, v));
+                    res = newRoot.toJSONString();
+                }
+                if(root instanceof JSONArray){
+                    res = ((JSONArray) root).toJSONString();
+                }
+            }
+        }else {
+            res = resJson.toJSONString();
+        }
+        return res ;
+    }
+
+    private static void setSpecName(Document d, List<String> needArrayXpaths, List<String> needNumberXpaths) {
+        // 获取需要转换为数组格式的节点
+        List<Node> needArrayNodes = new ArrayList<>();
+        needArrayXpaths.forEach(needArrayXpath -> {
+            needArrayNodes.addAll(d.selectNodes(needArrayXpath));
+        });
+        List<Node> needNumberNodes = new ArrayList<>();
+        needNumberXpaths.forEach(needNumberXpath -> {
+            needNumberNodes.addAll(d.selectNodes(needNumberXpath));
+        });
+        for (Node node : needArrayNodes) {
+            node.setName(node.getName() + ARRAY_SIGN);
+        }
+        for (Node node : needNumberNodes) {
+            node.setName(node.getName() + NUMBER_SIGN);
+        }
     }
 
     /**
      * 给需要转为数组的节点加标签
+     *
      * @param d
      * @param needArrayXpath
      */
     private static void setArrayName(Document d, String needArrayXpath) {
-        if(needArrayXpath==null || needArrayXpath.trim().equals("")){
+        if (needArrayXpath == null || needArrayXpath.trim().equals("")) {
             return;
         }
         // 获取需要转换为数组格式的节点
         List<Node> nodes = d.selectNodes(needArrayXpath);
         for (Node node : nodes) {
-            node.setName(node.getName()+ ARRAY_SIGN);
+            node.setName(node.getName() + ARRAY_SIGN);
+        }
+    }
+
+    /**
+     * 给需要转为数字的节点加标签
+     *
+     * @param d
+     * @param needNumberXpath
+     */
+    private static void setNumberName(Document d, String needNumberXpath) {
+        if (needNumberXpath == null || needNumberXpath.trim().equals("")) {
+            return;
+        }
+        // 获取需要转换为数组格式的节点
+        List<Node> nodes = d.selectNodes(needNumberXpath);
+        for (Node node : nodes) {
+            node.setName(node.getName() + NUMBER_SIGN);
         }
     }
 
     /**
      * 获取xml根节点, 返回json对象
+     *
      * @param d
      * @return
      */
@@ -227,12 +282,13 @@ public class TransformXmlToJson {
         JSONObject childJsonObject = (JSONObject) doTransformToJsonObject(rootElement);
         JSONObject res = new JSONObject();
         String rootElementName = rootElement.getName();
-        if(rootElementName.endsWith(ARRAY_SIGN)){
+        // 判断根节点是否标记为数组
+        if (rootElementName.contains(ARRAY_SIGN)) {
             rootElementName = rootElementName.split(ARRAY_SIGN)[0];
             JSONArray jsonArray = new JSONArray();
             jsonArray.add(childJsonObject);
-            res.put(rootElementName,jsonArray);
-        }else{
+            res.put(rootElementName, jsonArray);
+        } else {
             res.put(rootElementName, childJsonObject);
         }
         return res;
@@ -240,6 +296,7 @@ public class TransformXmlToJson {
 
     /**
      * 递归将当前层xml转为json
+     *
      * @param rootElement
      * @return
      */
@@ -247,18 +304,22 @@ public class TransformXmlToJson {
         JSONObject res = new JSONObject();
         List<Element> elements = rootElement.elements();
         HashMap<String, Object> currentMap = new HashMap<>();
-        // 如果其下没有节点, 说明当前就是根节点
+        // 如果其下没有节点, 说明当前就是叶子节点，返回值
         if (elements.size() == 0) {
-            return rootElement.getData();
+            Object data = rootElement.getData();
+            String name = rootElement.getName();
+            if (name.contains(NUMBER_SIGN)) {
+                return toNumber(data.toString());
+            }
+            return data;
         } else {
             for (Element element : elements) {
                 boolean isArray = false;
                 String elementName = element.getName();
-                if(elementName.endsWith(ARRAY_SIGN)){
-                    isArray  = true;
-                    elementName = elementName.split(ARRAY_SIGN)[0];
+                if (elementName.contains(ARRAY_SIGN)) {
+                    isArray = true;
                 }
-                // 判断当前层是否已经存在该name
+                // 判断当前层是否已经存在该name（多个同名节点自动转为数组）
                 if (currentMap.containsKey(elementName)) {
                     // 若存在, 则将已存在的拿出,与当前一起放入jsonArray
                     Object o = currentMap.get(elementName);
@@ -276,12 +337,12 @@ public class TransformXmlToJson {
                     // 若不存在
                     // 如果提前标注为数组,则放入数组
                     // 如果没有提前标注,则直接放入map
-                    if(isArray){
+                    if (isArray) {
                         JSONArray jsonArray = new JSONArray();
                         jsonArray.add(doTransformToJsonObject(element));
-                        currentMap.put(elementName,jsonArray);
+                        currentMap.put(elementName, jsonArray);
 
-                    }else {
+                    } else {
                         currentMap.put(elementName, doTransformToJsonObject(element));
                     }
 
@@ -291,12 +352,39 @@ public class TransformXmlToJson {
         }
         // 获取到了一个map, 遍历
         for (String s : currentMap.keySet()) {
-            res.put(s, currentMap.get(s));
+            String key = s;
+            if (s.contains(ARRAY_SIGN)) {
+                key = key.replace(ARRAY_SIGN, "");
+            }
+            if (s.contains(NUMBER_SIGN)) {
+                key = key.replace(NUMBER_SIGN, "");
+            }
+            res.put(key, currentMap.get(s));
         }
         return res;
     }
-}
 
+    private static Number toNumber(String str) {
+        if (str.contains(".")) {
+            try {
+                return Double.valueOf(str);
+            } catch (Exception e) {
+                return Float.valueOf(str);
+            }
+        } else {
+            try {
+                long value = Long.valueOf(str);
+                if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
+                    return (int) value;
+                } else {
+                    return value;
+                }
+            } catch (Exception e) {
+                return Double.valueOf(str);
+            }
+        }
+    }
+}
 ```
 
 # 文件压缩解压
