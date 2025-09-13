@@ -43,6 +43,8 @@ java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar art
 
 ![image-20240802145501197](idea远程调试/image-20240802145501197.png)
 
-# 效果
+# 调试
 
-与本地调试几乎相同，包括打断点后会暂定等
+主要远程上的代码版本必须与本地相同，否则会出现调试的时候发现代码错乱的情况
+
+同一台服务器上可启动多个agent对应多个微服务，新增idea项目配置然后修改端口就可以

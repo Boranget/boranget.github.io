@@ -530,3 +530,15 @@ try (InputStream keyStoreData = new FileInputStream(jksFilePath)) {           //
 已知静态代码块在编译后会有一个static 的init方法
 
 而非静态代码块在编译后会编织到当前类每个构造方法中，并在构造方法的具体逻辑之前执行
+
+# 包装类
+
+## intvalue
+
+Long类型的包装类中，有个intvalue方法，可返回对应的int类型值
+
+## map
+
+在包装类做key的情况下，比较的是对象的地址而非值
+
+比如Integer做key，key为3，此时如果用get(3L)的话是取不到的，因为3L是个Long类型

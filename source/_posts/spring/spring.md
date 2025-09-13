@@ -1,22 +1,22 @@
 ---
 title: Spring
 date: 2022-01-08 16:50:30
-updated: 2024-01-02 16:40:19
+updated: 2025-09-13 16:40:19
 tags:
   - spring
 categories:
   - notes
 ---
 
-# 一些经验
-
-## 构造方法注入
+# 构造方法注入
 
 Spring 团队提倡使用基于构造方法的注入，因为这样一方面可以将依赖注入到一个不可变的变量中 (注： final 修饰的变量)，另一方面也可以保证这些变量的值不会是 null。
 
-## **ApplicationContextAware接口**
+可配合lombok，比如使用lombok在类上添加@RequiredArgsConstructor注解，将需要注入的对象设为final类型
 
-一个bean实现该接口，spring会自动调用该类中实现的setApplicationContext接口。
+# ApplicationContextAware接口
+
+如果存在一个bean实现该接口，spring会自动调用该类中实现的setApplicationContext接口。
 
 参考案例：quartz中的AutowiringSpringBeanJobFactory
 
@@ -1379,3 +1379,15 @@ public static void main(String[] args) {
 # Transaction注解
 
 在Spring中，事务的处理有两种方式，注解标记是其中一种，在方法上标记Transaction注解即可
+
+# 循环依赖问题
+
+springboot最新版本禁止循环依赖
+
+循环依赖场景比如:
+
+Aservice中注入了Bservice
+
+故建议注入BMapper而不是Bservice
+
+可以通过在其中一个组件上添加Lazy注解来解决

@@ -1,7 +1,7 @@
 ---
 title: nginx
 date: 2022-11-09 16:50:30
-updated: 2024-01-23 10:35:19
+updated: 2025-09-13 10:35:19
 tags:
   - nginx
 categories:
@@ -527,3 +527,18 @@ get 请求下载文件时，net::ERR_INCOMPLETE_CHUNKED_ENCODING 200 (OK)
 
 >- `nginx`配置缓冲区设置过小；
 >- `nginx`的临时目录（`/proxy_temp`）没有权限写入缓存文件；
+
+# 超时时间
+
+[nginx：如何在Nginx中设置超时时间？请列举各种超时配置_nginx超时时间设置-CSDN博客](https://blog.csdn.net/weixin_43290370/article/details/147593331)
+
+![image-20250913114920970](nginx/image-20250913114920970.png)
+
+| 客户端连接超时       | `client_header_timeout` | 60s  | 防止慢速HTTP攻击     |
+| -------------------- | ----------------------- | ---- | -------------------- |
+| 客户端请求体读取超时 | `client_body_timeout`   | 60s  | 大文件上传场景       |
+| 代理连接超时         | `proxy_connect_timeout` | 60s  | 上游服务网络不稳定时 |
+| 代理读取超时         | `proxy_read_timeout`    | 60s  | 长轮询/SSE连接       |
+| 代理发送超时         | `proxy_send_timeout`    | 60s  | 低速客户端场景       |
+| Keepalive连接超时    | `keepalive_timeout`     | 75s  | 高并发短连接优化     |
+| DNS解析超时          | `resolver_timeout`      | 30s  | 动态上游服务发现     |

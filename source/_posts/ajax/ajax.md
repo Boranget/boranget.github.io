@@ -43,3 +43,7 @@ function getMessage(){
 注意有同源限制会报错
 
 > VM1665:11  [Report Only] Refused to connect to 'http://d1.weather.com.cn/sk_2d/101210401.html?_=[[2]]' because it violates the following Content Security Policy directive: "connect-src 'self
+
+# AXIOS下载文件
+
+前端下载文件需要将responseType设为blob

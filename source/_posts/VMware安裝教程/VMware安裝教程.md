@@ -50,6 +50,12 @@ categories:
 
 登录时使用邮箱和密码登录
 
+登陆后访问
+
+[ProductFiles - Support Portal - Broadcom support portal](https://support.broadcom.com/group/ecx/productfiles?subFamily=VMware Workstation Pro&displayGroup=VMware Workstation Pro 17.0 for Windows&release=17.6.4&os=&servicePk=&language=EN&freeDownloads=true)
+
+![image-20250830172822557](VMware安裝教程/image-20250830172822557.png)
+
 # VMTools
 
 下载iso后使用硬件设置加载iso，在系统中会弹出安装流程，安装即可

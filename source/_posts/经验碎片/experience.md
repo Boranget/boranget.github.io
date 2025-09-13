@@ -1,5 +1,5 @@
 ---
-title: experience
+title: 经验碎片
 date: 2023-01-31 16:50:30
 updated: 2024-02-22 16:50:30
 tags:
@@ -288,7 +288,7 @@ springboot默认扫描启动类所在包以及其下的包,如果引入了另一
 
 > org.springframework.core.io.support.SpringFactoriesLoader#loadSpringFactories用于加载所有的META-INF/spring.factories文件
 
-![image-20230131151506098](experience/image-20230131151506098.png)
+![image-20230131151506098](经验碎片/image-20230131151506098.png)
 
 以如下作为父项目以控制版本
 
@@ -451,7 +451,7 @@ public static void main(String[] args) {
 
 相互引用是没问题的,但如果要对其进行序列化, 如使用lombok+sout,或者使用json工具将其中一个对象序列化时,便会因为递归次数太多而发生stackoverflow异常
 
-![image-20230131101837736](experience/image-20230131101837736.png)
+![image-20230131101837736](经验碎片/image-20230131101837736.png)
 
 所以在使用序列化时,需要注意该对象内有无递归引用
 
@@ -649,7 +649,7 @@ information that should help you find out what is causing the crash.
 
 [MySQL - innodb - ERROR 995: InnoDB: Operating system error number 995 in a file operation (mysqlab.net)](http://www.mysqlab.net/knowledge/kb/detail/topic/innodb/id/8402)
 
-![image-20230615232847769](experience/image-20230615232847769.png)
+![image-20230615232847769](经验碎片/image-20230615232847769.png)
 
 查询资料后，感觉可能是缓冲池的原因，接着查看数据库缓冲池配置，发现大小为8M，偏小，于是改为128M，启动之后，系统访问数据库，数据库正常运行。
 
@@ -720,15 +720,7 @@ public static void main(String[] args) {
 
 除Asia/Shanghai之外还可以使用Etc或者UTC时区
 
-# 循环依赖问题
 
-springboot最新版本禁止循环依赖
-
-循环依赖场景比如:
-
-Aservice中注入了Bservice
-
-故建议注入BMapper而不是Bservice
 
 # 非ie浏览器向ie跳转打开了edge
 
@@ -936,3 +928,8 @@ timeout /t 2
 E:\work_file\高教炎黄\app\out>jar -cvf hello.jar ./production
 ```
 
+# firefox
+
+firefox中类似chrom中的离线调试，存在叫脱机模式的功能，入口在:
+
+![image-20250913123558383](experience/image-20250913123558383.png)
