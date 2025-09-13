@@ -9,14 +9,16 @@ if "%1"=="" (
     set "commit_msg=%1"
 )
 
-:: 先拉取远程最新代码，避免冲突
-echo 正在拉取远程仓库最新更新...
-git pull origin master
-
 :: Git提交流程
 echo 正在提交本地更改...
 git add .
 git commit -m"%commit_msg%"
+
+:: 先拉取远程最新代码，避免冲突
+echo 正在拉取远程仓库最新更新...
+git pull origin master
+
+:: Git推到远程仓库
 git push origin master
 
 echo 操作完成！
