@@ -18,7 +18,14 @@ git commit -m"%commit_msg%"
 echo 正在拉取远程仓库最新更新...
 git pull origin master
 
+<<<<<<< HEAD
 :: Git推到远程仓库
+=======
+:: Git提交流程
+echo 正在提交本地更改...
+git add .
+git commit -m"%commit_msg%"
+>>>>>>> ca7ba950bc29f4a826061a349083048f089ed261
 git push origin master
 
 echo 操作完成！
