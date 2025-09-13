@@ -5,7 +5,7 @@ updated: 2024-08-02 14:35:19
 tags:
   - idea远程调试
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

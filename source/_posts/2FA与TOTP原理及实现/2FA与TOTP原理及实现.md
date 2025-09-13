@@ -6,7 +6,7 @@ tags:
   - 2FA
   - TOTP
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

@@ -5,7 +5,7 @@ updated: 2023-01-22 16:50:30
 tags:
   - mysql
 categories:
-  - experience
+  - 经验
 ---
 
 # windows

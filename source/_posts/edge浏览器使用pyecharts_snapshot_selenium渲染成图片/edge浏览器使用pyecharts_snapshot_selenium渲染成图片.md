@@ -5,7 +5,7 @@ updated: 2021-06-17 16:50:30
 tags:
   - python
 categories:
-  - experience
+  - 经验
 ---
 
 # pyecharts渲染成图片

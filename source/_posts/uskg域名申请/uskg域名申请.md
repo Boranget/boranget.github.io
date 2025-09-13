@@ -5,7 +5,7 @@ updated: 2024-07-28 10:35:19
 tags:
   - 免费域名
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

@@ -5,7 +5,7 @@ updated: 2023-11-11 10:35:19
 tags:
   - ES6
 categories:
-  - notes
+  - 笔记
 ---
 
 # 介绍

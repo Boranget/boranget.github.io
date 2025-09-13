@@ -5,7 +5,7 @@ updated: 2024-02-22 10:35:19
 tags:
   - 微服务
 categories:
-  - notes
+  - 笔记
 ---
 
 # StripPrefix优先级

@@ -5,7 +5,7 @@ updated: 2023-05-31 16:50:30
 tags:
   - java入门
 categories:
-  - experience
+  - 经验
 ---
 
 ![在这里插入图片描述](JavaWebSession空指针异常/20210223184549743.png)

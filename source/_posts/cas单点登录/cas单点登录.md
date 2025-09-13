@@ -6,7 +6,7 @@ tags:
   - 单点登录
   - sso
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

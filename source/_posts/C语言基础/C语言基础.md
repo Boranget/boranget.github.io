@@ -6,7 +6,7 @@ tags:
   - c语言
   - 入门
 categories:
-  - experience
+  - 经验
 ---
 
 # C程序设计语言基本构成

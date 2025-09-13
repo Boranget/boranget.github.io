@@ -5,7 +5,7 @@ updated: 2024-05-17 14:35:19
 tags:
   - path
 categories:
-  - experience
+  - 经验
 ---
 
 # 基本思想

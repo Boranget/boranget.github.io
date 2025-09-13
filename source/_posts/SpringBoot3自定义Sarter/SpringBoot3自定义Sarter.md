@@ -5,7 +5,7 @@ updated: 2023-09-05 16:50:30
 tags:
   - SpringBoot
 categories:
-  - experience
+  - 经验
 ---
 
 # 变化

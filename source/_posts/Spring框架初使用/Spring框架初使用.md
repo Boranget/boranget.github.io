@@ -6,7 +6,7 @@ tags:
   - spring
   - 入门
 categories:
-  - experience
+  - 经验
 ---
 
 ## 准备工作

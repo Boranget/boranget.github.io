@@ -5,7 +5,7 @@ updated: 2023-11-19 16:50:30
 tags:
   - alist
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

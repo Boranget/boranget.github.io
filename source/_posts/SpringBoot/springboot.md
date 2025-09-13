@@ -5,7 +5,7 @@ updated: 2024-02-29 16:40:19
 tags:
   - spring boot
 categories:
-  - notes
+  - 笔记
 ---
 
 # 配置相关

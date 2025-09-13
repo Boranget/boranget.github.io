@@ -5,7 +5,7 @@ updated: 2023-11-09 10:35:19
 tags:
   - javaWeb
 categories:
-  - notes
+  - 笔记
 ---
 
 # 静态/动态资源

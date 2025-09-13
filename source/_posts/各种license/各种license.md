@@ -6,7 +6,7 @@ tags:
   - 开源
   - license
 categories:
-  - notes
+  - 笔记
 ---
 
 # 一张图

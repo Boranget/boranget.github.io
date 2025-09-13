@@ -6,7 +6,7 @@ tags:
   - 服务器
   - nginx
 categories:
-  - experience
+  - 经验
 ---
 
 # 内网渗透工具

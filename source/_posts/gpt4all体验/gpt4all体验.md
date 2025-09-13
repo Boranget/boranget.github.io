@@ -5,7 +5,7 @@ updated: 2024-03-16 10:35:19
 tags:
   - gpt4all
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

@@ -5,7 +5,7 @@ updated: 2025-02-27 16:35:19
 tags:
   - 3dmax
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

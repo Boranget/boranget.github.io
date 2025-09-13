@@ -5,7 +5,7 @@ updated: 2023-11-05 10:35:19
 tags:
   - http
 categories:
-  - notes
+  - 笔记
 ---
 
 # 超文本传输协议

@@ -5,7 +5,7 @@ updated: 2024-08-6 17:35:19
 tags:
   - markdown
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

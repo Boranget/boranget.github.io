@@ -6,7 +6,7 @@ tags:
   - job
   - qartz
 categories:
-  - notes
+  - 笔记
 ---
 
 # 基本概念

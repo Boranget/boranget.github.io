@@ -5,7 +5,7 @@ updated: 2023-11-20 16:50:30
 tags:
   - JupyterNotebook
 categories:
-  - experience
+  - 经验
 ---
 
 # 安装python

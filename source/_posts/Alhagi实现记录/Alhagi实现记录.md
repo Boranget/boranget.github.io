@@ -6,7 +6,7 @@ tags:
   - 编辑器
   - markdown
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

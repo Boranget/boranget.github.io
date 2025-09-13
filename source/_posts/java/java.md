@@ -5,7 +5,7 @@ updated: 2024-02-22 10:35:19
 tags:
   - java基础
 categories:
-  - notes
+  - 笔记
 ---
 
 # 内部类相关

@@ -5,7 +5,7 @@ updated: 2024-01-29 16:40:19
 tags:
   - redis
 categories:
-  - notes
+  - 笔记
 ---
 
 # windows下载地址

@@ -5,7 +5,7 @@ updated: 2023-10-24 10:35:19
 tags:
   - wsl
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

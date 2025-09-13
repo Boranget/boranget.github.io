@@ -6,7 +6,7 @@ tags:
   - hana
   - sap
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

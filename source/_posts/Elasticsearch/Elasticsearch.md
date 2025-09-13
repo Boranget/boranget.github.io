@@ -5,7 +5,7 @@ updated: 2024-12-27 15:35:19
 tags:
   - Elasticsearch
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

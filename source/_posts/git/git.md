@@ -5,7 +5,7 @@ updated: 2023-12-06 10:35:19
 tags:
   - git
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

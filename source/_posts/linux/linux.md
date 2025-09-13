@@ -5,7 +5,7 @@ updated: 2024-01-29 10:35:19
 tags:
   - linux
 categories:
-  - notes
+  - 笔记
 ---
 
 # 常用快捷键

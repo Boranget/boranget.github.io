@@ -6,7 +6,7 @@ tags:
   - 托管
   - netlify
 categories:
-  - experience
+  - 经验
 ---
 
 # netlify

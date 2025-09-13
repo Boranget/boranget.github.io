@@ -5,7 +5,7 @@ updated: 2023-10-27 16:50:30
 tags:
   - Milvus
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

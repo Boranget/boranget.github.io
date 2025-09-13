@@ -5,7 +5,7 @@ updated: 2024-05-22 22:35:19
 tags:
   - aigc
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

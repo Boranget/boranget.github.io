@@ -5,7 +5,7 @@ updated: 2023-11-09 10:35:19
 tags:
   - ajax
 categories:
-  - notes
+  - 笔记
 ---
 
 # Ajax

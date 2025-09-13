@@ -5,7 +5,7 @@ updated: 2024-09-12 15:58:19
 tags:
   - powershell
 categories:
-  - experience
+  - 经验
 ---
 
 # Powershell后缀

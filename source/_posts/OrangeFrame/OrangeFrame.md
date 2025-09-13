@@ -5,7 +5,7 @@ updated: 2023-05-31 16:40:19
 tags:
   - java frame
 categories:
-  - notes
+  - 笔记
 ---
 
 # 系统结构

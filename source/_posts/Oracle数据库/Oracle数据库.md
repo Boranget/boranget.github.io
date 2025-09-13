@@ -5,7 +5,7 @@ updated: 2024-12-2 16:35:19
 tags:
   - Oracle数据库
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

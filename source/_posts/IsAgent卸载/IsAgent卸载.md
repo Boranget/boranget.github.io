@@ -5,7 +5,7 @@ updated: 2024-01-10 10:35:19
 tags:
   - IsAgent卸载
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

@@ -5,7 +5,7 @@ updated: 2025-09-13 16:40:19
 tags:
   - spring
 categories:
-  - notes
+  - 笔记
 ---
 
 # 构造方法注入

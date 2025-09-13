@@ -5,7 +5,7 @@ updated: 2024-01-31 16:40:19
 tags:
   - tcp
 categories:
-  - notes
+  - 笔记
 ---
 
 # TCP三次握手

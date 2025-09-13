@@ -5,7 +5,7 @@ updated: 2024-09-04 16:35:19
 tags:
   - vbs
 categories:
-  - notes
+  - 笔记
 ---
 
 # 使用vbs批量替换文件内容

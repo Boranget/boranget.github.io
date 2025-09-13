@@ -5,7 +5,7 @@ updated: 2024-02-27 16:35:19
 tags:
   - curl
 categories:
-  - experience
+  - 经验
 ---
 
 # 简单get请求

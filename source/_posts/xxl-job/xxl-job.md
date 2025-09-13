@@ -5,7 +5,7 @@ updated: 2025-09-13 12:35:19
 tags:
   - xxl-job
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

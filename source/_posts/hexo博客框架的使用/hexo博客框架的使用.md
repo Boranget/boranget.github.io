@@ -6,7 +6,7 @@ tags:
   - hexo
   - 博客
 categories:
-  - experience
+  - 经验
 ---
 
 # 环境准备

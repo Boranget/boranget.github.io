@@ -5,7 +5,7 @@ updated: 2023-08-17 10:35:19
 tags:
   - 加密算法
 categories:
-  - notes
+  - 笔记
 ---
 
 # AES加密

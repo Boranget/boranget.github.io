@@ -5,7 +5,7 @@ updated: 2024-01-31 10:35:19
 tags:
   - maven
 categories:
-  - notes
+  - 笔记
 ---
 
 # Maven 概念

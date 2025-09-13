@@ -5,7 +5,7 @@ updated: 2024-02-27 16:35:19
 tags:
   - idea
 categories:
-  - experience
+  - 经验
 ---
 
 # idea2023全局配置

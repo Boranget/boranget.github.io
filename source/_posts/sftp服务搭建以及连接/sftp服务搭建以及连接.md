@@ -5,7 +5,7 @@ updated: 2024-10-11 10:35:19
 tags:
   - sftp
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

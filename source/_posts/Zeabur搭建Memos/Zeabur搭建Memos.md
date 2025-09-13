@@ -6,7 +6,7 @@ tags:
   - zeabur
   - memos
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

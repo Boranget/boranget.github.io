@@ -5,7 +5,7 @@ updated: 2024-01-08 10:35:19
 tags:
   - gdb
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

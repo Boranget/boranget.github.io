@@ -6,7 +6,7 @@ tags:
   - juc
   - 多线程
 categories:
-  - notes
+  - 笔记
 ---
 
 # JUC概述

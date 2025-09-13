@@ -5,7 +5,7 @@ updated: 2025-09-13 11:35:19
 tags:
   - nexus
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

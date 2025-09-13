@@ -5,7 +5,7 @@ updated: 2024-04-18 16:40:19
 tags:
   - react
 categories:
-  - notes
+  - 笔记
 ---
 
 # 虚拟DOM

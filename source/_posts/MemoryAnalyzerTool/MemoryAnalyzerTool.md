@@ -6,7 +6,7 @@ tags:
   - MemoryAnalyzerTool
   - MAT
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

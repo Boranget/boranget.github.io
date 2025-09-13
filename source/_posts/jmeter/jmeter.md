@@ -5,7 +5,7 @@ updated: 2024-07-15 16:35:19
 tags:
   - jmeter
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

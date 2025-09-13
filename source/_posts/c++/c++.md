@@ -5,7 +5,7 @@ updated: 2023-08-21 10:35:19
 tags:
   - c++
 categories:
-  - notes
+  - 笔记
 ---
 
 # C++数据类型

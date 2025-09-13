@@ -5,7 +5,7 @@ updated: 2023-05-31 10:35:19
 tags:
   - electron
 categories:
-  - notes
+  - 笔记
 ---
 
 # npm install

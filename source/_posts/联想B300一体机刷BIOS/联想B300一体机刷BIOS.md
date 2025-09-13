@@ -5,7 +5,7 @@ updated: 2025-01-23 10:35:19
 tags:
   - bios
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

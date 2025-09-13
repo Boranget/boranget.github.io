@@ -5,7 +5,7 @@ updated: 2024-02-27 16:35:19
 tags:
   - flutter
 categories:
-  - experience
+  - 经验
 ---
 
 # Android tool chain问题

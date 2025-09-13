@@ -5,7 +5,7 @@ updated: 2023-05-31 10:35:19
 tags:
   - 刷机
 categories:
-  - experience
+  - 经验
 ---
 
 # 参考资料

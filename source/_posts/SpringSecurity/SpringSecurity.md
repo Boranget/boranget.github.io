@@ -5,7 +5,7 @@ updated: 2024-02-02 16:40:19
 tags:
   - spring security
 categories:
-  - notes
+  - 笔记
 ---
 
 # 基本概念

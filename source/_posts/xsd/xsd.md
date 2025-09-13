@@ -6,7 +6,7 @@ tags:
   - xsd
   - xml
 categories:
-  - notes
+  - 笔记
 ---
 
 # Schema

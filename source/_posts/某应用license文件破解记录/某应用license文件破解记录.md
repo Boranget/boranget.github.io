@@ -5,7 +5,7 @@ updated: 2024-04-01 10:35:19
 tags:
   - 逆向
 categories:
-  - experience
+  - 经验
 ---
 
 # 捕获license文件读取位置

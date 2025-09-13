@@ -5,7 +5,7 @@ updated: 2023-11-23 10:35:19
 tags:
   - xfire
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

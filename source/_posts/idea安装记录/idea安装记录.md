@@ -5,7 +5,7 @@ updated: 2023-12-09 16:50:30
 tags:
   - idea
 categories:
-  - experience
+  - 经验
 ---
 
 # 2021版安装记录

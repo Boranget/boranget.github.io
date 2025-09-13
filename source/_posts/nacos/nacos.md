@@ -5,7 +5,7 @@ updated: 2024-01-22 10:35:19
 tags:
   - nacos
 categories:
-  - notes
+  - 笔记
 ---
 
 # 单例模式启动
