@@ -5,7 +5,7 @@ updated: 2025-09-21 12:35:19
 tags:
   - Flyway
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

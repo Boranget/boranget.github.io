@@ -6,7 +6,7 @@ tags:
   - SpringBootAdmin
   - 监控
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料

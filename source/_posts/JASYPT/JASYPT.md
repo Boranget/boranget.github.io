@@ -6,7 +6,7 @@ tags:
   - JASYPT
   - 加密
 categories:
-  - notes
+  - 笔记
 ---
 
 # 参考资料
