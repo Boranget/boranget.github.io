@@ -430,3 +430,9 @@ $ git fetch --all
 $ git reset --hard origin/master 
 $ git pull
 ```
+
+# git http凭证
+
+控制面板》用户账户》管理凭据中
+
+git 远程仓库如果使用http认证，则相关认证信息会存储在windows中如上位置，若发生凭证不正确，但一直不弹出对话框要求修改凭证的情况，可手动在该位置将相关登录信息删除后重新连接远程仓库
