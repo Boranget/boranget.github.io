@@ -78,8 +78,6 @@ typedef struct list {
 
 # RedisTemplate
 
-## 使用
-
 spring默认提供的redisTemplate并不好用，这里使用自定义的RedisTemplate\<String, Object\>
 
 ### redis连接
@@ -387,3 +385,7 @@ sudo systemctl restart redis
 # REDLOC
 
 分布式的服务如果要做锁，考虑到使用redis实现，redloc是redis作者推荐的工具，但现在该工具已经不建议使用
+
+# Lua脚本
+
+lua脚本实在redis层面执行的，由于redis是单线程，故可以保证原子性

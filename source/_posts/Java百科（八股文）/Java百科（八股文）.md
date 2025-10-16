@@ -145,7 +145,7 @@ categories:
 
 - 1.8使用CAS和synchronized
 
-  - CAS：compare and swap，是一个在UnSafe类中的本地方法。第一个参数是数据结构，第二个参数为下标，第三个为旧值，第四个为新值
+  - CAS：compare and swap，是一个在UnSafe类中的本地方法。第一个参数是数据结构，第二个参数为下标，第三个为旧值，第四个为新值，CAS属于乐观锁
 
     ```
     public final native boolean compareAndSwapObject(Object var1, long var2, Object var4, Object var5);
