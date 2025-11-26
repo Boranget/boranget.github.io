@@ -45,8 +45,6 @@ public class AutoWiringSpringBeanJobFactory extends SpringBeanJobFactory impleme
 
 # Spring 基本概念
 
-
-
 ## Bean的生命周期
 
 ```markdown
@@ -63,8 +61,6 @@ OrderDao: com.boranget.dao.OrderDao@3f200884
 postProcess---After---Initialization
 The current Bean need processor is orderService
 ```
-
-
 
 ![image-20221013101209444](spring/image-20221013101209444.png)
 
@@ -1380,9 +1376,19 @@ public static void main(String[] args) {
 
 在Spring中，事务的处理有两种方式，注解标记是其中一种，在方法上标记Transaction注解即可
 
+事务失效的情况：
+
+- 自己处理了异常没有抛出：可手动抛出异常
+- 抛出的异常为检查异常：可设置rollbakfor Exception
+- 标记了事务注解的方法不是public方法，导致无法代理
+
 # 循环依赖问题
 
-springboot最新版本禁止循环依赖
+spring默认提供了三级缓存来解决循环依赖问题：
+
+1. 一级缓存：单例池，存储已经完成的bean
+2. 二级缓存：存储没完成的bean
+3. 三级缓存：存储创建某个对象的工厂
 
 循环依赖场景比如:
 
@@ -1391,3 +1397,4 @@ Aservice中注入了Bservice
 故建议注入BMapper而不是Bservice
 
 可以通过在其中一个组件上添加Lazy注解来解决
+

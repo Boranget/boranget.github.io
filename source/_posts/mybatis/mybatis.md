@@ -659,3 +659,11 @@ set关键字会在行首拼接set关键字，并且在行尾删除额外逗号�
 开启：
 
 jdbc:mysql://localhost:3306/file_sys?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai**&allowMultiQueries=true**
+
+# 延迟加载
+
+需要用到数据时才执行对应的sql语句，用于mysql中一对一或者一对多关联对象查询的情况
+
+可通过mybatis配置文件中：lazyloadingenable参数启用
+
+延迟加载是使用cglib实现的，将目标对象进行代理后，当程序中调用目标方法时，则会被增强的invoke方法拦截，若发现改值为空，则会进行关联查询

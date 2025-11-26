@@ -161,4 +161,10 @@ public class XxlJobDemoHandler {
 
 # GLUE模式
 
-GLUE模式是直接在xxljob调度器页面编写java，实现提供的接口，xxljob会将其使用groovy编译后放到执行器的容器中
+GLUE模式是直接在xxljob调度器页面编写java，实现提供的接口，xxljob会将其使用groovy编译后放到执行器的bean容器中
+
+# 多实例路由策略
+
+- 轮询
+- 故障转移：按顺序心跳检测，第一个有心跳的几位目标执行器
+- 分片广播：出发所有机器中的任务同时传递分片参数
