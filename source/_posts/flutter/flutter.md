@@ -467,6 +467,8 @@ class MyApp extends StatelessWidget {
 
 ## Align
 
+与其他容器alignment属性的区别是，可以控制容器内单独一个组件的对齐方式
+
 - 功能：控制子组件在父容器内的对齐方式（如左上`topLeft`、右下`bottomRight`等）
 
 - 场景：需要精准控制子组件位置时使用
@@ -1184,3 +1186,461 @@ PageView.builder(
   },
 );
 ```
+
+# 组件通信
+
+## 无状态子组件通信父传子
+
+子组件接受信息的变量必须为final，避免子组件更改
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MainPage(), // 父组件
+    );
+  }
+}
+
+// 父组件（无状态）
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("父组件")),
+      body: Column(
+        children: [
+          // 传递参数给子组件：这里传了 "Hello 子组件"
+          Child(message: "Hello 子组件"),
+        ],
+      ),
+    );
+  }
+}
+
+// 子组件（无状态）
+class Child extends StatelessWidget {
+  // 1. 定义接收属性（必须用final）
+  final String? message;
+
+  // 2. 构造函数接收参数
+  const Child({super.key, this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      // 3. 使用父组件传递的属性
+      child: Text(
+        "子组件显示：$message",
+        style: const TextStyle(color: Colors.red, fontSize: 18),
+      ),
+    );
+  }
+}
+```
+
+## 有状态子组件通信父传子
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MainPage(), // 父组件
+    );
+  }
+}
+
+// 父组件（无状态）
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("父组件（传递参数）")),
+      body: Column(
+        children: [
+          // 传递参数给有状态子组件
+          Child(message: "父组件传给我的内容"),
+        ],
+      ),
+    );
+  }
+}
+
+// 有状态子组件（对外的Widget类）
+class Child extends StatefulWidget {
+  // 1. 定义接收属性（final修饰）
+  final String message;
+
+  // 2. 构造函数接收参数（required表示必传）
+  const Child({super.key, required this.message});
+
+  @override
+  State<Child> createState() => _ChildState();
+}
+
+// 有状态子组件（对内的State类）
+class _ChildState extends State<Child> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      // 3. 通过widget.属性名获取父组件传递的值
+      child: Text(
+        "有状态子组件显示：${widget.message}",
+        style: const TextStyle(color: Colors.red, fontSize: 18),
+      ),
+    );
+  }
+}
+```
+
+## 子传父回调函数
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: MainPage());
+  }
+}
+
+// 父组件：维护菜品列表，传递删除函数给子组件
+class MainPage extends StatefulWidget {
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  // 菜品列表数据
+  List<String> foodList = ["鱼香肉丝", "宫保鸡丁", "京酱肉丝", "溜肉片"];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("菜品列表")),
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // 一行显示2个
+          childAspectRatio: 1.5, // 宽高比
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        padding: const EdgeInsets.all(10),
+        itemCount: foodList.length,
+        itemBuilder: (context, index) {
+          // 传递：菜品名称、索引、删除函数
+          return Child(
+            foodName: foodList[index],
+            index: index,
+            delFood: (int index) {
+              setState(() {
+                foodList.removeAt(index); // 从列表中移除对应项
+              });
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 子组件：接收父组件的参数，点击删除按钮触发父组件函数
+class Child extends StatefulWidget {
+  // 接收父组件的参数
+  final String foodName;
+  final int index;
+  final Function(int) delFood;
+
+  const Child({
+    super.key,
+    required this.foodName,
+    required this.index,
+    required this.delFood,
+  });
+
+  @override
+  State<Child> createState() => _ChildState();
+}
+
+class _ChildState extends State<Child> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.topRight, // Stack内的组件默认右上角对齐
+      children: [
+        // 菜品容器
+        Container(
+          color: Colors.blue,
+          alignment: Alignment.center,
+          child: Text(
+            widget.foodName,
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+        // 删除按钮（点击时调用父组件的delFood函数）
+        IconButton(
+          color: Colors.red,
+          onPressed: () {
+            widget.delFood(widget.index); // 触发父组件的删除逻辑
+          },
+          icon: const Icon(Icons.delete),
+        ),
+      ],
+    );
+  }
+}
+
+```
+
+# 网络请求DIO
+
+安装`flutter pub add dio`
+
+```dart
+import 'package:dio/dio.dart';
+
+void main(List<String> args) {
+  Dio()
+      .get("https://geek.itheima.net/v1_0/channels")
+      .then((res) {
+        print(res);
+      })
+      .catchError((e) {
+        print(e);
+      });
+}
+```
+
+## 开发环境跨域问题
+
+默认情况下，Flutter 运行 Web 端时加载网络资源，会因浏览器的同源策略限制，出现跨域请求错误。 
+1. 修改 Chrome 启动配置   找到 Flutter 工具包中的 `chrome.dart` 文件：   路径：`flutter/packages/flutter_tools/lib/src/web/chrome.dart`   在该文件的 Chrome 启动参数列表中，添加 `'--disable-web-security'`（关闭浏览器的跨域安全校验）。  
+2. 清除缓件   删除 Flutter 缓存目录下的两个文件，让修改后的配置生效：   路径：`flutter/bin/cache/`   需删除的文件：   `flutter_tools.snapshot`    `flutter_tools.stamp`  
+3. 此方法仅适用于开发调试阶段（关闭浏览器安全校验存在风险，不能用于生产环境）。 生产环境的跨域问题，需通过后端配置 CORS 策略（如服务端设置 `Access-Control-Allow-Origin` 等响应头）来解决。  
+
+# 路由
+
+## 基础路由
+
+
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: ListPage(), // 启动页为列表页
+    );
+  }
+}
+
+// 列表页（StatefulWidget，可扩展状态）
+class ListPage extends StatefulWidget {
+  const ListPage({super.key});
+
+  @override
+  State<ListPage> createState() => _ListPageState();
+}
+
+class _ListPageState extends State<ListPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("列表页")),
+      // 列表构建器（懒加载）
+      body: ListView.builder(
+        padding: const EdgeInsets.all(10),
+        itemCount: 20, // 列表项数量
+        itemBuilder: (context, index) {
+          // 每个列表项（可点击）
+          return GestureDetector(
+            onTap: () {
+              // 点击跳转到详情页，并传递参数
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailPage(itemIndex: index + 1),
+                ),
+              );
+            },
+            // 列表项样式（蓝色背景+文字）
+            child: Container(
+              color: Colors.blue,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              margin: const EdgeInsets.only(bottom: 5),
+              child: Center(
+                child: Text(
+                  "列表项${index + 1}",
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 详情页（接收列表项参数）
+class DetailPage extends StatelessWidget {
+  final int itemIndex; // 接收的参数
+
+  const DetailPage({super.key, required this.itemIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("详情页")),
+      body: Center(
+        child: Text("你点击了 列表项$itemIndex", style: const TextStyle(fontSize: 20)),
+      ),
+    );
+  }
+}
+
+```
+
+## 命名路由
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      initialRoute: "/list", // 初始路由：启动页为列表页
+      routes: {
+        // 路由表：配置路径与页面的映射
+        "/list": (context) => const ListPage(),
+        "/detail": (context) => const DetailPage(),
+      },
+    );
+  }
+}
+
+// 列表页：负责传递参数
+class ListPage extends StatelessWidget {
+  const ListPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("列表页")),
+      body: ListView.builder(
+        itemCount: 10, // 列表项数量
+        itemBuilder: (context, index) => GestureDetector(
+          onTap: () {
+            // 命名路由跳转 + 传递参数
+            // arguments：通过该参数传递数据（通常是Map格式，方便多参数）
+            Navigator.pushNamed(
+              context,
+              "/detail", // 目标路由路径
+              arguments: {"id": index + 1}, // 传递的参数：id=当前列表项序号
+            );
+          },
+          child: Container(
+            color: Colors.blue,
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              "列表项${index + 1}",
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 详情页：负责接收参数
+class DetailPage extends StatefulWidget {
+  const DetailPage({super.key});
+
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  String _id = ""; // 存储接收的参数
+
+  @override
+  void initState() {
+    super.initState();
+    // 注意：initState中直接获取路由参数会失败（此时context还未关联路由）
+    // 需放在Future.microtask（异步微任务）中，等页面初始化完成后再获取
+    Future.microtask(() {
+      // ModalRoute.of(context)：获取当前页面的路由信息
+      if (ModalRoute.of(context) != null) {
+        // 从settings.arguments中取出参数，并断言为Map类型
+        Map<String, dynamic> params =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        // 提取参数中的id，并更新状态
+        setState(() {
+          _id = params["id"].toString();
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("详情页")),
+      body: Center(child: Text("当前详情页ID：$_id")), // 展示接收的参数
+    );
+  }
+}
+
+```
+
+| 方法名                    | 核心作用             | 路由栈变化示例      | 使用场景                           |
+| ------------------------- | -------------------- | ------------------- | ---------------------------------- |
+| `pushNamed`               | 进入新页面           | `[A,B] → [A,B,C]`   | 常规页面跳转（如列表→详情）        |
+| `pushReplacementNamed`    | 替换当前页面         | `[A,B] → [A,C]`     | 登录成功后跳主页（无法返回登录页） |
+| `pushNamedAndRemoveUntil` | 跳转新页并清理栈     | `[A,B,C,D] → [A,E]` | 退出登录后跳登录页（清空历史）     |
+| `popAndPushNamed`         | 返回并立即跳新页     | `[A,B,C] → [A,B,D]` | 购物车结算后→返回列表 + 跳订单页   |
+| `popUntil`                | 连续返回直到满足条件 | `[A,B,C,D] → [A,B]` | 从设置深层级一键返回主设置页       |

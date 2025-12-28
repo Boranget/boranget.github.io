@@ -18,9 +18,7 @@ categories:
 
 flutter自带dart环境
 
-# 基础
-
-## 语法
+# 变量声明
 
 使用var进行变量声明
 
@@ -28,7 +26,7 @@ flutter自带dart环境
 
 使用final进行常量声明（运行时常量）
 
-### 基本类型：
+# 基本类型
 
 String，且可使用反引号定义模板字符串
 
@@ -93,11 +91,11 @@ a = "test";
 可用于声明变量，类似于var，但是变量的类型可在下一次赋值时随意变化
 ```
 
-### 空安全机制
+# 空安全机制
 
 ![image-20251220155006636](Dart/image-20251220155006636.png)
 
-### 运算符
+# 运算符
 
 | 运算符 | 作用   |
 | ------ | ------ |
@@ -112,7 +110,7 @@ a = "test";
 
 if，switch，while，for与java中完全相同
 
-### 方法/函数
+# 方法/函数
 
 分类:函数返回值分为有返回值和无返回值
 有返回值:具体类型函数名称(){}
@@ -176,7 +174,7 @@ void onTest(Function callback) {
 int add(int a, int b) => a + b;
 ```
 
-类
+# 类
 
 ```dart
 void main(List<String> args) {
@@ -225,11 +223,11 @@ class Person {
   Person.createPerson({this.age, this.name, this.sex}); // 同理简化赋值逻辑
 ```
 
-### 私有属性
+# 私有属性
 
 以下划线开头的变量或方法只能在当前类访问
 
-### 继承
+# 继承
 
 定义：继承是拥有父类的属性和方法
 特点：dart 属于单继承，一个类只能拥有一个直接父类，子类拥有父类所有的属性和方法
@@ -305,7 +303,7 @@ class AliPay implements PayBase {
 - `extends`：表示「is-a」关系（子类是父类的一种），子类会继承父类的非私有属性 / 方法，只需实现抽象方法。
 - `implements`：表示「has-a」关系（子类实现父类的接口），**必须重写父类的所有方法（包括具体方法）**，本质是「接口实现」（Dart 中没有 `interface` 关键字，抽象类可兼作接口）。
 
-### 混入
+# 混入
 
 定义:Dart允许在不使用传统继承的情况下,向类中添加新的功能能
 方式:使用mixin关键字定义一个对象
@@ -364,7 +362,7 @@ class Teacher with Singable {
 }
 ```
 
-### 泛型
+# 泛型
 
 ```dart
 void main(List<String> args) {
@@ -415,7 +413,7 @@ class Student<I> {
 }
 ```
 
-## 异步编程
+# 异步编程
 
 ![image-20251220181533091](Dart/image-20251220181533091.png)
 
@@ -499,3 +497,48 @@ void test() async { // 🔴 注意：异步函数需要加async关键字
 }
 ```
 
+# build赋值
+
+```dart
+import 'package:dio/dio.dart';
+
+void main(List<String> args) {
+  Test test = Test();
+  test
+    ..name = "张三"
+    ..age = 18;
+}
+
+class Test {
+  String? name;
+  int? age;
+}
+
+```
+
+# 强转
+
+## AS
+
+可将一个对象声明为指定类型，类似于java中的强制转换
+
+```dart
+data as MAP<String, dynamic>
+```
+
+## CAST
+
+```dart
+// 假设 data 是 List<dynamic> 类型（比如接口返回的数组）
+// 1. cast<Map<String, dynamic>>()：把 List<dynamic> 转为 List<Map<String, dynamic>> 的视图
+// 2. 后面的 as List<Map<String, dynamic>> 其实是冗余的（cast已经返回该类型）
+print(data.cast<Map<String, dynamic>>() as List<Map<String, dynamic>>);
+```
+
+
+
+| 对比项   | `cast<目标类型>()`                                           | `as 目标类型`                                        |
+| -------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| 适用场景 | 主要用于**集合类**（`List`/`Map`等），转换集合的泛型类型     | 用于**任意对象**，转换对象本身的类型                 |
+| 转换粒度 | 逐个检查集合中的元素类型（如果有元素类型不匹配，**访问该元素时才抛异常**） | 直接断言整个对象的类型（类型不匹配时**立即抛异常**） |
+| 返回结果 | 返回原集合的 “类型安全视图”（不创建新集合）                  | 返回原对象本身（只是编译器认为它是目标类型）         |

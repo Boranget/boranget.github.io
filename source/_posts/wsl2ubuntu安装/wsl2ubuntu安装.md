@@ -26,6 +26,8 @@ categories:
 
 在winsows商店中搜索ubuntu，找到需要的版本点击获取即可安装（到C盘）
 
+或者使用命令行 `wsl --install`
+
 # 设置
 
 安装完成后点击启动会打开控制台，界面显示引导信息需要输入用户名和密码，设置完成即可进入系统
@@ -58,3 +60,6 @@ deb https://mirrors.ustc.edu.cn/ubuntu/ jammy-proposed main restricted universe 
 #deb-src https://mirrors.ustc.edu.cn/ubuntu/ jammy-proposed main restricted universe multiverse
 ```
 
+# 字体安装
+
+提示找不到ubuntu mono字体，可在网上下载改字体，将字体文件放入c/windows/fonts中
