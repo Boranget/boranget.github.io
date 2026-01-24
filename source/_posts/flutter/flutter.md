@@ -1644,3 +1644,290 @@ class _DetailPageState extends State<DetailPage> {
 | `pushNamedAndRemoveUntil` | 跳转新页并清理栈     | `[A,B,C,D] → [A,E]` | 退出登录后跳登录页（清空历史）     |
 | `popAndPushNamed`         | 返回并立即跳新页     | `[A,B,C] → [A,B,D]` | 购物车结算后→返回列表 + 跳订单页   |
 | `popUntil`                | 连续返回直到满足条件 | `[A,B,C,D] → [A,B]` | 从设置深层级一键返回主设置页       |
+
+# GETX
+
+用于不同页面间的数据共享
+
+对象初始化时，调用其`.obs`
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+// 1. 自定义响应式数据类（模拟用户信息）
+class UserInfo {
+  String name;
+  int age;
+
+  UserInfo({required this.name, required this.age});
+
+  // 重写 toString，方便打印查看
+  @override
+  String toString() {
+    return "姓名：$name，年龄：$age";
+  }
+}
+
+// 2. 响应式状态管理（也可以直接在 Widget 中定义，这里单独抽离更清晰）
+class CounterController extends GetxController {
+  // 基础类型响应式：int.obs
+  final RxInt count = 0.obs;
+
+  // 自定义类响应式：UserInfo.obs
+  final Rx<UserInfo> user = UserInfo(name: "张三", age: 20).obs;
+
+  // 普通变量（非响应式，变化不会触发 UI 刷新）
+  String normalText = "我是非响应式文本";
+
+  // 3. 改变响应式数据的方法
+  // 改变基础类型
+  void incrementCount() {
+    count.value++; // 响应式对象必须通过 .value 赋值
+  }
+
+  // 改变自定义类（整体替换）
+  void updateUserWhole() {
+    user.value = UserInfo(name: "李四", age: 25);
+  }
+
+  // 改变自定义类的内部属性（需配合 .refresh() 或使用 Rx 嵌套）
+  void updateUserAge() {
+    user.value.age++; 
+    user.refresh(); // 因为修改的是对象内部属性，需手动触发刷新（或把属性定义为 RxInt）
+  }
+
+  // 改变非响应式变量（不会触发 UI 刷新）
+  void changeNormalText() {
+    normalText = "非响应式文本被修改了，但 UI 不更！";
+    print(normalText); // 控制台能看到变化，但 UI 无反应
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // 初始化控制器（全局可通过 Get.find<CounterController>() 获取）
+    final controller = Get.put(CounterController());
+
+    return GetMaterialApp(
+      title: "GetX .obs 响应式 Demo",
+      home: Scaffold(
+        appBar: AppBar(title: const Text(".obs 核心用法")),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 4. 用 Obx 监听响应式数据（数据变，UI 自动更）
+              Obx(() => Text(
+                    "响应式计数：${controller.count.value}",
+                    style: const TextStyle(fontSize: 20),
+                  )),
+              const SizedBox(height: 20),
+
+              // 监听自定义类响应式数据
+              Obx(() => Text(
+                    "响应式用户信息：${controller.user.value}",
+                    style: const TextStyle(fontSize: 20),
+                  )),
+              const SizedBox(height: 20),
+
+              // 非响应式文本（不会自动刷新）
+              Text(
+                "非响应式文本：${controller.normalText}",
+                style: const TextStyle(fontSize: 20, color: Colors.grey),
+              ),
+              const SizedBox(height: 40),
+
+              // 5. 按钮触发数据变化
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: controller.incrementCount,
+                    child: const Text("增加计数"),
+                  ),
+                  ElevatedButton(
+                    onPressed: controller.updateUserWhole,
+                    child: const Text("替换用户信息"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: controller.updateUserAge,
+                    child: const Text("用户年龄+1"),
+                  ),
+                  ElevatedButton(
+                    onPressed: controller.changeNormalText,
+                    child: const Text("修改非响应式文本"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+# 持久化
+
+使用SharedPreferences
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "SharedPreferences 简单 Demo",
+      home: const StorageDemo(),
+    );
+  }
+}
+
+class StorageDemo extends StatefulWidget {
+  const StorageDemo({super.key});
+
+  @override
+  State<StorageDemo> createState() => _StorageDemoState();
+}
+
+class _StorageDemoState extends State<StorageDemo> {
+  // 用于展示存储的数据
+  String _savedText = "未存储数据";
+  int _savedNum = 0;
+  bool _savedSwitch = false;
+
+  // ------------------- 核心操作方法 -------------------
+  // 1. 存储数据（字符串、数字、布尔值）
+  Future<void> _saveData() async {
+    // 获取 SharedPreferences 实例（异步）
+    final sp = await SharedPreferences.getInstance();
+    // 存字符串
+    await sp.setString("username", "张三");
+    // 存数字
+    await sp.setInt("age", 25);
+    // 存布尔值
+    await sp.setBool("isLogin", true);
+
+    // 刷新 UI 显示最新数据
+    _loadData();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("数据存储成功！")),
+    );
+  }
+
+  // 2. 读取数据
+  Future<void> _loadData() async {
+    final sp = await SharedPreferences.getInstance();
+    // 读取对应 key 的数据，无则返回默认值（如 ""、0、false）
+    setState(() {
+      _savedText = sp.getString("username") ?? "未存储";
+      _savedNum = sp.getInt("age") ?? 0;
+      _savedSwitch = sp.getBool("isLogin") ?? false;
+    });
+  }
+
+  // 3. 删除单个数据（根据 key）
+  Future<void> _deleteData() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.remove("username"); // 只删除 "username" 对应的数据
+    _loadData(); // 刷新显示
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("已删除用户名数据！")),
+    );
+  }
+
+  // 4. 清空所有存储数据
+  Future<void> _clearAll() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.clear(); // 清空所有 key-value
+    _loadData(); // 刷新显示
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("所有数据已清空！")),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 页面初始化时，自动读取已存储的数据
+    _loadData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("SharedPreferences 演示")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // 展示存储的数据
+            Text("存储的用户名：$_savedText", style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 10),
+            Text("存储的年龄：$_savedNum", style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 10),
+            Text("登录状态：${_savedSwitch ? "已登录" : "未登录"}", style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 40),
+
+            // 操作按钮
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: _saveData,
+                  child: const Text("存储数据"),
+                ),
+                ElevatedButton(
+                  onPressed: _loadData,
+                  child: const Text("读取数据"),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: _deleteData,
+                  child: const Text("删除用户名"),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: _clearAll,
+                  child: const Text("清空所有", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+

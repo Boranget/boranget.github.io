@@ -227,6 +227,10 @@ class Person {
 
 以下划线开头的变量或方法只能在当前类访问
 
+# 静态属性
+
+static 修饰的属性为类的静态属性
+
 # 继承
 
 定义：继承是拥有父类的属性和方法
@@ -542,3 +546,27 @@ print(data.cast<Map<String, dynamic>>() as List<Map<String, dynamic>>);
 | 适用场景 | 主要用于**集合类**（`List`/`Map`等），转换集合的泛型类型     | 用于**任意对象**，转换对象本身的类型                 |
 | 转换粒度 | 逐个检查集合中的元素类型（如果有元素类型不匹配，**访问该元素时才抛异常**） | 直接断言整个对象的类型（类型不匹配时**立即抛异常**） |
 | 返回结果 | 返回原集合的 “类型安全视图”（不创建新集合）                  | 返回原对象本身（只是编译器认为它是目标类型）         |
+
+# 工厂声明
+
+使用工厂声明构造类的实例
+
+```dart
+class BannerItem {
+  String id;
+  String imgUrl;
+  BannerItem({required this.id, required this.imgUrl});
+  factory BannerItem.fromJson(Map<String, dynamic> json) {
+    return BannerItem(
+      id: json["id"],
+      imgUrl: json["imgUrl"],
+    );
+  }
+}
+
+```
+
+# getter
+
+getter 定义：`List<GoodsItem> get _items { ... }`，调用时直接 `_items`（像用变量一样）
+
