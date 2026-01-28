@@ -1,0 +1,798 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>网安 | Boranget.博客</title><meta name="author" content="Boranget"><meta name="copyright" content="Boranget"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="虚拟化 寄居架构（vm作为软件运行在主系统上） VMware Workstation MS Hyoer-V   原生架构（vm装在硬件上，虚拟机本身就是操作系统） VMware vSphere    IP设备方框中的双向箭头：交换机 圆框中叉：路由器 IP地址32位二进制，点分十进制记忆 0-255 子网掩码划分子网使用，子网掩码相同的可以通信 子网掩码使得ip地址可以由网络位和主机位组成 主机位">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网安">
+<meta property="og:url" content="https://boranget.github.io/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/index.html">
+<meta property="og:site_name" content="Boranget.博客">
+<meta property="og:description" content="虚拟化 寄居架构（vm作为软件运行在主系统上） VMware Workstation MS Hyoer-V   原生架构（vm装在硬件上，虚拟机本身就是操作系统） VMware vSphere    IP设备方框中的双向箭头：交换机 圆框中叉：路由器 IP地址32位二进制，点分十进制记忆 0-255 子网掩码划分子网使用，子网掩码相同的可以通信 子网掩码使得ip地址可以由网络位和主机位组成 主机位">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://boranget.github.io/assets/img/tx.png">
+<meta property="article:published_time" content="2025-07-02T02:35:19.000Z">
+<meta property="article:modified_time" content="2025-07-02T02:35:19.000Z">
+<meta property="article:author" content="Boranget">
+<meta property="article:tag" content="网络安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://boranget.github.io/assets/img/tx.png"><link rel="shortcut icon" href="/assets/img/tx.png"><link rel="canonical" href="https://boranget.github.io/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":true,"top_n_per_article":1,"unescape":true,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '网安',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-07-02 10:35:19'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/assets/img/tx.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">198</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">206</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Boranget.博客"><img class="site-icon" src="/assets/img/tx.png"/><span class="site-name">Boranget.博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">网安</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-02T02:35:19.000Z" title="发表于 2025-07-02 10:35:19">2025-07-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-02T02:35:19.000Z" title="更新于 2025-07-02 10:35:19">2025-07-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="网安"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="虚拟化"><a href="#虚拟化" class="headerlink" title="虚拟化"></a>虚拟化</h1><ul>
+<li>寄居架构（vm作为软件运行在主系统上）<ul>
+<li>VMware Workstation</li>
+<li>MS Hyoer-V</li>
+</ul>
+</li>
+<li>原生架构（vm装在硬件上，虚拟机本身就是操作系统）<ul>
+<li>VMware vSphere</li>
+</ul>
+</li>
+</ul>
+<h1 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h1><h2 id="设备"><a href="#设备" class="headerlink" title="设备"></a>设备</h2><p>方框中的双向箭头：交换机</p>
+<p>圆框中叉：路由器</p>
+<h2 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h2><p>32位二进制，点分十进制记忆</p>
+<p>0-255</p>
+<h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h2><p>划分子网使用，子网掩码相同的可以通信</p>
+<p>子网掩码使得ip地址可以由网络位和主机位组成</p>
+<p>主机位全为0为网段地址，故主机的主机位不能为0</p>
+<p>主机位全为1为该网段广播地址，故主机的主机位不能为255</p>
+<h3 id="早期五类地址"><a href="#早期五类地址" class="headerlink" title="早期五类地址"></a>早期五类地址</h3><p>A: 1-126 默认子网掩码255.0.0.0；对应内网范围：10.0.0.0–10.255.255.255</p>
+<p>B:128-191默认子网掩码255.255.0.0；对应内网范围：172.16.0.0–172.31.255.255 </p>
+<p>c:192-223默认子网掩码255.255.255.0；对应内网范围：192.168.0.0–192.168.255.255</p>
+<p>d: 224-239</p>
+<p>e: 240-254</p>
+<p>目前可以使用acb三类地址，子网掩码可更改</p>
+<h2 id="回环地址"><a href="#回环地址" class="headerlink" title="回环地址"></a>回环地址</h2><p>127.0.0.1</p>
+<h2 id="网关"><a href="#网关" class="headerlink" title="网关"></a>网关</h2><p>网关一般使用局域网中第一个或者最后一个主机ip</p>
+<p>单纯的局域网不需要网关，需要访问别的局域网才需要网关</p>
+<h2 id="IP地址设置"><a href="#IP地址设置" class="headerlink" title="IP地址设置"></a>IP地址设置</h2><p>一块网卡可以设置添加多个ip地址</p>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>域名解析服务</p>
+<p>nslookup 命令 可以查看使用了哪个dns</p>
+<h2 id="ping"><a href="#ping" class="headerlink" title="ping"></a>ping</h2><p>有可能开着防火墙不让ping，所以ping不通不代表对方不在线</p>
+<h1 id="DOS命令"><a href="#DOS命令" class="headerlink" title="DOS命令"></a>DOS命令</h1><ul>
+<li><p>echo 打印</p>
+<p>  echo. 打印空行</p>
+</li>
+<li><p>type 查看文件内容</p>
+</li>
+<li><p>dir 查看目录下文件</p>
+</li>
+<li><p>&#x2F;a 查看所有文件</p>
+</li>
+<li><p>more 分页查看</p>
+</li>
+<li><p>rd 删除目录 &#x2F;s 递归 &#x2F;q 强制</p>
+</li>
+<li><p>del 删除文件 可带通配符 &#x2F;s 递归 &#x2F;q 强制</p>
+</li>
+<li><p>copy 复制文件</p>
+<p>  copy con filename 将控制台里接下来输入的内容复制到文件中，使用ctrl + Z 结束输入</p>
+</li>
+<li><p>move 移动文件</p>
+</li>
+<li><p>ren 重命名</p>
+</li>
+<li><p>md 创建目录</p>
+</li>
+<li><p>attrib 修改文件&#x2F;文件夹属性 </p>
+<ul>
+<li>attrib +h filename  隐藏文件</li>
+<li>+s 系统级别文件</li>
+<li>+a 只读</li>
+</ul>
+</li>
+<li><p>fsutil file createnew c:\sys.ini 4096000 直接创建一个文件并指定其大小</p>
+</li>
+<li><p>assoc  .txt&#x3D;exefile 将txt文件关联到exe</p>
+</li>
+<li><p>shutdown -s -t 60 60秒后关机</p>
+<ul>
+<li>shutdown -a 取消all定时</li>
+<li>-f 强制</li>
+<li>-c 提示信息</li>
+<li>-r 重启 -l注销</li>
+</ul>
+</li>
+<li><p>cls 清屏</p>
+</li>
+<li><p>@echo off 关闭回显，屏蔽执行过程</p>
+</li>
+<li><p>pause 暂停程序 （按任意键继续）</p>
+</li>
+<li><p>title 修改窗口标题</p>
+</li>
+<li><p>nul 用于丢弃输出：<code>ping -n 10 127.0.0.1 &gt;nul 2&gt;nul</code>，其中2表示执行异常的输出</p>
+</li>
+<li><p>冒号:指定代码块，配合goto进行跳转</p>
+</li>
+<li><p>start 启动cmd 后面跟参数可以打开具体的程序</p>
+</li>
+<li><p>%% 取值，中间为变量名</p>
+<ul>
+<li>%userprofile%当前用户目录</li>
+</ul>
+</li>
+<li><p>当命令参数中有空格时，前后加双引号</p>
+</li>
+<li><p>定义变量</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set i=100</span><br><span class="line">echo %i%</span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>获取用户输入值，此时等号后面为placeholder，而非值</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set /p i=请输入</span><br><span class="line">echo %i%</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>判断 </p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if &quot;%i%&quot;==&quot;1&quot; goto a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ntsd -c q -pn winlogon.exe</code> 针对2003的命令，会尝试杀死登录进程最终导致蓝屏</p>
+</li>
+<li><p><code>taskkill /im 进程名 /f</code> 强制杀死指定进程</p>
+</li>
+</ul>
+<h1 id="用户管理"><a href="#用户管理" class="headerlink" title="用户管理"></a>用户管理</h1><p>每个账户有自己唯一的SID安全标识符</p>
+<p>win中SID由系统SID与用户UID组成，uid 500 固定给admin用</p>
+<p>账户和密码存储的位置：<code>C:\windows\system32\config\SAM</code></p>
+<p>windows服务器密码默认有效期42天</p>
+<p>winserver默认的五个账户</p>
+<ul>
+<li>administrator 管理员账户</li>
+<li>guest 访客</li>
+<li>system 系统账户</li>
+<li>local services 本地服务账户，权限相当于普通账户</li>
+<li>network serviecs网络服务账户，权限相当于普通账户</li>
+</ul>
+<p>可通过计算机管理中的用户和组管理进行用户的添加</p>
+<p>命令管理用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">net user # 查询系统中所有用户</span><br><span class="line">net user pc # 查询用户pc的相关信息</span><br><span class="line">net user pc 1 # 将用户pc的密码修改为1</span><br><span class="line">net user abc 123 /add # 新建用户abc并给密码123</span><br><span class="line">net user abc /del # 删除用户abc</span><br><span class="line">net user abc /active:yes|no # 启用或禁用用户</span><br></pre></td></tr></table></figure>
+
+<p>命令管理用户组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">net localgroup # 查询系统中所有组</span><br><span class="line">net localgroup administrators # 查询该组信息</span><br><span class="line">net localgroup administrators pc /add # 将pc移入该组</span><br><span class="line">net localgroup administrators pc /del # 移除</span><br><span class="line">net localgroup ceo /add # 添加组</span><br></pre></td></tr></table></figure>
+
+<p>查看自己</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">whoami</span><br><span class="line">whoami /user # 查看sid</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="远程访问"><a href="#远程访问" class="headerlink" title="远程访问"></a>远程访问</h1><h2 id="远程桌面"><a href="#远程桌面" class="headerlink" title="远程桌面"></a>远程桌面</h2><p>服务端计算机属性中将被远程打开，创建用户并将其添加到remote desktop users组，客户端使用mstsc连接</p>
+<p>远程桌面端口 3389</p>
+<h2 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h2><p>在服务管理器中将telnet服务启动，并将允许telnet登录的用户添加到telnetClients用户组，客户端在命令行</p>
+<p>telnet端口 23</p>
+<p><code>telnet 目标ip</code></p>
+<h1 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -an # 查看当前主机开放的所有端口</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>21 FTP</li>
+<li>22 SSH</li>
+<li>23 TELNET</li>
+<li>25 smtp</li>
+<li>80 HTTP</li>
+<li>443 HTTPS</li>
+<li>1443 SQL SERVER</li>
+<li>1521 ORACLE</li>
+<li>3306 MYSQL</li>
+<li>3389 RDP</li>
+</ul>
+<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><p>常见文件系统：<br>windows：</p>
+<ul>
+<li>FAT</li>
+<li>NTFS</li>
+</ul>
+<p>linux：</p>
+<ul>
+<li>EXT</li>
+</ul>
+<h2 id="NTFS"><a href="#NTFS" class="headerlink" title="NTFS"></a>NTFS</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>可提高磁盘读写性能</li>
+<li>可靠<ol>
+<li>加密文件系统</li>
+<li>访问控制列表</li>
+</ol>
+</li>
+<li>磁盘利用率<ol>
+<li>压缩</li>
+<li>磁盘配额</li>
+</ol>
+</li>
+<li>支持单个文件大于4G</li>
+</ol>
+<h3 id="权限控制"><a href="#权限控制" class="headerlink" title="权限控制"></a>权限控制</h3><ul>
+<li><p>默认子项会继承父项的权限，取消继承父项传递的权限：在文件权限中点击高级，取消继承（取消勾选“允许父项的….”）</p>
+</li>
+<li><p>可进行强制继承（刷新子文件夹的权限）</p>
+</li>
+<li><p>父项传递下来的权限无法修改</p>
+</li>
+<li><p>在父目录开启强制继承的情况下，文件复制到该目录后，权限会被修改，而同分区移动文件，该文件权限会保留</p>
+</li>
+<li><p>文件权限</p>
+<ul>
+<li>读取：允许查看文件内容</li>
+<li>写入：允许修改文件内容</li>
+<li>读取和运行：读取和运行</li>
+<li>修改：允许重命名文件或者删除文件，包含读取和写入</li>
+<li>完全控制：所有权限外加修改文件权限或者更改所有者</li>
+</ul>
+</li>
+<li><p>目录权限</p>
+<ul>
+<li>读取：允许查看目录内文件和子目录名称</li>
+<li>写入：允许创建新文件，新建子目录</li>
+<li>列出文件夹目录：允许查看子文件列表</li>
+<li>读取和运行：读取和运行</li>
+<li>修改：允许删除目录本身或者重命名目录</li>
+<li>完全控制：所有权限外加修改权限或者更改所有者</li>
+</ul>
+</li>
+</ul>
+<p>权限累加：一个用户在不同组中对一个文件的权限可以累加</p>
+<p>拒绝：拒绝权限高于允许权限优先级</p>
+<h3 id="共享"><a href="#共享" class="headerlink" title="共享"></a>共享</h3><p>本地用户在网络访问共享目录时，收到该目录共享权限与本地权限的共同控制，取交集，如果只是本地访问，则不受共享权限控制</p>
+<p>隐藏共享：在共享文件名后加$符号，会变成隐藏共享，可通过地址访问但不能在ip的视图下看到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net share # 查看当前主机共享出去的内容</span><br><span class="line">net share sharenm /del # 删除指定共享内容</span><br></pre></td></tr></table></figure>
+
+<p>文件共享服务 Secondary Logon 445端口号</p>
+<h1 id="注册表编辑器"><a href="#注册表编辑器" class="headerlink" title="注册表编辑器"></a>注册表编辑器</h1><p>运行 regedit</p>
+<h1 id="DHCP"><a href="#DHCP" class="headerlink" title="DHCP"></a>DHCP</h1><p>DHCP攻击：</p>
+<ul>
+<li>攻击DHCP服务器<ul>
+<li>生成虚假mac地址申请ip进行非法占用，直到资源耗尽<ul>
+<li>防御：在交换机端口上做动态MAC地址绑定</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>伪装为DHCP服务器进行不可用IP的分发<ul>
+<li>防御：在交换机上设置，除DHCP服务器外禁止发送offer包</li>
+</ul>
+</li>
+</ul>
+<h2 id="DHCP服务安装"><a href="#DHCP服务安装" class="headerlink" title="DHCP服务安装"></a>DHCP服务安装</h2><p>win2003插入光盘镜像，安装可选的windows组件，找到DHCP服务进行安装，安装完成后，本地会占用67和68两个端口号。打开DHCP设置，右键新建作用域，设置起始ip与结束ip，以及子网掩码，可选的配置地址排除；以及租约时间；设置作用域选项：指定网关、DNS服务器。</p>
+<ul>
+<li>VMware（网卡 Vnet1或8）需要设置下将默认的DHCP服务器停用</li>
+</ul>
+<h2 id="服务端操作"><a href="#服务端操作" class="headerlink" title="服务端操作"></a>服务端操作</h2><ul>
+<li>可创建多个资源池</li>
+<li>可对当前配置进行备份</li>
+<li>设置地址保留，对某个mac分配固定的ip</li>
+<li>若有多个作用域，可设置服务器选项，作用域选项优先级大于服务器选项</li>
+</ul>
+<h2 id="客户端操作"><a href="#客户端操作" class="headerlink" title="客户端操作"></a>客户端操作</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /release # 释放已获取的IP地址</span><br><span class="line">ipconfig /renew # 重新获取IP地址（或者续约）</span><br></pre></td></tr></table></figure>
+
+<h1 id="DNS-1"><a href="#DNS-1" class="headerlink" title="DNS"></a>DNS</h1><p>FQDN：完全限定域名，格式为<code>主机名.域名</code></p>
+<ul>
+<li>递归查询：发送dns查询请求后，返回内容为结果，查询细节请求方不予理会</li>
+<li>迭代查询：发送dns查询请求后，返回内容非结果，而是相关的树节点服务器，查询方再根据结果去进行下一步查询</li>
+<li>正向解析：域名到ip</li>
+<li>反向解析：ip到域名</li>
+</ul>
+<p>客户机域名解析过程</p>
+<p>​	本地缓存-》本地hosts-》本地dns服务器</p>
+<p>服务器处理域名过程</p>
+<p>​	dns高速缓存-》本地区域解析文件-》转发器-》根</p>
+<h2 id="服务安装"><a href="#服务安装" class="headerlink" title="服务安装"></a>服务安装</h2><p>安装流程与DHCP安装流程类似</p>
+<p>端口：TCP和UDP的53端口</p>
+<p>主要区域：作为权威解析，设置域名（不包含主机名）</p>
+<p>辅助区域：主服务器允许区域复制，辅助服务器新建“辅助区域”</p>
+<p>正&#x2F; 反向解析配置</p>
+<p>dns分类：</p>
+<ul>
+<li>A 正向解析</li>
+<li>CNAME 别名</li>
+<li>PTR 反向解析</li>
+<li>MX 邮件交换</li>
+<li>NS 域名服务器</li>
+</ul>
+<p>dns服务器分类</p>
+<ul>
+<li>主要名称服务器</li>
+<li>辅助名称服务器</li>
+<li>根名称服务器</li>
+<li>高速缓存名称服务器（缓存名称服务器）</li>
+</ul>
+<h2 id="转发器"><a href="#转发器" class="headerlink" title="转发器"></a>转发器</h2><p>配置转发器以将dns请求转发到外网或者其他dns服务器</p>
+<h2 id="客户端操作-1"><a href="#客户端操作-1" class="headerlink" title="客户端操作"></a>客户端操作</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nslookup name # 查找域名对应ip</span><br><span class="line">ipconfig /flushdns # 清空本地缓存</span><br><span class="line">ipconfig /displaydns # 查看本地缓存</span><br></pre></td></tr></table></figure>
+
+<h1 id="WEB服务器"><a href="#WEB服务器" class="headerlink" title="WEB服务器"></a>WEB服务器</h1><p>HTTP 80</p>
+<p>HTTPS 443</p>
+<p>服务器软件：</p>
+<ul>
+<li>IIS 微软（web和ftp）</li>
+<li>Apache&#x2F;LAMP&#x2F;Tomcat&#x2F;nginx</li>
+</ul>
+<p>可配置相同端口号相同ip，不同域名指向不同项目</p>
+<h2 id="IIS配置"><a href="#IIS配置" class="headerlink" title="IIS配置"></a>IIS配置</h2><ol>
+<li>配置静态IP地址</li>
+<li>安装IIS-WEB插件</li>
+<li>停用默认站点</li>
+<li>新建网站-地址端口绑定-指定站点路径-设置权限</li>
+<li>设置首页</li>
+</ol>
+<h1 id="FTP服务器"><a href="#FTP服务器" class="headerlink" title="FTP服务器"></a>FTP服务器</h1><p>port 20 21</p>
+<p>21 控制端口，接收命令 </p>
+<p>20 主动模式下的数据端口 </p>
+<h2 id="IIS"><a href="#IIS" class="headerlink" title="IIS"></a>IIS</h2><p>iis中的用户使用windows自带的用户管理，权限为取交集</p>
+<h2 id="Serv-U"><a href="#Serv-U" class="headerlink" title="Serv-U"></a>Serv-U</h2><p>非win账号管理</p>
+<h1 id="域"><a href="#域" class="headerlink" title="域"></a>域</h1><h2 id="内网环境"><a href="#内网环境" class="headerlink" title="内网环境"></a>内网环境</h2><ul>
+<li>工作组：默认模式，人人平等，不适合企业管理</li>
+<li>域：有层级关系，适合企业集中管理</li>
+</ul>
+<h2 id="域的组成"><a href="#域的组成" class="headerlink" title="域的组成"></a>域的组成</h2><ul>
+<li>域控制器 DC<ul>
+<li>活动目录 AD</li>
+<li>组策略 GPO</li>
+</ul>
+</li>
+<li>成员机</li>
+<li>域树（子域）-域林</li>
+</ul>
+<h2 id="域的创建"><a href="#域的创建" class="headerlink" title="域的创建"></a>域的创建</h2><p>域会自带DNS，新进成员机会被自动分配主机名</p>
+<h2 id="域的功能"><a href="#域的功能" class="headerlink" title="域的功能"></a>域的功能</h2><ul>
+<li><p>域账号登录</p>
+<p>可使用域中创建的账号登录成员机电脑，认证时，成员机会向DC询问登陆账号是否合法。</p>
+</li>
+</ul>
+<h2 id="winserver安装域"><a href="#winserver安装域" class="headerlink" title="winserver安装域"></a>winserver安装域</h2><ul>
+<li><p>配置静态ip并去掉dns指向</p>
+</li>
+<li><p>开始-运行-<code>dcpromo</code>安装活动目录</p>
+<p>安装过程会引导将当前计算机作为DNS服务器</p>
+<p>新林新域</p>
+</li>
+<li><p>安装后重启，本地管理员升级为域管理员</p>
+</li>
+<li><p>会自动在DNS中创建dc域</p>
+</li>
+</ul>
+<h2 id="域管理"><a href="#域管理" class="headerlink" title="域管理"></a>域管理</h2><p>新计算机加入域：</p>
+<ul>
+<li><p>客户机将dns改到dc</p>
+</li>
+<li><p>客户机更改计算机名（工作组）将工作组改为域，确定后输入域管理员的用户名和密码，重启。</p>
+</li>
+<li><p>dc新建user</p>
+<ul>
+<li>所属用户组 domain users</li>
+</ul>
+</li>
+<li><p>成员机使用新建的user登录dc（非本机）</p>
+</li>
+</ul>
+<p>可以将域用户添加到成员机的本地管理员组中</p>
+<p><strong>组织单位OU</strong></p>
+<p>用于下发组策略，将User和Computer移动到其中。</p>
+<p>针对User做的限制，不管该User在哪台电脑上登陆都生效，对Computer做的限制，不管哪个用户登录都生效</p>
+<p>OU中也可添加用户组</p>
+<p><strong>组策略GPO</strong></p>
+<p>对当前OU做限制</p>
+<p>策略应用顺序：LSDOU： local&gt;林&gt;域&gt;OU</p>
+<p>后应用会覆盖前应用的，未配置的不算</p>
+<ul>
+<li><p>OU中上级可对下级做强制策略，此时下层级无法再覆盖 </p>
+</li>
+<li><p>下级可对上级进行阻止继承，则上级配置均不生效，但无法阻止强制</p>
+</li>
+</ul>
+<p>常用策略：</p>
+<ul>
+<li>开机&#x2F;登录&#x2F;关机&#x2F;注销自动运行脚本</li>
+<li>去除开机ctrl alt del 操作</li>
+<li>密码格式限制</li>
+</ul>
+<h1 id="PKI-公钥基础设施"><a href="#PKI-公钥基础设施" class="headerlink" title="PKI 公钥基础设施"></a>PKI 公钥基础设施</h1><p>通过加密计数和数字签名技术保证信息的安全；公钥加密技术、数字证书、CA证书机构、RA注册机构</p>
+<p>子CA可以理解为RA，但是这里网上说法各不相同，有的人说RA没有自己的证书，只负责注册，有的人说RA就是子级CA，有自己的证书</p>
+<h2 id="信息安全三要素"><a href="#信息安全三要素" class="headerlink" title="信息安全三要素"></a>信息安全三要素</h2><ol>
+<li>机密性：无法被他人获取信息</li>
+<li>完整性：无法被他人修改信息</li>
+<li>身份验证&#x2F;操作不可否认性：身份可确认</li>
+</ol>
+<h2 id="用到PKI的地方"><a href="#用到PKI的地方" class="headerlink" title="用到PKI的地方"></a>用到PKI的地方</h2><ul>
+<li>SSL</li>
+<li>IPsecVPN</li>
+<li>部分远程访问VPN</li>
+</ul>
+<h2 id="公钥加密技术"><a href="#公钥加密技术" class="headerlink" title="公钥加密技术"></a>公钥加密技术</h2><ol>
+<li>对称加密<br>DES、3DES、AES</li>
+<li>非对称加密算法<br>RSA、DSA、DH</li>
+<li>HASH，不可逆<br>MD5、SHA-长度</li>
+</ol>
+<p>私钥签名（hash摘要（公钥加密（原文））)</p>
+<p>证书：</p>
+<p>证书格式遵循X.509标准</p>
+<p>包含</p>
+<ul>
+<li>使用者公钥</li>
+<li>使用者标识</li>
+<li>有效期</li>
+<li>颁发者标识</li>
+<li>颁发者的数字签名</li>
+</ul>
+<p>公钥加密是为了机密性，私钥签名是为了防篡改，且验证身份</p>
+<h2 id="CA创建"><a href="#CA创建" class="headerlink" title="CA创建"></a>CA创建</h2><ul>
+<li>选择算法类型</li>
+<li>设置CA名称</li>
+<li>给CA自己颁发证书，注意，该证书失效后会导致所有依赖该证书的证书全部失效</li>
+</ul>
+<h2 id="证书申请"><a href="#证书申请" class="headerlink" title="证书申请"></a>证书申请</h2><p>网站服务器自己先生成好公私钥，然后将公钥与自己的信息一起，作为一个申请提交给CA，从CA上申请证书，</p>
+<p>CA审批通过后，可以下载证书或者证书链，然后将证书文件放在服务器上</p>
+<h2 id="证书信任"><a href="#证书信任" class="headerlink" title="证书信任"></a>证书信任</h2><p>在ie的internet选项中》内容》证书》受信任的根证书颁发机构</p>
+<h2 id="双向认证"><a href="#双向认证" class="headerlink" title="双向认证"></a>双向认证</h2><p>有的情况下需要客户端也申请证书，互相交换</p>
+<p>申请证书后可以安装到浏览器中</p>
+<h1 id="渗透简单测试流程"><a href="#渗透简单测试流程" class="headerlink" title="渗透简单测试流程"></a>渗透简单测试流程</h1><ol>
+<li><p>被渗透方授权</p>
+</li>
+<li><p>信息收集</p>
+<ol>
+<li>nslookup</li>
+<li>whois</li>
+</ol>
+</li>
+<li><p>扫描漏洞</p>
+<ol>
+<li>namp ip范围、端口</li>
+<li>高级扫描 IIS漏洞、网站漏洞</li>
+</ol>
+</li>
+<li><p>漏洞利用</p>
+</li>
+<li><p>提权（shell）</p>
+</li>
+<li><p>删除日志</p>
+</li>
+<li><p>留后门</p>
+</li>
+<li><p>渗透测试报告</p>
+</li>
+</ol>
+<h2 id="445攻击"><a href="#445攻击" class="headerlink" title="445攻击"></a>445攻击</h2><p>windows scanport 获取服务器端口开放状态</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250803175815648.png" alt="image-20250803175815648"></p>
+<p>445漏洞利用<code>IPC$</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># net use 挂载远程路径到f盘</span><br><span class="line">net use f: \\ip\share 密码 /user:账号</span><br><span class="line"># 删除f</span><br><span class="line">net use f: /del</span><br></pre></td></tr></table></figure>
+
+<p>暴力破解系统密码by445：</p>
+<p>使用软件NTscan，配合dic文件</p>
+<p>使用密码字典生成工具生成dic文件尝试出密码</p>
+<p>使用netuse连接IPC$</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use \\ip\ipc$ 密码 /user:账号</span><br></pre></td></tr></table></figure>
+
+<p>制作木马</p>
+<p>将木马上传到目标服务器</p>
+<p>使用计划任务启用该木马</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 获取目标服务器时间</span><br><span class="line">net time \\ip</span><br><span class="line"># 设置定时任务</span><br><span class="line">at \\ip 时间 &quot;文件地址&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="扫描与爆破"><a href="#扫描与爆破" class="headerlink" title="扫描与爆破"></a>扫描与爆破</h1><ul>
+<li>nmap 端口扫描软件</li>
+<li>hydra 九头蛇，爆破软件</li>
+</ul>
+<h2 id="扫描技术"><a href="#扫描技术" class="headerlink" title="扫描技术"></a>扫描技术</h2><ul>
+<li>主机探测：扫描网段下有哪些主机存活</li>
+<li>端口扫描：寻找在线主机开放的端口</li>
+</ul>
+<h2 id="NMAP"><a href="#NMAP" class="headerlink" title="NMAP"></a>NMAP</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-sP ping扫描</span><br><span class="line">-p 指定端口范围</span><br><span class="line">-sV 服务版本探测</span><br><span class="line">-O 操作系统探测</span><br><span class="line">-A 全面扫描</span><br><span class="line">-oN 保存txt</span><br><span class="line"></span><br><span class="line">// 扫描地址 </span><br><span class="line">nmap -sP 10.1.1.0/24 // 标记网段，若ip写全但标记网段，则网段外的主机地址无意义</span><br></pre></td></tr></table></figure>
+
+<h2 id="HYDRA"><a href="#HYDRA" class="headerlink" title="HYDRA"></a>HYDRA</h2><p>用于密码爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hydra -l 用户名 -p 密码 目标主机名 协议名</span><br><span class="line">-L 用户字典</span><br><span class="line">-P 密码字典</span><br><span class="line">// 举例</span><br><span class="line">hydra -l admin -P /home/dic.txt 10.1.1.1 ftp</span><br></pre></td></tr></table></figure>
+
+<h1 id="Win密码破解"><a href="#Win密码破解" class="headerlink" title="Win密码破解"></a>Win密码破解</h1><h2 id="WIN7-x2F-Winserver内存密码"><a href="#WIN7-x2F-Winserver内存密码" class="headerlink" title="WIN7&#x2F;Winserver内存密码"></a>WIN7&#x2F;Winserver内存密码</h2><p>win7，win2003在用户登陆后，会将密码暂时存在内存中，此时通过特定工具可从内存中获取密码</p>
+<h2 id="本地爆破"><a href="#本地爆破" class="headerlink" title="本地爆破"></a>本地爆破</h2><p>找到SAM文件，获取其中的hash值，使用工具跑字典暴力破解</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250916202704986.png" alt="image-20250916202704986"></p>
+<h2 id="win7（早期win10）破解密码"><a href="#win7（早期win10）破解密码" class="headerlink" title="win7（早期win10）破解密码"></a>win7（早期win10）破解密码</h2><p>在开机，展示win徽标启动动画时强制断电，再次启动时选择修复（而非正常启动），修复失败时会弹出对话框，选择查看问题详细信息，其中有超链接，点击会打开记事本，在记事本的“打开”选项中可以操作系统内文件，将粘滞键的程序sethc改为cmd程序，再次启动系统后按五次shift即可启动cmd，在其中重新修改用户密码（或者新建用户并提权）即可。</p>
+<p>cmd工具路径&#96;C:&#x2F;Windows&#x2F;system32&#x2F;cmd</p>
+<h2 id="PE更改（破解）windows密码"><a href="#PE更改（破解）windows密码" class="headerlink" title="PE更改（破解）windows密码"></a>PE更改（破解）windows密码</h2><p>进入PE后修改C:\windows\system32\config\SAM文件中的hash值，只能修改无法查看</p>
+<h1 id="互联网基础"><a href="#互联网基础" class="headerlink" title="互联网基础"></a>互联网基础</h1><p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250918205332266.png" alt="image-20250918205332266"></p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250918204619925.png" alt="image-20250918204619925"></p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250918205124326.png" alt="image-20250918205124326"></p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250919214052890.png" alt="image-20250919214052890"></p>
+<p>console线一般连接电脑的一端使用com口</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250922210546060.png" alt="image-20250922210546060"></p>
+<p>交换机通过mac地址表判断该往哪发，没有的话就广播，只要某个mac地址通过一次交换机端口，交换机就会记录</p>
+<h2 id="交换机的工作原理"><a href="#交换机的工作原理" class="headerlink" title="交换机的工作原理"></a>交换机的工作原理</h2><p>收到一个数据帧后</p>
+<ul>
+<li>学习帧中的源mac地址形成mac地址表</li>
+<li>检查帧中的mac地址，并匹配mac地址表<ul>
+<li>若有匹配项，则单播转发</li>
+<li>若没有，则除接收端口外，广播</li>
+</ul>
+</li>
+<li>MAC地址表的默认老化时间为300秒</li>
+<li>交换机端口<ul>
+<li>E 10Mb</li>
+<li>F 100Mb</li>
+<li>G 1000Mb</li>
+<li>Te 10000Mb</li>
+<li>F0&#x2F;1 其中0为模块号，1为接口号</li>
+</ul>
+</li>
+<li>端口状态有两种<ul>
+<li>up</li>
+<li>down<ul>
+<li>人工down掉</li>
+<li>速率不匹配</li>
+<li>双工模式不匹配（单工，半双工，全双工）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>交换机第一次配置需要使用console线，pc上需安装对应的超级终端类程序</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><h3 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h3><ul>
+<li><p>用户模式Switch&gt;：可以查看基本配置信息但不能修改</p>
+</li>
+<li><p>配置模式&#x2F;特权模式Switch#：用户模式下输入enable，可以查看所有配置但不能修改</p>
+</li>
+<li><p>全局配置模式Switch(config)#：配置模式下输入configure terminal，简写 conf t，可修改全局配置，默认不能查看配置</p>
+</li>
+<li><p>接口配置模式：全局配置下使用interface 指定要配置的接口，可只对该接口配置，默认不能查看配置</p>
+</li>
+<li><p>console口&#x2F;线&#x2F;控制台模式：全局模式下输入line console 0</p>
+</li>
+</ul>
+<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><ul>
+<li><p>exit退回一级，end退回到特权模式</p>
+</li>
+<li><p>可使用缩写</p>
+</li>
+<li><p>？可用于提示命令</p>
+</li>
+<li><p>tab可补全</p>
+</li>
+<li><p>hostname 修改用户名称立即生效</p>
+</li>
+<li><p>password 设置密码</p>
+</li>
+<li><p>login 启用认证</p>
+</li>
+<li><p>ctrl+u 清空当前行命令</p>
+</li>
+<li><p>ctrl+a 到行首</p>
+</li>
+<li><p>ctrl+e 到行尾</p>
+</li>
+<li><p>在第一次开机时，系统会在内存中创建<code>running-config</code>文件，用于存储配置</p>
+</li>
+<li><p>在特权模式下，<code>copy running-config startup-config</code>保存配置，缩写<code>wr</code></p>
+</li>
+<li><p>系统开机时若发现系统中存在startup文件，则会将其复制到runnig-config文件中，否则创建新的running-config文件</p>
+</li>
+<li><p>查看当前配置：<code>show running-config</code>缩写<code>sh run</code></p>
+</li>
+<li><p>重启设备<code>reload</code></p>
+</li>
+<li><p>配置特权密码，同时配置明文和密文密码，明文会失效</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conf t	</span><br><span class="line">enable password 明文密码</span><br><span class="line">enable secret MD5</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>清除配置<code>earse st</code></p>
+</li>
+<li><p>查看mac地址表<code>show mac-address-table</code></p>
+</li>
+<li><p>查看交换机上所有的接口<code>show ip interface brief</code>brief是简要信息，简写<code>show ip int b</code></p>
+</li>
+<li><p>down一个接口：进入接口配置<code>shutdown</code></p>
+</li>
+<li><p>启用一个接口：进入接口配置<code>no shutdown</code></p>
+</li>
+<li><p>取消一条配置：<code>no ...</code></p>
+</li>
+<li><p>其他模式下使用特权命令<code>do ...</code></p>
+</li>
+<li><p>关闭自动解析域名（避免敲错命令卡住）<code>conf t下 no ip domain-lookup</code></p>
+</li>
+</ul>
+<h3 id="路由器命令"><a href="#路由器命令" class="headerlink" title="路由器命令"></a>路由器命令</h3><p>路由器命令与交换机类似</p>
+<p>出厂状态下，二层接口都是开启状态，三层接口是关闭状态，需要使用no shutdown开启</p>
+<ul>
+<li><p>进入某个接口配置</p>
+</li>
+<li><p><code>ip address ip地址 掩码</code> 为某个接口上的网卡配置ip地址以及掩码（网段）</p>
+</li>
+</ul>
+<h3 id="远程访问-1"><a href="#远程访问-1" class="headerlink" title="远程访问"></a>远程访问</h3><ul>
+<li><p>开启远程访问：全局配置模式下<code>line vty 0 4</code>开启4个虚拟端口（默认使用telnet），最多15个，同时进入远程配置模式</p>
+<ul>
+<li>使用password 设置telnet密码</li>
+<li>客户机使用telnet连接，无需输入端口，默认开23端口</li>
+<li>调整telnet端口号<code>transport input telnet</code></li>
+</ul>
+</li>
+<li><p>开启ssh</p>
+<ul>
+<li>修改路由器用户名<code>host r1</code></li>
+<li>修改域名<code>ip domain-name r1.boranget</code> 将域名修改为r1.boranget</li>
+<li>生成密钥<code>crypto key generate rsa</code></li>
+<li>启用ssh<code>transport input ssh</code></li>
+<li>客户端上使用r1作为用户名连接</li>
+</ul>
+</li>
+<li><p>本地认证（用户名密码表）</p>
+<ul>
+<li><code>no login</code> 关闭身份验证</li>
+<li><code>login local </code> 启用本地身份认证</li>
+<li><code>username zhangsan password 1234qwer</code>添加一条认证信息</li>
+</ul>
+</li>
+<li><p>交换机远程访问</p>
+<p>  交换机是二层设备，所以交换机理论上是没有IP地址的，但企业型的交换机会在其中部署一台内置终端，叫做虚拟IP，使用该终端可进行远程访问</p>
+<ul>
+<li><code>conf t</code></li>
+<li><code>int vlan 1</code> &#x2F;&#x2F; 打开虚拟接口</li>
+<li><code>p add ip地址 子网掩码</code> 为虚拟接口添加ip地址</li>
+<li>若想要被非同一网段下的pc控制，由于收到包后还要回包，回包需要找到网关，所以需要给虚拟端口配置网关<code>ip default-gateway 网关ip地址</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="网络抓包"><a href="#网络抓包" class="headerlink" title="网络抓包"></a>网络抓包</h1><h2 id="科来"><a href="#科来" class="headerlink" title="科来"></a>科来</h2><h2 id="wireshark"><a href="#wireshark" class="headerlink" title="wireshark"></a>wireshark</h2><h1 id="IP包头"><a href="#IP包头" class="headerlink" title="IP包头"></a>IP包头</h1><p>20-60字节</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250929203746354.png" alt="image-20250929203746354"></p>
+<ul>
+<li><p>优先级与服务类型：运行商用的比较多</p>
+</li>
+<li><p>总长度：IP包的总长度</p>
+<p>  <img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20250929210013913.png" alt="image-20250929210013913"></p>
+</li>
+<li><p>标识符：标识不同的IP包（分类分片）</p>
+</li>
+<li><p>标志位：第二位1被分片；第三位0当前分片为最后一个分片<br>  Teardrop 攻击：攻击者故意构造畸形的分片数据包，使后续分片的起始偏移量小于前序分片结束偏移量，即存在重叠区域，引发系统崩溃，现在所有防火墙都开启了010防御：只有010的允许通过，所以分片交给应用层去做</p>
+</li>
+<li><p>段偏移量：分片的情况下，当前分片的偏移量</p>
+</li>
+<li><p>ttl：每碰到一个路由器减一，为0时丢弃</p>
+</li>
+<li><p>类型：6-TCP；17-UDP；1-ICMP</p>
+</li>
+<li><p>首部校验：只校验20个字节的首部</p>
+</li>
+</ul>
+<h1 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h1><p>路由器收到请求后会从路由表中查找该请求的目标ip段，若没找到则会干掉该包且向源主机相应icmp报错</p>
+<p>C为直连接口，S为手动配置的静态路由</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20251013202352688.png" alt="image-20251013202352688"></p>
+<p>边缘路由器可以配置默认路由</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20251013204728224.png" alt="image-20251013204728224"></p>
+<p>路由表中条目是有优先级的，优先级可以调整</p>
+<p>配置：</p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20251013205652821.png" alt="image-20251013205652821"></p>
+<p><img src="/2025/07/02/%E7%AC%94%E8%AE%B0/%E7%BD%91%E5%AE%89/%E7%BD%91%E5%AE%89/image-20251013205925985.png" alt="image-20251013205925985"></p>
+<p>查看路由表：</p>
+<p><code>do show ip route</code></p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全</a></div><div class="post_share"><div class="social-share" data-image="/assets/img/tx.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/08/27/%E7%AC%94%E8%AE%B0/SAP-JCO/SAP-JCO/" title="SAP-JCO"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">SAP-JCO</div></div></a></div><div class="next-post pull-right"><a href="/2025/07/01/%E7%AC%94%E8%AE%B0/%E7%89%9B%E5%AE%A2%E7%BB%8F%E5%85%B8%E5%BF%85%E5%88%B7%E7%BC%96%E7%A8%8B%E9%A2%98%E5%BA%93/%E7%89%9B%E5%AE%A2%E7%BB%8F%E5%85%B8%E5%BF%85%E5%88%B7%E7%BC%96%E7%A8%8B%E9%A2%98%E5%BA%93/" title="牛客经典必刷编程题库"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">牛客经典必刷编程题库</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/assets/img/tx.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Boranget</div><div class="author-info__description">整理的一些笔记和平时的一些经验</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">198</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">206</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Boranget"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">笔记分类是一些看书或者网课做的笔记，经验分类一般是平时碰到的问题或者折腾的一些小东西。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">虚拟化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#IP"><span class="toc-number">2.</span> <span class="toc-text">IP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87"><span class="toc-number">2.1.</span> <span class="toc-text">设备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IP%E5%9C%B0%E5%9D%80"><span class="toc-number">2.2.</span> <span class="toc-text">IP地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81"><span class="toc-number">2.3.</span> <span class="toc-text">子网掩码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A9%E6%9C%9F%E4%BA%94%E7%B1%BB%E5%9C%B0%E5%9D%80"><span class="toc-number">2.3.1.</span> <span class="toc-text">早期五类地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E7%8E%AF%E5%9C%B0%E5%9D%80"><span class="toc-number">2.4.</span> <span class="toc-text">回环地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E5%85%B3"><span class="toc-number">2.5.</span> <span class="toc-text">网关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IP%E5%9C%B0%E5%9D%80%E8%AE%BE%E7%BD%AE"><span class="toc-number">2.6.</span> <span class="toc-text">IP地址设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DNS"><span class="toc-number">2.7.</span> <span class="toc-text">DNS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ping"><span class="toc-number">2.8.</span> <span class="toc-text">ping</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DOS%E5%91%BD%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">DOS命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">用户管理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE"><span class="toc-number">5.</span> <span class="toc-text">远程访问</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2"><span class="toc-number">5.1.</span> <span class="toc-text">远程桌面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#telnet"><span class="toc-number">5.2.</span> <span class="toc-text">telnet</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3"><span class="toc-number">6.</span> <span class="toc-text">端口</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">7.</span> <span class="toc-text">文件系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NTFS"><span class="toc-number">7.1.</span> <span class="toc-text">NTFS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E7%82%B9"><span class="toc-number">7.1.1.</span> <span class="toc-text">特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6"><span class="toc-number">7.1.2.</span> <span class="toc-text">权限控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B1%E4%BA%AB"><span class="toc-number">7.1.3.</span> <span class="toc-text">共享</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E8%A1%A8%E7%BC%96%E8%BE%91%E5%99%A8"><span class="toc-number">8.</span> <span class="toc-text">注册表编辑器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DHCP"><span class="toc-number">9.</span> <span class="toc-text">DHCP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#DHCP%E6%9C%8D%E5%8A%A1%E5%AE%89%E8%A3%85"><span class="toc-number">9.1.</span> <span class="toc-text">DHCP服务安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%93%8D%E4%BD%9C"><span class="toc-number">9.2.</span> <span class="toc-text">服务端操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%93%8D%E4%BD%9C"><span class="toc-number">9.3.</span> <span class="toc-text">客户端操作</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DNS-1"><span class="toc-number">10.</span> <span class="toc-text">DNS</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%AE%89%E8%A3%85"><span class="toc-number">10.1.</span> <span class="toc-text">服务安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E5%8F%91%E5%99%A8"><span class="toc-number">10.2.</span> <span class="toc-text">转发器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%93%8D%E4%BD%9C-1"><span class="toc-number">10.3.</span> <span class="toc-text">客户端操作</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#WEB%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">11.</span> <span class="toc-text">WEB服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#IIS%E9%85%8D%E7%BD%AE"><span class="toc-number">11.1.</span> <span class="toc-text">IIS配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FTP%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">12.</span> <span class="toc-text">FTP服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#IIS"><span class="toc-number">12.1.</span> <span class="toc-text">IIS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Serv-U"><span class="toc-number">12.2.</span> <span class="toc-text">Serv-U</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%9F"><span class="toc-number">13.</span> <span class="toc-text">域</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E7%8E%AF%E5%A2%83"><span class="toc-number">13.1.</span> <span class="toc-text">内网环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">13.2.</span> <span class="toc-text">域的组成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">13.3.</span> <span class="toc-text">域的创建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="toc-number">13.4.</span> <span class="toc-text">域的功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#winserver%E5%AE%89%E8%A3%85%E5%9F%9F"><span class="toc-number">13.5.</span> <span class="toc-text">winserver安装域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E7%AE%A1%E7%90%86"><span class="toc-number">13.6.</span> <span class="toc-text">域管理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PKI-%E5%85%AC%E9%92%A5%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD"><span class="toc-number">14.</span> <span class="toc-text">PKI 公钥基础设施</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E4%B8%89%E8%A6%81%E7%B4%A0"><span class="toc-number">14.1.</span> <span class="toc-text">信息安全三要素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E5%88%B0PKI%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">14.2.</span> <span class="toc-text">用到PKI的地方</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86%E6%8A%80%E6%9C%AF"><span class="toc-number">14.3.</span> <span class="toc-text">公钥加密技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CA%E5%88%9B%E5%BB%BA"><span class="toc-number">14.4.</span> <span class="toc-text">CA创建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7"><span class="toc-number">14.5.</span> <span class="toc-text">证书申请</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%81%E4%B9%A6%E4%BF%A1%E4%BB%BB"><span class="toc-number">14.6.</span> <span class="toc-text">证书信任</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E5%90%91%E8%AE%A4%E8%AF%81"><span class="toc-number">14.7.</span> <span class="toc-text">双向认证</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%97%E9%80%8F%E7%AE%80%E5%8D%95%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="toc-number">15.</span> <span class="toc-text">渗透简单测试流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#445%E6%94%BB%E5%87%BB"><span class="toc-number">15.1.</span> <span class="toc-text">445攻击</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E4%B8%8E%E7%88%86%E7%A0%B4"><span class="toc-number">16.</span> <span class="toc-text">扫描与爆破</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E6%8A%80%E6%9C%AF"><span class="toc-number">16.1.</span> <span class="toc-text">扫描技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NMAP"><span class="toc-number">16.2.</span> <span class="toc-text">NMAP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HYDRA"><span class="toc-number">16.3.</span> <span class="toc-text">HYDRA</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Win%E5%AF%86%E7%A0%81%E7%A0%B4%E8%A7%A3"><span class="toc-number">17.</span> <span class="toc-text">Win密码破解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#WIN7-x2F-Winserver%E5%86%85%E5%AD%98%E5%AF%86%E7%A0%81"><span class="toc-number">17.1.</span> <span class="toc-text">WIN7&#x2F;Winserver内存密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E7%88%86%E7%A0%B4"><span class="toc-number">17.2.</span> <span class="toc-text">本地爆破</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#win7%EF%BC%88%E6%97%A9%E6%9C%9Fwin10%EF%BC%89%E7%A0%B4%E8%A7%A3%E5%AF%86%E7%A0%81"><span class="toc-number">17.3.</span> <span class="toc-text">win7（早期win10）破解密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PE%E6%9B%B4%E6%94%B9%EF%BC%88%E7%A0%B4%E8%A7%A3%EF%BC%89windows%E5%AF%86%E7%A0%81"><span class="toc-number">17.4.</span> <span class="toc-text">PE更改（破解）windows密码</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%92%E8%81%94%E7%BD%91%E5%9F%BA%E7%A1%80"><span class="toc-number">18.</span> <span class="toc-text">互联网基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">18.1.</span> <span class="toc-text">交换机的工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C"><span class="toc-number">18.2.</span> <span class="toc-text">操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F"><span class="toc-number">18.2.1.</span> <span class="toc-text">模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4"><span class="toc-number">18.2.2.</span> <span class="toc-text">命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E5%99%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">18.2.3.</span> <span class="toc-text">路由器命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE-1"><span class="toc-number">18.2.4.</span> <span class="toc-text">远程访问</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%8A%93%E5%8C%85"><span class="toc-number">19.</span> <span class="toc-text">网络抓包</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%91%E6%9D%A5"><span class="toc-number">19.1.</span> <span class="toc-text">科来</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#wireshark"><span class="toc-number">19.2.</span> <span class="toc-text">wireshark</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#IP%E5%8C%85%E5%A4%B4"><span class="toc-number">20.</span> <span class="toc-text">IP包头</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1"><span class="toc-number">21.</span> <span class="toc-text">路由</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/28/%E7%BB%8F%E9%AA%8C/%E9%BB%91%E7%A5%9E%E8%AF%9D%E7%A0%B4%E8%A7%A3%E7%89%88%E8%BF%90%E8%A1%8C/%E9%BB%91%E7%A5%9E%E8%AF%9D%E7%A0%B4%E8%A7%A3%E7%89%88%E8%BF%90%E8%A1%8C/" title="黑神话破解版运行">黑神话破解版运行</a><time datetime="2026-01-28T07:51:40.000Z" title="更新于 2026-01-28 15:51:40">2026-01-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/11/%E7%AC%94%E8%AE%B0/mi6x%E7%9B%B4%E4%BE%9B%E7%94%B5/mi6x%E7%9B%B4%E4%BE%9B%E7%94%B5/" title="mi6x直供电">mi6x直供电</a><time datetime="2026-01-11T15:35:19.000Z" title="更新于 2026-01-11 23:35:19">2026-01-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/07/%E7%AC%94%E8%AE%B0/win11%E5%90%AF%E5%8A%A8%E8%87%AA%E5%8A%A8%E6%89%93%E5%BC%80%E7%83%AD%E7%82%B9/win11%E5%90%AF%E5%8A%A8%E8%87%AA%E5%8A%A8%E6%89%93%E5%BC%80%E7%83%AD%E7%82%B9/" title="win11启动自动打开热点">win11启动自动打开热点</a><time datetime="2026-01-07T02:35:19.000Z" title="更新于 2026-01-07 10:35:19">2026-01-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/07/%E7%AC%94%E8%AE%B0/%E6%8A%93%E5%8F%96B%E7%AB%99%E7%9B%B4%E6%92%AD%E9%97%B4%E5%BC%B9%E5%B9%95/%E6%8A%93%E5%8F%96B%E7%AB%99%E7%9B%B4%E6%92%AD%E9%97%B4%E5%BC%B9%E5%B9%95/" title="抓取B站直播间弹幕">抓取B站直播间弹幕</a><time datetime="2026-01-07T02:35:19.000Z" title="更新于 2026-01-07 10:35:19">2026-01-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/20/%E7%AC%94%E8%AE%B0/Dart/Dart/" title="Dart">Dart</a><time datetime="2025-12-20T02:35:19.000Z" title="更新于 2025-12-20 10:35:19">2025-12-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Boranget</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
