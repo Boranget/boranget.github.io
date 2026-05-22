@@ -667,3 +667,11 @@ jdbc:mysql://localhost:3306/file_sys?useUnicode=true&characterEncoding=utf-8&ser
 可通过mybatis配置文件中：lazyloadingenable参数启用
 
 延迟加载是使用cglib实现的，将目标对象进行代理后，当程序中调用目标方法时，则会被增强的invoke方法拦截，若发现改值为空，则会进行关联查询
+
+# 注释
+
+mapper文件中SQL语句中最好不要使用`--`注释，若注释的内容中含有`#{}`
+mybatis会把 SQL 里所有出现 `#{}` 的地方全部找出来，并尝试注入
+
+`<!-- -->` 是 **XML 注释**，可以在MyBatis 读取 SQL 之前删掉
+

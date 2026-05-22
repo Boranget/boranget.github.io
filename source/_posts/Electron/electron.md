@@ -10,49 +10,36 @@ categories:
 
 # 安装
 
-**核心原因**：electron 二进制包不使用 npm registry 镜像，需单独配置 `ELECTRON_MIRROR`；
-
-#### 方式 1：临时配置（仅当前终端生效）
-
-在执行 `npm install` 前，先设置环境变量指定 electron 国内镜像：
-
-```
-# Windows PowerShell 执行
-$env:ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
-$env:ELECTRON_CUSTOM_DIR="{{ version }}"
-
-# 然后执行安装
-npm install
-```
-
-#### 方式 2：永久配置（所有终端生效）
-
-1. 打开系统环境变量配置（Win+R 输入 `sysdm.cpl` → 高级 → 环境变量）；
-
-2. 「用户变量」中新建两个变量：
-
-   - 变量名：`ELECTRON_MIRROR`，变量值：`https://npmmirror.com/mirrors/electron/`
-   - 变量名：`ELECTRON_CUSTOM_DIR`，变量值：`{{ version }}`
-
-3. 保存后关闭所有终端，重新打开项目目录执行：
-
-   ```
-   npm install
-   ```
-
-#### 方式 3：通过 .npmrc 配置（项目级永久生效）
+####  .npmrc 配置（项目级永久生效）
 
 在项目根目录新建 / 编辑 `.npmrc` 文件，添加以下内容：
 
 ```
-# npm 镜像
-registry=https://registry.npmmirror.com/
-# electron 镜像
-electron_mirror=https://npmmirror.com/mirrors/electron/
-electron_custom_dir={{ version }}
+# 设置 npm 镜像源
+registry=https://registry.npmmirror.com
+# 设置electron镜像源
+ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+# 设置Nodejs二进制镜像源
+NODE_MIRROR=https://npmmirror.com/mirrors/node/
+# 设置electron-builder二进制镜像源
+ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/
 ```
 
 保存后执行 `npm install` 即可。
+
+最新版的node不支持下面三个变量了，需配置的系统环境变量中
+
+```
+# 设置环境变量（仅当前PowerShell窗口有效）
+$env:ELECTRON_MIRROR = "https://npmmirror.com/mirrors/electron/"
+$env:NODE_MIRROR = "https://npmmirror.com/mirrors/node/"
+$env:ELECTRON_BUILDER_BINARIES_MIRROR = "https://npmmirror.com/mirrors/electron-builder-binaries/"
+
+# 验证是否生效（执行后会显示设置的地址）
+$env:ELECTRON_MIRROR
+```
+
+
 
 # npm install
 
