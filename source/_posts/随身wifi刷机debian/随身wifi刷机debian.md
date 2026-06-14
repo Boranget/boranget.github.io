@@ -15,6 +15,10 @@ categories:
 
 [随身WiFi刷纯净版Debian教程+Debian设置中文+插手机卡上网+设置主机名内存4G剩2.4G_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1oT411n75V/?spm_id_from=333.880.my_history.page.click&vd_source=7103983ce7cdb97d8715a21074de9a20)
 
+[win10 fastboot找不到设备_adb reboot bootloader无法找到设备-CSDN博客](https://blog.csdn.net/qq_33529867/article/details/113665717)
+
+[几块钱的随身 Wi-Fi 刷 openwrt 变成随身软路由_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV16a411L7tt/?spm_id_from=333.337.search-card.all.click&vd_source=7103983ce7cdb97d8715a21074de9a20)
+
 # 购买
 
 选择为410的芯片的主板，可以查看店铺购买评论来判断, 一般客服也不知道
@@ -165,12 +169,10 @@ win11
 ## 刷机
 
 1. 重新把棒子插到电脑上, 进入tool文件夹, cmd执行adb reboot bootloader, cmd执行fastboot devices, 出现设备列表则说明棒子已经进入fastboot模式
-
-2. 进入base文件夹, 运行flash.bat,一路回车,直到cmd窗口关闭
-
-3. 进入debian文件夹, 运行flash.bat, 一路回车, 直到显示all done, 再次回车cmd窗口关闭
-
-4. 此时系统已经刷入, 将棒子拔下来重新插入
+2. 若进入fastboot模式但是扫描不到，更新驱动为 android bootloader device
+3. 进入base文件夹, 运行flash.bat,一路回车,直到cmd窗口关闭
+4. 进入debian文件夹, 运行flash.bat, 一路回车, 直到显示all done, 再次回车cmd窗口关闭
+5. 此时系统已经刷入, 将棒子拔下来重新插入
 
 ## 更换驱动
 
@@ -229,6 +231,16 @@ win11
 
 ### 更新依赖
 
+```
+cat > /etc/apt/sources.list <<EOF
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian-security/ bullseye-security main contrib non-free
+EOF
+```
+
+
+
 ```bash
 true > /etc/apt/sources.list.d/mobian.list
 apt-get update
@@ -253,6 +265,29 @@ dpkg-reconfigure locales
 reboot
 ```
 
+# 安装docker
+
+```
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+```
+
+```
+# 配置docker镜像
+cat > /etc/docker/daemon.json <<EOF
+{
+  "registry-mirrors": [
+    "https://mirrors.tuna.tsinghua.edu.cn/dockerhub/",
+    "https://hub-mirror.c.163.com"
+  ]
+}
+EOF
+
+systemctl daemon-reload
+systemctl restart docker
+```
+
+
+
 ## 一些命令
 
 ### 查看磁盘剩余空间 
@@ -275,3 +310,17 @@ vi /etc/rc.local
 
 
 
+# OPENWRT做无线网卡
+
+使用苏苏小亮亮的工具刷成openwrt后，插上电脑，切换为NDIS驱动
+
+- 访问192.168.1.1
+- 无密码登录
+- 进入高级配置
+- 进入网络-无线：
+  - 删除原先的旧无线，点击扫描，找到要连接的wifi，输入密码连接，
+  - 防火墙选wan
+  - 工作频率选40
+- 网络-接口中，手动配置wwan的DNS 8.8.8.8
+
+保存并应用

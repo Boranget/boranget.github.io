@@ -26,6 +26,8 @@ categories:
 
 [百度智能云控制台 (baidu.com)](https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application)
 
+进入 模型服务-应用身份
+
 点击该地址进入应用控制台，点击左侧应用接入，填写相关信息并创建应用，创建成功后可以看到apiKey和secretKey
 
 # 获取token
