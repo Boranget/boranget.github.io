@@ -1,7 +1,7 @@
 ---
 title: Alhagi实现记录
 date: 2024-11-17 21:35:19
-updated: 2024-11-17 21:35:19
+updated: 2026-06-02 21:35:19
 tags:
   - 编辑器
   - markdown
@@ -25,3 +25,15 @@ https://spec.commonmark.org/0.31.2/
   - 新创建一个段落块
     - 添加到现有段落的懒延续中
 - 关闭：从当前节点开始，向上级关闭，直到关闭到T，（T不关闭，因为下一行可能还要放在这个容器中）
+
+# MarkText阶段
+
+marktext本身使用vue2实现的的，其核心采用了自用的muya核心，整体想法比较多，功能也留了很多，但在实际使用的过程中，发现marktext的bug还是很多的，并且很多muya核心的bug，比如多行选中删除的时候会出现已经删除的内容又冒出来，最终在将其重构为vue3并使用了一段时间后，放弃了使用marktext进行二开的想法。
+
+# Vditor阶段
+
+使用vditor替代muya作为核心，但vditor的不足在于，vditor没有内置搜索，且由于vditor是直接html编辑，没有做源码到渲染后内容的位置映射，在实现搜索语法高亮以及替换的时候很艰难
+
+# milkdown阶段
+
+milkdown使用了prosemirror作为底层，prosemirror是一款成熟的富文本编辑核心，是很多编辑器的底层核心。

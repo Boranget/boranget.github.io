@@ -28,9 +28,21 @@ Control + Shift + P，输入flutter，选择创建新项目，此时会弹出安
 
 需要在系统环境变量中添加如下两个变量
 
-`PUB_HOSTED_URL="https://pub.flutter-io.cn"`
+```
+PUB_HOSTED_URL="https://pub.flutter-io.cn"
 
-`FLUTTER_STORAGE_BASE_URL="https://storage.flutter-io.cn"`
+FLUTTER_STORAGE_BASE_URL="https://storage.flutter-io.cn"
+```
+
+若上方镜像不行，则尝试清华镜像
+
+```
+PUB_HOSTED_URL="https://mirrors.tuna.tsinghua.edu.cn/dart-pub"
+
+FLUTTER_STORAGE_BASE_URL="https://mirrors.tuna.tsinghua.edu.cn/flutter"
+```
+
+
 
 ## 验证
 
@@ -755,6 +767,19 @@ Text(
 )
 ```
 
+## ASSETS
+
+如果在代码中用到了某个资源，则必须在 `pubspec.yaml` 中配置资源路径，并且必须配置到深层目录，否则编译的时候不会携带
+
+```yaml
+flutter:
+  assets:
+    - lib/images/ # 配置整个文件夹
+    # 或指定单个图片：- lib/images/avatar.png
+```
+
+
+
 ## Image 组件
 
 **作用**：加载并显示本地、网络等多种来源的图片。
@@ -769,13 +794,6 @@ Text(
 
 1. 在项目根目录创建资源文件夹（如 `lib/images/`），放入图片文件
 2. 在 `pubspec.yaml` 中配置资源路径：
-
-```yaml
-flutter:
-  assets:
-    - lib/images/ # 配置整个文件夹
-    # 或指定单个图片：- lib/images/avatar.png
-```
 
 ```dart
 // 1. 本地资源图片
@@ -1931,3 +1949,24 @@ class _StorageDemoState extends State<StorageDemo> {
 }
 ```
 
+# 项目重命名
+
+下载依赖
+
+```bash
+flutter pub global activate rename
+```
+
+查看当前项目名和包名
+
+```bash
+flutter pub global run rename getAppName
+flutter pub global run rename getBundleId
+```
+
+修改（指定平台）
+
+```bash
+flutter pub global run rename setAppName --targets windows,macos,ios,android --value "项目名称"
+flutter pub global run rename setBundleId --targets windows,macos,ios,android --value "com.example.bundleId"  
+```
