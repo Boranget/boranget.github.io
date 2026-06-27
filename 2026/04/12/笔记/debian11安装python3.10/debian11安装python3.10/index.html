@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>debian11安装python3.10 | Boranget.博客</title><meta name="author" content="Boranget"><meta name="copyright" content="Boranget"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="参考资料Debian 11上安装Python 3.10，并切换系统默认Python版本 - DouSTN - 博客园 Index of python-local&#x2F;3.10.0 注意 切换版本后要用python执行而不是python3  可使用参考资料中的镜像地址下载python   流程一、更新系统包并安装编译依赖环境首先更新系统软件包，再安装 Python 源码编译必需的依赖库，这是编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="debian11安装python3.10">
+<meta property="og:url" content="https://boranget.github.io/2026/04/12/%E7%AC%94%E8%AE%B0/debian11%E5%AE%89%E8%A3%85python3.10/debian11%E5%AE%89%E8%A3%85python3.10/index.html">
+<meta property="og:site_name" content="Boranget.博客">
+<meta property="og:description" content="参考资料Debian 11上安装Python 3.10，并切换系统默认Python版本 - DouSTN - 博客园 Index of python-local&#x2F;3.10.0 注意 切换版本后要用python执行而不是python3  可使用参考资料中的镜像地址下载python   流程一、更新系统包并安装编译依赖环境首先更新系统软件包，再安装 Python 源码编译必需的依赖库，这是编">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://boranget.github.io/assets/img/tx.png">
+<meta property="article:published_time" content="2026-04-12T05:46:41.000Z">
+<meta property="article:modified_time" content="2026-04-12T05:46:41.000Z">
+<meta property="article:author" content="Boranget">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://boranget.github.io/assets/img/tx.png"><link rel="shortcut icon" href="/assets/img/tx.png"><link rel="canonical" href="https://boranget.github.io/2026/04/12/%E7%AC%94%E8%AE%B0/debian11%E5%AE%89%E8%A3%85python3.10/debian11%E5%AE%89%E8%A3%85python3.10/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":true,"top_n_per_article":1,"unescape":true,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'debian11安装python3.10',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-04-12 13:46:41'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/assets/img/tx.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">201</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">207</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Boranget.博客"><img class="site-icon" src="/assets/img/tx.png"/><span class="site-name">Boranget.博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">debian11安装python3.10</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-04-12T05:46:41.000Z" title="发表于 2026-04-12 13:46:41">2026-04-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-04-12T05:46:41.000Z" title="更新于 2026-04-12 13:46:41">2026-04-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="debian11安装python3.10"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/STangQL/p/15647583.html">Debian 11上安装Python 3.10，并切换系统默认Python版本 - DouSTN - 博客园</a></p>
+<p><a target="_blank" rel="noopener" href="https://mirrors.huaweicloud.com/python/3.10.0/">Index of python-local&#x2F;3.10.0</a></p>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><ul>
+<li><p>切换版本后要用python执行而不是python3</p>
+</li>
+<li><p>可使用参考资料中的镜像地址下载python</p>
+</li>
+</ul>
+<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><h2 id="一、更新系统包并安装编译依赖环境"><a href="#一、更新系统包并安装编译依赖环境" class="headerlink" title="一、更新系统包并安装编译依赖环境"></a>一、更新系统包并安装编译依赖环境</h2><p>首先更新系统软件包，再安装 Python 源码编译必需的依赖库，这是编译安装的基础步骤。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更新软件包索引并升级已安装包</span></span><br><span class="line">sudo apt update &amp;&amp; sudo apt upgrade -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装编译依赖环境</span></span><br><span class="line">sudo apt install wget build-essential libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev -y</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、正式安装-Python-3-10（源码编译）"><a href="#二、正式安装-Python-3-10（源码编译）" class="headerlink" title="二、正式安装 Python 3.10（源码编译）"></a>二、正式安装 Python 3.10（源码编译）</h2><h3 id="1-下载-Python-3-10-源码包"><a href="#1-下载-Python-3-10-源码包" class="headerlink" title="1. 下载 Python 3.10 源码包"></a>1. 下载 Python 3.10 源码包</h3><p>切换到用户主目录，下载 Python 3.10.0 官方源码包（可去 Python 官网替换为最新版本）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入用户主目录</span></span><br><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载 Python 3.10.0 源码</span></span><br><span class="line">wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-解压源码包"><a href="#2-解压源码包" class="headerlink" title="2. 解压源码包"></a>2. 解压源码包</h3><p>解压下载的 <code>.tgz</code> 压缩包，会自动生成同名文件夹。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xzf Python-3.10.0.tgz</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-配置编译选项"><a href="#3-配置编译选项" class="headerlink" title="3. 配置编译选项"></a>3. 配置编译选项</h3><p>进入解压后的源码目录，执行配置命令，开启性能优化。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入源码目录</span></span><br><span class="line"><span class="built_in">cd</span> Python-3.10.0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置编译选项（开启优化）</span></span><br><span class="line">./configure --enable-optimizations</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>--enable-optimizations</code>：开启 Python 性能优化，推荐必加</li>
+<li>可选参数：<code>--prefix=PATH</code> 自定义安装路径（默认 <code>/usr/local</code>）</li>
+</ul>
+<h3 id="4-编译并安装"><a href="#4-编译并安装" class="headerlink" title="4. 编译并安装"></a>4. 编译并安装</h3><p>使用 <code>altinstall</code> 安装，<strong>避免覆盖系统默认 Python 版本</strong>，这是关键安全操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make altinstall</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-验证安装"><a href="#5-验证安装" class="headerlink" title="5. 验证安装"></a>5. 验证安装</h3><p>执行命令检查 Python 3.10 是否安装成功。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3.10</span><br></pre></td></tr></table></figure>
+
+<p>出现如下界面即安装完成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Python 3.10.0 (default, Dec  5 2021, 22:46:09) [GCC 10.2.1 20210110] on linux</span><br><span class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、查看已安装-Python-版本-amp-路径"><a href="#三、查看已安装-Python-版本-amp-路径" class="headerlink" title="三、查看已安装 Python 版本 &amp; 路径"></a>三、查看已安装 Python 版本 &amp; 路径</h2><p>安装完成后，可通过命令查看系统所有 Python 版本及对应路径。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看所有 Python 版本及路径</span></span><br><span class="line">whereis python</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看指定版本的安装路径（示例：Python3.10）</span></span><br><span class="line"><span class="built_in">which</span> python3.10</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、切换默认-Python-版本"><a href="#四、切换默认-Python-版本" class="headerlink" title="四、切换默认 Python 版本"></a>四、切换默认 Python 版本</h2><p>提供<strong>单用户切换</strong>和<strong>系统级切换</strong>两种方案，按需选择。</p>
+<h3 id="方案-1：单用户切换（推荐，不影响系统全局）"><a href="#方案-1：单用户切换（推荐，不影响系统全局）" class="headerlink" title="方案 1：单用户切换（推荐，不影响系统全局）"></a>方案 1：单用户切换（推荐，不影响系统全局）</h3><p>仅对当前用户生效，修改 <code>.bashrc</code> 配置别名即可。</p>
+<ol>
+<li>编辑配置文件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>在文件末尾添加别名（路径替换为你的 Python3.10 实际路径）</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> python=<span class="string">&#x27;/usr/local/bin/python3.10&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>重新加载配置文件生效</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>验证：直接执行 <code>python</code> 即可启动 Python 3.10</li>
+</ol>
+<hr>
+<h3 id="方案-2：系统级切换（全局生效）"><a href="#方案-2：系统级切换（全局生效）" class="headerlink" title="方案 2：系统级切换（全局生效）"></a>方案 2：系统级切换（全局生效）</h3><p>使用 <code>update-alternatives</code> 管理系统默认 Python 版本。</p>
+<h4 id="1-添加-Python-版本到替代列表"><a href="#1-添加-Python-版本到替代列表" class="headerlink" title="1. 添加 Python 版本到替代列表"></a>1. 添加 Python 版本到替代列表</h4><p>命令格式：<code>update-alternatives --install &lt;链接&gt; &lt;名称&gt; &lt;路径&gt; &lt;优先级&gt;</code></p>
+<ul>
+<li>优先级：数字越大，默认优先级越高</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加 Python2.7（优先级1）</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加 Python3.9（优先级2）</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.9 2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加 Python3.10（优先级3，最高）</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/python python /usr/local/bin/python3.10 3</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-列出所有可用版本"><a href="#2-列出所有可用版本" class="headerlink" title="2. 列出所有可用版本"></a>2. 列出所有可用版本</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update-alternatives --list python</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-手动切换版本"><a href="#3-手动切换版本" class="headerlink" title="3. 手动切换版本"></a>3. 手动切换版本</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo update-alternatives --config python</span><br></pre></td></tr></table></figure>
+
+<p>执行后会出现选择菜单，输入对应编号即可切换：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">有 3 个候选项可用于替换 python (提供 /usr/bin/python)。</span><br><span class="line"></span><br><span class="line">  选择       路径                     优先级  状态</span><br><span class="line">------------------------------------------------------------</span><br><span class="line">* 0            /usr/local/bin/python3.10   3         自动模式</span><br><span class="line">  1            /usr/bin/python2.7          1         手动模式</span><br><span class="line">  2            /usr/bin/python3.9          2         手动模式</span><br><span class="line">  3            /usr/local/bin/python3.10   3         手动模式</span><br><span class="line"></span><br><span class="line">要维持当前值[*]请按&lt;回车键&gt;，或者键入选择的编号：</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-验证切换结果"><a href="#4-验证切换结果" class="headerlink" title="4. 验证切换结果"></a>4. 验证切换结果</h4><p>直接执行 <code>python</code> 命令，查看默认版本是否生效。</p>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>编译安装核心：依赖安装 → 源码下载 → 配置优化 → <code>make altinstall</code>（防覆盖）</li>
+<li>单用户切换：修改 <code>.bashrc</code> 别名，安全无风险</li>
+<li>系统级切换：<code>update-alternatives</code> 统一管理，全局生效</li>
+<li>验证命令：<code>python3.10</code>（固定调用）&#x2F; <code>python</code>（默认版本）</li>
+</ol>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/python/">python</a></div><div class="post_share"><div class="social-share" data-image="/assets/img/tx.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/04/12/%E7%AC%94%E8%AE%B0/%E5%AE%89%E8%A3%85uv%E5%B9%B6%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/%E5%AE%89%E8%A3%85uv%E5%B9%B6%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/" title="安装uv并配置环境变量"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">安装uv并配置环境变量</div></div></a></div><div class="next-post pull-right"><a href="/2026/01/28/%E7%BB%8F%E9%AA%8C/%E9%BB%91%E7%A5%9E%E8%AF%9D%E7%A0%B4%E8%A7%A3%E7%89%88%E8%BF%90%E8%A1%8C/%E9%BB%91%E7%A5%9E%E8%AF%9D%E7%A0%B4%E8%A7%A3%E7%89%88%E8%BF%90%E8%A1%8C/" title="黑神话破解版运行"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">黑神话破解版运行</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2021/06/17/%E7%BB%8F%E9%AA%8C/edge%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8pyecharts_snapshot_selenium%E6%B8%B2%E6%9F%93%E6%88%90%E5%9B%BE%E7%89%87/edge%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8pyecharts_snapshot_selenium%E6%B8%B2%E6%9F%93%E6%88%90%E5%9B%BE%E7%89%87/" title="edge浏览器使用pyecharts_snapshot_selenium渲染成图片"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-17</div><div class="title">edge浏览器使用pyecharts_snapshot_selenium渲染成图片</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/assets/img/tx.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Boranget</div><div class="author-info__description">整理的一些笔记和平时的一些经验</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">201</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">207</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Boranget"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">笔记分类是一些看书或者网课做的笔记，经验分类一般是平时碰到的问题或者折腾的一些小东西。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.</span> <span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">2.</span> <span class="toc-text">注意</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%9B%B4%E6%96%B0%E7%B3%BB%E7%BB%9F%E5%8C%85%E5%B9%B6%E5%AE%89%E8%A3%85%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96%E7%8E%AF%E5%A2%83"><span class="toc-number">3.1.</span> <span class="toc-text">一、更新系统包并安装编译依赖环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%AD%A3%E5%BC%8F%E5%AE%89%E8%A3%85-Python-3-10%EF%BC%88%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">二、正式安装 Python 3.10（源码编译）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8B%E8%BD%BD-Python-3-10-%E6%BA%90%E7%A0%81%E5%8C%85"><span class="toc-number">3.2.1.</span> <span class="toc-text">1. 下载 Python 3.10 源码包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%A7%A3%E5%8E%8B%E6%BA%90%E7%A0%81%E5%8C%85"><span class="toc-number">3.2.2.</span> <span class="toc-text">2. 解压源码包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9"><span class="toc-number">3.2.3.</span> <span class="toc-text">3. 配置编译选项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%BC%96%E8%AF%91%E5%B9%B6%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.4.</span> <span class="toc-text">4. 编译并安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.5.</span> <span class="toc-text">5. 验证安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%AE%89%E8%A3%85-Python-%E7%89%88%E6%9C%AC-amp-%E8%B7%AF%E5%BE%84"><span class="toc-number">3.3.</span> <span class="toc-text">三、查看已安装 Python 版本 &amp; 路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%88%87%E6%8D%A2%E9%BB%98%E8%AE%A4-Python-%E7%89%88%E6%9C%AC"><span class="toc-number">3.4.</span> <span class="toc-text">四、切换默认 Python 版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-1%EF%BC%9A%E5%8D%95%E7%94%A8%E6%88%B7%E5%88%87%E6%8D%A2%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%8C%E4%B8%8D%E5%BD%B1%E5%93%8D%E7%B3%BB%E7%BB%9F%E5%85%A8%E5%B1%80%EF%BC%89"><span class="toc-number">3.4.1.</span> <span class="toc-text">方案 1：单用户切换（推荐，不影响系统全局）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-2%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%BA%A7%E5%88%87%E6%8D%A2%EF%BC%88%E5%85%A8%E5%B1%80%E7%94%9F%E6%95%88%EF%BC%89"><span class="toc-number">3.4.2.</span> <span class="toc-text">方案 2：系统级切换（全局生效）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%B7%BB%E5%8A%A0-Python-%E7%89%88%E6%9C%AC%E5%88%B0%E6%9B%BF%E4%BB%A3%E5%88%97%E8%A1%A8"><span class="toc-number">3.4.2.1.</span> <span class="toc-text">1. 添加 Python 版本到替代列表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E5%8F%AF%E7%94%A8%E7%89%88%E6%9C%AC"><span class="toc-number">3.4.2.2.</span> <span class="toc-text">2. 列出所有可用版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%89%8B%E5%8A%A8%E5%88%87%E6%8D%A2%E7%89%88%E6%9C%AC"><span class="toc-number">3.4.2.3.</span> <span class="toc-text">3. 手动切换版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E9%AA%8C%E8%AF%81%E5%88%87%E6%8D%A2%E7%BB%93%E6%9E%9C"><span class="toc-number">3.4.2.4.</span> <span class="toc-text">4. 验证切换结果</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.4.3.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/17/%E7%AC%94%E8%AE%B0/Alhagi%E5%AE%9E%E7%8E%B0%E8%AE%B0%E5%BD%95/Alhagi%E5%AE%9E%E7%8E%B0%E8%AE%B0%E5%BD%95/" title="Alhagi实现记录">Alhagi实现记录</a><time datetime="2026-06-02T13:35:19.000Z" title="更新于 2026-06-02 21:35:19">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/12/%E7%AC%94%E8%AE%B0/napcat%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/napcat%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/" title="napcat安装使用">napcat安装使用</a><time datetime="2026-04-12T10:04:07.000Z" title="更新于 2026-04-12 18:04:07">2026-04-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/12/%E7%AC%94%E8%AE%B0/%E5%AE%89%E8%A3%85uv%E5%B9%B6%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/%E5%AE%89%E8%A3%85uv%E5%B9%B6%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/" title="安装uv并配置环境变量">安装uv并配置环境变量</a><time datetime="2026-04-12T05:54:01.000Z" title="更新于 2026-04-12 13:54:01">2026-04-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/12/%E7%AC%94%E8%AE%B0/debian11%E5%AE%89%E8%A3%85python3.10/debian11%E5%AE%89%E8%A3%85python3.10/" title="debian11安装python3.10">debian11安装python3.10</a><time datetime="2026-04-12T05:46:41.000Z" title="更新于 2026-04-12 13:46:41">2026-04-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/28/%E7%BB%8F%E9%AA%8C/%E9%BB%91%E7%A5%9E%E8%AF%9D%E7%A0%B4%E8%A7%A3%E7%89%88%E8%BF%90%E8%A1%8C/%E9%BB%91%E7%A5%9E%E8%AF%9D%E7%A0%B4%E8%A7%A3%E7%89%88%E8%BF%90%E8%A1%8C/" title="黑神话破解版运行">黑神话破解版运行</a><time datetime="2026-01-28T07:51:40.000Z" title="更新于 2026-01-28 15:51:40">2026-01-28</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Boranget</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
